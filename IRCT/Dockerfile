@@ -1,35 +1,33 @@
 FROM jboss/wildfly
 MAINTAINER Jeremy R. Easton-Marks <Jeremy_Easton-Marks@hms.harvard.edu>
 
-# Add WAR FIle
-ADD IRCT-CL.war /opt/jboss/wildfly/standalone/deployments/
+# SET DEFAULT ENV VARIABLES
+ENV IRCT_DB_CONNECTION_URL localhost:3306/irct
+ENV IRCT_DB_CONNECTION_USER root
+ENV IRCT_DB_CONNECTION_PASSWORD password
+ENV IRCT_AUTH0_DOMAIN domain
+ENV IRCT_AUTH0_CLIENT_ID client_id
+ENV IRCT_AUTH0_CLIENT_SECRET client_secret
+ENV IRCT_USER_FIELD email
+ENV IRCT_KEY_TIMEOUT_IN_MINUTES 720
 
-# Add standalone.xml
-ADD standalone.xml /opt/jboss/wildfly/standalone/configuration/
+# Copy standalone.xml
+COPY standalone.xml /opt/jboss/wildfly/standalone/configuration/
 
-# Add MySQL Module
-ADD mySQL/module.xml /opt/jboss/wildfly/modules/system/layers/base/com/sql/mysql/main/
-ADD mySQL/mysql-connector-java-5.1.22.jar /opt/jboss/wildfly/modules/system/layers/base/com/sql/mysql/main/
+# Copy MySQL Module
+COPY mySQL/module.xml /opt/jboss/wildfly/modules/system/layers/base/com/sql/mysql/main/
+COPY mySQL/mysql-connector-java-5.1.22.jar /opt/jboss/wildfly/modules/system/layers/base/com/sql/mysql/main/
 
-# Add Oracle Module
-ADD oracle/module.xml /opt/jboss/wildfly/modules/system/layers/base/com/oracle/main/
-ADD oracle/ojdbc6.jar /opt/jboss/wildfly/modules/system/layers/base/com/oracle/main/
+# Copy Oracle Module
+COPY oracle/module.xml /opt/jboss/wildfly/modules/system/layers/base/com/oracle/main/
+COPY oracle/ojdbc6.jar /opt/jboss/wildfly/modules/system/layers/base/com/oracle/main/
 
 USER root
+
 # IRCT Scratch Directory
-RUN mkdir /scratch
-RUN mkdir /scratch/irct
+RUN mkdir -p /scratch/irct
 
+# COPY WAR FIle
+COPY IRCT-CL.war /opt/jboss/wildfly/standalone/deployments/
 
-# SET DEFAULT ENV VARIABLEs
-
-IRCT_DB_CONNECTION_URL=mysql:3306/irct
-IRCT_DB_CONNECTION_USER=root
-IRCT_DB_CONNECTION_PASSWORD=password
-IRCT_AUTH0_DOMAIN=domain
-IRCT_AUTH0_CLIENT_ID=client_id
-IRCT_AUTH0_CLIENT_SECRET=client_secret
-IRCT_USER_FIELD=email
-IRCT_KEY_TIMEOUT_IN_MINUTES=720
-IRCT_DB_ADDRESS=localhost:3306/irct
-IRCT_DB_PASSWORD=root
+ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]

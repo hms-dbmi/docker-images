@@ -11,7 +11,7 @@ dataSource {
  driverClassName ="oracle.jdbc.driver.OracleDriver"
 
  //url = "jdbc:oracle:thin:@10.0.2.2:1521:xe"
- url = "jdbc:oracle:thin:@${System.getenv("DB_URL")}:${System.getenv('DB_PORT')}:ORCL"
+ url = "jdbc:oracle:thin:@${System.getenv("DB_HOST")}:${System.getenv('DB_PORT')}:ORCL"
  username = "${System.getenv('DB_USERNAME')}"
  password = "${System.getenv('DB_PASSWORD')}"
 
