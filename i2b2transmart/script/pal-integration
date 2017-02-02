@@ -75,24 +75,23 @@ encrypt_data() {
   enc_data=$(echo -n $data | openssl base64)
   echo $enc_data
 
-  pgp_response=$(echo -n 'this is pgp-encrypted secret' | \
-    palpgpenc \
-    -labels=pal \
-    -keyids=BFA130C83AEEFBA1 \
-    -pubring=${pubring_location})
-  pgp_status=$?
+#  pgp_response=$(echo -n 'this is pgp-encrypted secret' | \
+#    palpgpenc \
+#    -labels=pal \
+#    -keyids=BFA130C83AEEFBA1 \
+#    -pubring=${pubring_location})
+#  pgp_status=$?
 
   body=$(curl --silent --cacert /tmp/server.crt \
     https://$ro_host:$ro_port/encrypt  \
-    -d '{"Name":"Alice","Password":"Lewis","Minimum":1,"Labels":["pal"],"Owners":["Alice","Batman"],"Data":"'$enc_data'"}')
+    -d '{"Name":"Alice","Password":"Lewis","Minimum":1,"Owners":["Alice","Batman"],"Data":"'$enc_data'"}')
   ro_status=$(echo $body | jq -r .Status)
   ro_response=$(echo $body | jq -r .Response)
-  if [[ $ro_status == "ok" && $pgp_status -eq 0 ]]; then
+  if [[ $ro_status == "ok" ]]; then
     export PAL_SECRETS_YAML=$(cat << EOF
 dev:
   env:
     RO_VAR: ro:${ro_response}
-    PGP_VAR: pgp:${pgp_response}
 EOF
 )
     echo $PAL_SECRETS_YAML
@@ -106,7 +105,7 @@ ensure_delegation() {
   local user=$1
   local password=$2
   curl --silent --cacert /tmp/server.crt https://$ro_host:$ro_port/delegate \
-    -d '{"Name":"'$user'","Password":"'$password'","Time":"1h","Uses":10,"Labels":["pal"]}'
+    -d '{"Name":"'$user'","Password":"'$password'","Time":"1h","Uses":10}'
   echo ""
 }
 
@@ -118,5 +117,5 @@ chmod 644 /tmp/server.crt
 ensure_user Alice Lewis
 ensure_user Batman Robin
 ensure_delegation Alice Lewis
-encrypt_data "Why is a raven like a writing desk?"
+encrypt_data "HMWPIJ91VQ1HOQYQD37"
 exec $@
