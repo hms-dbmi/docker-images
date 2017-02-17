@@ -1,0 +1,116 @@
+version: '2'
+services:
+  nginx:
+    build:
+        context: nginx/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/nginx:${version}
+    environment:
+      - constraint:node==/.*(${ACCOUNT_ID}).*/
+
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "${APP_PORT}:80"
+    networks:
+      - i2b2-net
+    depends_on:
+      - i2b2transmartapp
+      - irct
+      - i2b2-wildfly
+  i2b2transmartapp:
+    build:
+        context: i2b2transmart/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/i2b2transmart-app:${version}
+    environment:
+      - ORACLEHOST=${ORACLEHOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - BIOMART_USER=${BIOMART_USER}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}
+    restart: always
+    networks:
+      - i2b2-net
+    expose:
+      - 8080
+    mem_limit: "2g"
+  i2b2-wildfly:
+    build:
+        context: i2b2-wildfly/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/i2b2-wildfly:${version}
+    environment:
+      - ORACLEHOST=${ORACLEHOST}
+      - DB_PORT=${DB_PORT}
+      - I2B2HIVE=${I2B2HIVE}
+      - I2B2DEMODATA=${I2B2DEMODATA}
+      - I2B2METADATA=${I2B2METADATA}
+      - I2B2PM=${I2B2PM}
+      - I2B2WORKDATA=${I2B2WORKDATA}
+    restart: always
+    networks:
+      - i2b2-net
+    expose:
+      - 9090
+  irct:
+    build:
+        context: irct/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/irct:${version}
+    depends_on:
+       - mysql
+    environment:
+      - IRCTMYSQLADDRESS=${IRCTMYSQLADDRESS}
+      - IRCT_DB_PORT=${IRCT_DB_PORT}
+      - IRCT_DB_CONNECTION_USER=${IRCT_DB_CONNECTION_USER}
+      - IRCTMYSQLPASS=${IRCTMYSQLPASS}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}
+    restart: always
+    networks:
+      - i2b2-net
+    expose:
+      - 8080
+  mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=${IRCTMYSQLPASS}
+      - MYSQL_DATABASE=irct
+    restart: always
+    expose:
+      - 3306
+    networks:
+      - i2b2-net
+  irct-init:
+    build:
+        context: irct-init/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/irct-init:${version}
+    depends_on:
+      - mysql
+      - irct
+    environment:
+      - IRCT_RESOURCE_NAME=${APPLICATION_NAME}
+      - IRCTMYSQLADDRESS=${IRCTMYSQLADDRESS}
+      - IRCT_DB_PORT=${IRCT_DB_PORT}
+      - IRCT_DB_CONNECTION_USER=${IRCT_DB_CONNECTION_USER}
+      - IRCTMYSQLPASS=${IRCTMYSQLPASS}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+    restart: on-failure:10
+    networks:
+      - i2b2-net
+#    entrypoint:
+#      - ./scratch/irct/sql/init-db.sh
+#      - -h
+#      - $IRCTMYSQLADDRESS
+#      - -u
+#      - $IRCT_DB_CONNECTION_USER
+#      - -p
+#      - $IRCTMYSQLPASS
+#      - -d
+#      - irct
+#      - -c
+#      - "true"
+networks:
+    i2b2-net:

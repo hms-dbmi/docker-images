@@ -10,10 +10,9 @@ dataSource {
  // standard jdbc driver
  driverClassName ="oracle.jdbc.driver.OracleDriver"
 
- //url = "jdbc:oracle:thin:@10.0.2.2:1521:xe"
- url = "jdbc:oracle:thin:@${System.getenv("DB_HOST")}:${System.getenv('DB_PORT')}:ORCL"
- username = "${System.getenv('DB_USERNAME')}"
- password = "${System.getenv('DB_PASSWORD')}"
+ url = "jdbc:oracle:thin:@${System.getenv("ORACLEHOST")}:${System.getenv("DB_PORT")}:ORCL"
+ username = "${System.getenv("DB_USER")}"
+ password = "${System.getenv("BIOMART_USER")}"
 
 
  // hibernate database connection dialect

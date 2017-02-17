@@ -259,16 +259,16 @@ com.recomdata.searchtool.appTitle="Department of Biomedical Informatics – tran
 // The callback URI has to match the Auth0 'Callback' setting (at least one of them)
 edu.harvard.transmart.auth0.callback="/login/callback"
 
-edu.harvard.transmart.auth0.client_id="ywAq4Xu4Kl3uYNdm3m05Cc5ow0OibvXt"
-edu.harvard.transmart.auth0.client_secret="nQWNixJHJ_jRWd6ZuFY9XJNdt9-gDvqBkpN9b80qHn7ySpCUfTdwIm0F85UZgbB4"
-edu.harvard.transmart.auth0.domain="avillachlab.auth0.com"
+edu.harvard.transmart.auth0.client_id="${System.getenv("AUTH0_CLIENT_ID")}"
+edu.harvard.transmart.auth0.client_secret="${System.getenv("AUTH0_CLIENT_SECRET")}"
+edu.harvard.transmart.auth0.domain="${System.getenv("AUTH0_DOMAIN")}"
 
 // *************************
 // ***  reCAPTCHA Setup  ***
 // *************************
 
-edu.harvard.transmart.captcha.secret="6Le5BiETAAAAAFnHL2HQfARXPcbC9Y1PBZ7j_I_h}"
-edu.harvard.transmart.captcha.sitekey="6Le5BiETAAAAAD3lXzlWrVVD5fOyn8hsBEOAzNCB"
+edu.harvard.transmart.captcha.secret="${System.getenv("GOOGLE_RECAPTCHA_SECRET")}"
+edu.harvard.transmart.captcha.sitekey="${System.getenv("GOOGLE_RECAPTCHA_SITEKEY")}"
 edu.harvard.transmart.captcha.verifyurl="https://www.google.com/recaptcha/api/siteverify"
 
 // **************************
@@ -278,23 +278,23 @@ edu.harvard.transmart.captcha.verifyurl="https://www.google.com/recaptcha/api/si
 edu.harvard.transmart.email.port="587"
 edu.harvard.transmart.email.server="smtp.gmail.com"
 edu.harvard.transmart.email.user="hms.dbmi.data.infrastructure@gmail.com"
-edu.harvard.transmart.email.password="NsSbuFr8zVLtVgCH"
+edu.harvard.transmart.email.password="${System.getenv("EMAIL_PASS")}"
 
 // The sending e-mail address has to match/valid on the "email.server" server above!!!
 edu.harvard.transmart.email.from="HMS-DBMI DataInfrastructure Support <hms.dbmi.data.infrastructure@gmail.com>"
 
 // Internal support e-mail communication will be sent to this. Usually a list of emails, separated by commas
 edu.harvard.transmart.email.support="jira@hms-dbmi.atlassian.net"
-edu.harvard.transmart.email.notify="gabor_korodi@hms.harvard.edu,paul_avillach@hms.harvard.edu,Andre_Rosa@hms.harvard.edu"
+edu.harvard.transmart.email.notify="${System.getenv("NOTIFICATION_EMAILS")}"
 
-edu.harvard.transmart.googleanalytics.tracking=""
+edu.harvard.transmart.googleanalytics.tracking="${System.getenv("GOOGLE_TRACKING")}"
 edu.harvard.transmart.email.smtp_timeout="180000" // in miliseconds
 edu.harvard.transmart.email.isdebug="false"
 edu.harvard.transmart.email.logo="http://dbmi.hms.harvard.edu/profiles/hmssf/themes/custom/hms_bootstrap/logo.png"
 
 
 // Additional properties
-edu.harvard.transmart.instance.name="NHANES (prod like)"
+edu.harvard.transmart.instance.name="${System.getenv("APPLICATION_NAME")}"
 edu.harvard.transmart.instance.type=""
 edu.harvard.transmart.isPublicStudyRestricted="true"
 edu.harvard.transmart.access.level1="manual"
@@ -303,9 +303,9 @@ edu.harvard.transmart.access.level1="manual"
 // ***    Export Setup   ***
 // *************************
 edu.harvard.transmart.data.export.transferToS3=true
-edu.harvard.transmart.S3BucketName="dbmi-picsure-data"
-edu.harvard.transmart.rServeHost="localhost"
-edu.harvard.transmart.rServePort=6311
+edu.harvard.transmart.S3BucketName="${System.getenv("S3_BUCKET_NAME")}"
+edu.harvard.transmart.rServeHost="${System.getenv("RSERVE_HOST")}"
+edu.harvard.transmart.rServePort=${System.getenv("RSERVE_PORT")}
 
 //Path on the remote file server (S3) where we can store the job files.
 //no starting slash and make sure there is a slash at the end! e.g.: tmp/jobs/

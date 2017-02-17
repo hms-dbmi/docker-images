@@ -3,6 +3,14 @@ MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
 ENV TOMCAT_VERSION 8.0.36
 
+ENV ORACLEHOST localhost
+ENV DB_USER biomart_user
+ENV BIOMART_USER demouser
+ENV DB_PORT 1521
+ENV AUTH0_DOMAIN domain
+ENV AUTH0_CLIENT_ID client_id
+ENV AUTH0_CLIENT_SECRET client_secret
+
 # use bash instead of sh. easier for container debugging
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 

@@ -31,7 +31,6 @@
         <extension module="org.wildfly.extension.undertow"/>
     </extensions>
 
-
     <management>
         <security-realms>
             <security-realm name="ManagementRealm">
@@ -149,7 +148,7 @@
                     </security>
                 </datasource>
                 <datasource jndi-name="java:jboss/datasources/irct-cl-DS" pool-name="ComunicationLayerDS" use-java-context="true">
-                    <connection-url>jdbc:mysql://${env.IRCT_DB_CONNECTION_URL}?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;autoReconnectForPools=true</connection-url>
+                    <connection-url>jdbc:mysql://${env.IRCTMYSQLADDRESS}:${env.IRCT_DB_PORT}/irct?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;autoReconnectForPools=true</connection-url>
                     <driver>mysql</driver>
                     <pool>
                         <min-pool-size>5</min-pool-size>
@@ -158,7 +157,7 @@
                     </pool>
                     <security>
                         <user-name>${env.IRCT_DB_CONNECTION_USER}</user-name>
-                        <password>${env.IRCT_DB_CONNECTION_PASSWORD}</password>
+                        <password>${env.IRCTMYSQLPASS}</password>
                     </security>
                     <validation>
                         <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
@@ -197,7 +196,12 @@
                     <managed-scheduled-executor-service name="default" jndi-name="java:jboss/ee/concurrency/scheduler/default" context-service="default" hung-task-threshold="60000" keepalive-time="3000"/>
                 </managed-scheduled-executor-services>
             </concurrent>
-            <default-bindings context-service="java:jboss/ee/concurrency/context/default" datasource="java:jboss/datasources/ExampleDS" managed-executor-service="java:jboss/ee/concurrency/executor/default" managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default" managed-thread-factory="java:jboss/ee/concurrency/factory/default"/>
+            <default-bindings
+                context-service="java:jboss/ee/concurrency/context/default"
+                datasource="java:jboss/datasources/ExampleDS"
+                managed-executor-service="java:jboss/ee/concurrency/executor/default"
+                managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default"
+                managed-thread-factory="java:jboss/ee/concurrency/factory/default"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:ejb3:4.0">
             <session-bean>
@@ -327,9 +331,9 @@
                 <simple name="java:global/redirect_on_success" value="/IRCT-UI/token.html"/>
                 <simple name="java:global/resultDataFolder" value="/scratch/irct"/>
                 <simple name="java:global/userField" value="${env.IRCT_USER_FIELD}"/>
-                <simple name="java:global/domain" value="${env.IRCT_AUTH0_DOMAIN}"/>
-                <simple name="java:global/client_secret" value="${env.IRCT_AUTH0_CLIENT_SECRET}"/>
-                <simple name="java:global/client_id" value="${env.IRCT_AUTH0_CLIENT_ID}"/>
+                <simple name="java:global/domain" value="${env.AUTH0_DOMAIN}"/>
+                <simple name="java:global/client_secret" value="${env.AUTH0_CLIENT_SECRET}"/>
+                <simple name="java:global/client_id" value="${env.AUTH0_CLIENT_ID}"/>
                 <simple name="java:global/KeyTimeOutInMinutes" value="${env.IRCT_KEY_TIMEOUT_IN_MINUTES}"/>
             </bindings>
             <remote-naming/>
