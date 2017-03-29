@@ -27,6 +27,6 @@ COPY DataSource.groovy /root/.grails/transmartConfig
 COPY Config.groovy /root/.grails/transmartConfig
 COPY RModulesConfig.groovy /root/.grails/transmartConfig
 
-COPY transmart.war /usr/local/tomcat/webapps/
+COPY target/transmart.war /usr/local/tomcat/webapps/
 
 ENTRYPOINT ["./bin/catalina.sh", "run"]
