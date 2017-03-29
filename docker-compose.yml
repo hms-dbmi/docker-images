@@ -55,7 +55,7 @@ services:
 
   irct:
     build:
-        context: irct/
+        context: IRCT/
     image: dtr.avl.dbmi.hms.harvard.edu/dbmi/irct:${version}
     depends_on:
        - mysql
