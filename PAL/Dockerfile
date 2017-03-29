@@ -9,16 +9,9 @@ COPY ./bin/pald /usr/bin/pald
 # red october, pgp, notary configuration
 COPY ./config.yaml /etc/pal/config.yaml
 
-# pgp keyring
-#COPY ./testdata/secring.gpg /etc/pal/keyrings/secring.gpg
-
-# copies tmp red october certificate
-ADD ./script/pald-integration /docker-entrypoint
-
 VOLUME /var/run
 
-ENTRYPOINT ["/docker-entrypoint"]
-CMD ["/usr/bin/pald", \
+ENTRYPOINT ["/usr/bin/pald", \
     "-addr=unix:///var/run/pald.sock", \
     "-config=/etc/pal/config.yaml", \
     "-env=dev"]
