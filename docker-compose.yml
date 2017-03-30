@@ -16,10 +16,10 @@ services:
       - irct
       - i2b2-wildfly
 
-  i2b2transmartapp:
+  i2b2transmart:
     build:
         context: i2b2transmart/
-    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/i2b2transmart-app:${version}
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/i2b2transmart:${version}
     environment:
       - ORACLEHOST=${ORACLEHOST}
       - DB_PORT=${DB_PORT}
