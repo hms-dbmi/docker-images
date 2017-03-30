@@ -12,7 +12,7 @@ services:
     networks:
       - i2b2-net
     depends_on:
-      - i2b2transmartapp
+      - i2b2transmart
       - irct
       - i2b2-wildfly
 
