@@ -29,6 +29,6 @@ USER root
 RUN mkdir -p /scratch/irct
 
 # COPY WAR FIle
-COPY IRCT-CL.war /opt/jboss/wildfly/standalone/deployments/
+COPY target/IRCT-CL.war /opt/jboss/wildfly/standalone/deployments/
 
 ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
