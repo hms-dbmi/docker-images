@@ -87,7 +87,7 @@ services:
 
   irct-init:
     build:
-        context: IRCT-init/
+        context: irct-init/
     image: dtr.avl.dbmi.hms.harvard.edu/dbmi/irct-init:${version}
     depends_on:
       - mysql
