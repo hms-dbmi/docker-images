@@ -321,3 +321,11 @@ edu.harvard.transmart.transfer.localServerTempPath="/mnt/tmp/jobs"
 com.recomdata.transmart.data.export.rScriptDirectory = "https://raw.githubusercontent.com/hms-dbmi/tranSMART-R-Scripts/master/dataExportRScripts/"
 
 edu.harvard.transmart.instance.userguideurl="https://example.com/SomeUserguideUrl.html"
+
+// *************************
+// ***    IRCT Setup   ***
+// *************************
+
+// must be used internally within the same shared Docker network
+edu.harvard.transmart.irct.host="http://irct:8080"
+edu.harvard.transmart.irct.url="/IRCT-CL/rest/securityService/createKey"
