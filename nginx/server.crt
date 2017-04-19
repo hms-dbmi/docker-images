@@ -1,2 +1,1 @@
-${env.cert}
-${env.chain}
+${env.CERT}${env.CHAIN}
