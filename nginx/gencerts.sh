@@ -5,9 +5,8 @@ set -u
 # create self-signed certs
 echo "Verify (if existing) certificates"
 
-# disabling output to stdout. openssl rsa prints out key value
-openssl verify -CAfile $APP_CA $APP_CERT 1>/tmp/stdout 2>/tmp/err
-openssl rsa -check -in $APP_KEY 1>/tmp/stdout 2>/tmp/err
+openssl verify -CAfile $APP_CA $APP_CERT 2>/tmp/err
+openssl rsa -check -noout -in $APP_KEY 2>>/tmp/err
 
 if [ -s /tmp/err ]; then
 
