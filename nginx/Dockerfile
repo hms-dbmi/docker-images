@@ -15,6 +15,7 @@ COPY key.pem $CERT_DIR/
 ENV APPLICATION_NAME default
 ENV APP_KEY $CERT_DIR/key.pem
 ENV APP_CERT $CERT_DIR/server.crt
+ENV APP_CA $CERT_DIR/ca.pem
 
 COPY gencerts.sh /docker-entrypoint
 RUN chmod +x /docker-entrypoint
