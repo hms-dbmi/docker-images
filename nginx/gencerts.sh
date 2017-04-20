@@ -4,8 +4,10 @@ set -u
 # if we are not bind mounting in certs or the user has not already generated certs
 # create self-signed certs
 echo "Verify (if existing) certificates"
-openssl verify -CAfile $APP_CA $APP_CERT 2>/tmp/err
-openssl rsa -check -in $APP_KEY 2>/tmp/err
+
+# disabling output to stdout. openssl rsa prints out key value
+openssl verify -CAfile $APP_CA $APP_CERT 1>/tmp/stdout 2>/tmp/err
+openssl rsa -check -in $APP_KEY 1>/tmp/stdout 2>/tmp/err
 
 if [ -s /tmp/err ]; then
 
@@ -28,6 +30,8 @@ if [ -s /tmp/err ]; then
 	echo "Generated default certificates for $APPLICATION_NAME at $APP_CERT and $APP_KEY"
 	echo
 fi
+
+rm /tmp/stdout
 
 echo "Running $@"
 exec "$@"

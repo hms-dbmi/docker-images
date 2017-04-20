@@ -11,6 +11,7 @@ ENV CERT_DIR /etc/nginx/certs
 
 COPY server.crt $CERT_DIR/
 COPY key.pem $CERT_DIR/
+COPY ca.pem $CERT_DIR/
 
 ENV APPLICATION_NAME default
 ENV APP_KEY $CERT_DIR/key.pem
