@@ -30,7 +30,5 @@ if [ -s /tmp/err ]; then
 	echo
 fi
 
-rm /tmp/stdout
-
 echo "Running $@"
 exec "$@"
