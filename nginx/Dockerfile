@@ -1,8 +1,6 @@
 FROM nginx:mainline
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
-COPY nginx.conf /etc/nginx/
-
 # install openssl
 RUN apt-get update && apt-get install openssl
 
@@ -20,6 +18,14 @@ ENV APP_CA $CERT_DIR/ca.pem
 
 COPY gencerts.sh /docker-entrypoint
 RUN chmod +x /docker-entrypoint
+
+# default configuration
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# TODO: nginx conf generation.
+# Used in conjunction with jwilder/docker-gen:latest
+# templates
+COPY ./templates /etc/nginx/templates
 
 ENTRYPOINT ["./docker-entrypoint"]
 CMD ["nginx", "-g", "daemon off;"]
