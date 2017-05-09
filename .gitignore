@@ -2,3 +2,5 @@
 IRCT/target/IRCT-CL.war
 
 i2b2transmart/target/transmart.war
+
+.env
