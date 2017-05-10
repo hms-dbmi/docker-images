@@ -27,6 +27,9 @@ COPY DataSource.groovy /root/.grails/transmartConfig
 COPY Config.groovy /root/.grails/transmartConfig
 COPY RModulesConfig.groovy /root/.grails/transmartConfig
 
-COPY target/transmart.war /usr/local/tomcat/webapps/
+# With nginx as our front-end, make sure scheme protocol and IP is forwarded to tomcat - AR
+COPY server.xml $CATALINA_HOME/conf/
+
+COPY target/transmart.war $CATALINA_HOME/webapps/
 
 ENTRYPOINT ["./bin/catalina.sh", "run"]
