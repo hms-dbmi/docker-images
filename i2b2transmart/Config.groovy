@@ -304,8 +304,8 @@ edu.harvard.transmart.access.level1="manual"
 // *************************
 edu.harvard.transmart.data.export.transferToS3=true
 edu.harvard.transmart.S3BucketName="${System.getenv("S3_BUCKET_NAME")}"
-edu.harvard.transmart.rServeHost="${System.getenv("RSERVE_HOST")}"
-edu.harvard.transmart.rServePort=${System.getenv("RSERVE_PORT")}
+edu.harvard.transmart.rServeHost="rserve"
+edu.harvard.transmart.rServePort=6311
 
 //Path on the remote file server (S3) where we can store the job files.
 //no starting slash and make sure there is a slash at the end! e.g.: tmp/jobs/

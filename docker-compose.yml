@@ -105,5 +105,15 @@ services:
     networks:
       - i2b2-net
 
+  rserve:
+    build:
+        context: rserve/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/rserve:${version}
+    restart: always
+    expose:
+      - 6311
+    networks:
+      - i2b2-net
+
 networks:
     i2b2-net:
