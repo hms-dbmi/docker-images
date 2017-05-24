@@ -1,0 +1,138 @@
+version: '2'
+services:
+
+  # ORACLE DB tunnel
+  oracledb:
+    image: thomass/ssh-client
+    hostname: ${ORACLEHOST}
+    container_name: ${ORACLEHOST}
+    volumes:
+      - ~/.ssh:/ssh
+    command: ssh -Ng -L 1521:${ORACLEHOST}:1521 -i /ssh/${SSH_KEY} -o StrictHostKeyChecking=no ${SSH_HOST}
+    networks:
+      - i2b2-net
+    ports:
+      - 1521:1521
+
+  # IRCT DB tunnel
+  irctdb:
+    image: thomass/ssh-client
+    hostname: ${IRCTMYSQLADDRESS}
+    container_name: ${IRCTMYSQLADDRESS}
+    volumes:
+      - ~/.ssh:/ssh
+    command: ssh -Ng -L ${IRCT_DB_PORT}:${IRCTMYSQLADDRESS}:${IRCT_DB_PORT} -i /ssh/${SSH_KEY} -o StrictHostKeyChecking=no ${SSH_HOST}
+    networks:
+      - i2b2-net
+    ports:
+      - ${IRCT_DB_PORT}:${IRCT_DB_PORT}
+
+
+  nginx:
+    build:
+        context: nginx/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/nginx:${nginx_version}
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - i2b2-net
+    depends_on:
+      - i2b2transmart
+      - irct
+      - i2b2-wildfly
+      - rserve
+
+  i2b2transmart:
+    build:
+        context: i2b2transmart/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/i2b2transmart:${i2b2transmart_version}
+    environment:
+      - ORACLEHOST=${ORACLEHOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - BIOMART_USER=${BIOMART_USER}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}
+      - RSERVE_HOST=localhost
+      - RSERVE_PORT=6311
+      - JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
+      - JPDA_ADDRESS=8000
+      - JPDA_TRANSPORT=dt_socket
+    entrypoint: ./bin/catalina.sh jpda run
+    restart: always
+    depends_on:
+      - oracledb
+    networks:
+      - i2b2-net
+    expose:
+      - 8080
+      - 8000
+    ports:
+      - 8000:8000
+      - 9999:8080
+    mem_limit: "2g"
+
+  i2b2-wildfly:
+    build:
+        context: i2b2-wildfly/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/i2b2-wildfly:${i2b2_wildfly_version}
+    environment:
+      - ORACLEHOST=${ORACLEHOST}
+      - DB_PORT=${DB_PORT}
+      - I2B2HIVE=${I2B2HIVE}
+      - I2B2DEMODATA=${I2B2DEMODATA}
+      - I2B2METADATA=${I2B2METADATA}
+      - I2B2PM=${I2B2PM}
+      - I2B2WORKDATA=${I2B2WORKDATA}
+    restart: always
+    networks:
+      - i2b2-net
+    expose:
+      - 9090
+    ports:
+      - 9090:9090
+
+  rserve:
+    build:
+        context: rserve/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/rserve:${rserve_version}
+    restart: always
+    expose:
+      - 6311
+    ports:
+      - 6311:6311
+    networks:
+      - i2b2-net
+
+  irct:
+    build:
+        context: irct/
+    image: dtr.avl.dbmi.hms.harvard.edu/dbmi/irct:${irct_version}
+    depends_on:
+       - irctdb
+    environment:
+      - IRCTMYSQLADDRESS=${IRCTMYSQLADDRESS}
+      - IRCT_DB_PORT=${IRCT_DB_PORT}
+      - IRCT_DB_CONNECTION_USER=${IRCT_DB_CONNECTION_USER}
+      - IRCTMYSQLPASS=${IRCTMYSQLPASS}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}
+    command: --debug --server-config=standalone.xml
+    restart: always
+    networks:
+      - i2b2-net
+    expose:
+      - 8080
+      - 8787
+    ports:
+      - 8080:8080
+      - 8787:8787
+
+
+
+networks:
+    i2b2-net:
