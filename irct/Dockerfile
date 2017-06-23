@@ -21,7 +21,8 @@ COPY mySQL/mysql-connector-java-5.1.22.jar /opt/jboss/wildfly/modules/system/lay
 
 # Copy Oracle Module
 COPY oracle/module.xml /opt/jboss/wildfly/modules/system/layers/base/com/oracle/main/
-COPY oracle/ojdbc6.jar /opt/jboss/wildfly/modules/system/layers/base/com/oracle/main/
+# LICENSE!!!!! (Used for UMLS synonyms)
+#COPY oracle/ojdbc6.jar /opt/jboss/wildfly/modules/system/layers/base/com/oracle/main/
 
 USER root
 
