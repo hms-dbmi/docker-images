@@ -12,6 +12,9 @@ ENV AUTH0_CLIENT_SECRET client_secret
 ENV IRCT_USER_FIELD email
 ENV IRCT_KEY_TIMEOUT_IN_MINUTES 720
 
+# security service introduced in IRCT build 65.hackathon
+ENV IRCT_SECURITY_SERVICE http://securetoken/irct-security-service/token/validate
+
 # Copy standalone.xml
 COPY standalone.xml /opt/jboss/wildfly/standalone/configuration/
 
