@@ -9,6 +9,11 @@ ENV IRCTMYSQLPASS my-secret-pw
 ENV AUTH0_DOMAIN domain
 ENV AUTH0_CLIENT_ID client_id
 
+# sci db service introduced in IRCT build 2493.hackathon
+ENV SCIDB_HOST http://scidb:8080
+ENV SCIDB_USER scidbuser
+ENV SCIDB_PASSWORD scidbpassword
+
 # scripts will run at startup to populate the DB
 COPY init-db/ /scratch/irct/sql/
 

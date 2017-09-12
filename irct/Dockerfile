@@ -15,11 +15,6 @@ ENV IRCT_KEY_TIMEOUT_IN_MINUTES 720
 # security service introduced in IRCT build 65.hackathon
 ENV IRCT_SECURITY_SERVICE http://securetoken/irct-security-service/token/validate
 
-# sci db service introduced in IRCT build 2493.hackathon
-ENV SCIDB_HOST http://scidb:8080
-ENV SCIDB_USER scidbuser
-ENV SCIDB_PASSWORD scidbpassword
-
 # Copy standalone.xml
 COPY standalone.xml /opt/jboss/wildfly/standalone/configuration/
 
