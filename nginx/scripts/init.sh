@@ -4,6 +4,7 @@ set -u
 # if we are not bind mounting in certs or the user has not already generated certs
 # create self-signed certs
 echo "Verify (if existing) certificates"
+echo
 
 openssl verify -CAfile $APP_CA $APP_CERT 2>/tmp/err
 openssl rsa -check -noout -in $APP_KEY 2>>/tmp/err
@@ -29,6 +30,13 @@ if [ -s /tmp/err ]; then
 	echo "Generated default certificates for $APPLICATION_NAME at $APP_CERT and $APP_KEY"
 	echo
 fi
+
+export NAMESERVER=`cat /etc/resolv.conf | grep "nameserver" | awk '{print $2}' | tr '\n' ' '`
+
+echo "Nameserver is: $NAMESERVER"
+echo
+
+sed -i "s/\$NAMESERVER/$NAMESERVER/g" /etc/nginx/conf.d/default.conf
 
 echo "Running $@"
 exec "$@"
