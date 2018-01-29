@@ -8,6 +8,7 @@ ENV IRCT_DB_CONNECTION_USER root
 ENV IRCTMYSQLPASS my-secret-pw
 ENV AUTH0_DOMAIN domain
 ENV AUTH0_CLIENT_ID client_id
+ENV TRANSMART_RESOURCE https://transmart:8080
 
 # sci db service introduced in IRCT build 2493.hackathon
 ENV SCIDB_HOST http://scidb:8080
