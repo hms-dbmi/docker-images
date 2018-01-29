@@ -1,8 +1,9 @@
-FROM i2b2/i2b2-wildfly:0.1
+FROM i2b2/i2b2-wildfly:release-v1.7.09a.0002
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
 # database connection
 ENV ORACLEHOST localhost
+ENV ORACLEDB ORCL
 ENV DB_PORT 1521
 
 ENV I2B2HIVE demouser
