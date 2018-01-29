@@ -24,7 +24,8 @@ services:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     depends_on:
-       - irctdb
+       - db
+       - nginx
     env_file:
       - ${ENV_FILE}
     # debug command
@@ -38,10 +39,10 @@ services:
       # debug port
       - 8787:8787
     volumes:
-      - ${LOCAL_IRCT}:/opt/jboss/wildfly/standalone/deployments/:cached
+      - ${LOCAL_IRCT}/IRCT-CL.war:/opt/jboss/wildfly/standalone/deployments/IRCT-CL.war:cached
 
   irct-init:
-    image: dbmi/irct-init:${version}
+    image: dbmi/irct-init:${irct_init_version}
     depends_on:
       - db
       - irct
@@ -50,7 +51,7 @@ services:
     restart: on-failure:10
     networks:
       - i2b2-net
-    
+
   # IRCT DB
   db:
     image: mysql:latest
@@ -69,4 +70,3 @@ services:
 
 networks:
     i2b2-net:
-    i2b2-hack:
