@@ -1,45 +1,46 @@
-FROM tomcat:8.0.36
+FROM dbmi/transmart-data:release-16.2 AS transmart-data
+
+### Build Transmart Configurations ###
+FROM alpine:3.6 AS install_config
+
+COPY --from=transmart-data /transmart-data/ /transmart-data/
+
+RUN DEPENDENCIES=" \
+    make \
+    php5" \
+    && apk upgrade \
+    && apk --no-cache --update add $DEPENDENCIES bash \
+    && rm /bin/sh && ln -s /bin/bash /bin/sh \
+    && ln -s /usr/bin/php5 /usr/bin/php \
+    && cd /transmart-data \
+    && source ./vars \
+    && make -C config install \
+    && apk del $DEPENDENCIES && rm -rf /var/cache/apk/
+
+
+### Transmart Production ###
+FROM tomcat:7.0-alpine
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
+COPY --from=install_config /root/.grails/transmartConfig/*.groovy /root/.grails/transmartConfig/
+
+#ENV ORACLEHOST localhost
+#ENV DB_USER biomart_user
+#ENV BIOMART_USER demouser
+#ENV DB_PORT 1521
+#ENV OAUTH true
+#ENV SAML false
+#ENV GWAVA false
+
 ENV TRANSMART_WAR_URL http://library.transmartfoundation.org/release/release16_2_0_artifacts/transmart.war
-ENV TRANSMART_GWAVA_WAR_URL http://library.transmartfoundation.org/release/release16_2_0_artifacts/gwava.war
-
-RUN curl $TRANSMART_WAR_URL > $CATALINA_HOME/webapps/transmart.war  \
-    && curl $TRANSMART_GWAVA_WAR_URL > $CATALINA_HOME/webapps/gwava.war
-
-ENV ORACLEHOST localhost
-ENV DB_USER biomart_user
-ENV BIOMART_USER demouser
-ENV DB_PORT 1521
-ENV AUTH0_DOMAIN domain
-ENV AUTH0_CLIENT_ID client_id
-ENV AUTH0_CLIENT_SECRET client_secret
-
-# use bash instead of sh. easier for container debugging
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-
-# Remove garbage
-RUN rm -rf /usr/local/tomcat/webapps/examples
-RUN rm -rf /usr/local/tomcat/webapps/docs
 
 ENV CATALINA_OPTS "$CATALINA_OPTS -Xms512m -Xmx2g -Djava.awt.headless=true -XX:+UseConcMarkSweepGC"
 
-RUN mkdir -p /root/.grails/transmartConfig \
-    && ln -s /root/.grails/ .grails
+RUN apk upgrade \
+    && apk --no-cache --update add curl bash \
+    && rm /bin/sh && ln -s /bin/bash /bin/sh \
+    && curl $TRANSMART_WAR_URL > $CATALINA_HOME/webapps/transmart.war \
+    && apk del curl && rm -rf /var/cache/apk/
 
-COPY BuildConfig.groovy /root/.grails/transmartConfig
-COPY DataSource.groovy /root/.grails/transmartConfig
-COPY Config.groovy /root/.grails/transmartConfig
-COPY RModulesConfig.groovy /root/.grails/transmartConfig
-
-# With nginx as our front-end, make sure scheme protocol and IP is forwarded to tomcat - AR
-COPY server.xml $CATALINA_HOME/conf/
-
-# install war files
-ENV TRANSMART_WAR_URL http://library.transmartfoundation.org/release/release16_2_0_artifacts/transmart.war
-ENV TRANSMART_GWAVA_WAR_URL http://library.transmartfoundation.org/release/release16_2_0_artifacts/gwava.war
-
-RUN curl $TRANSMART_WAR_URL > $CATALINA_HOME/webapps/transmart.war  \
-    && curl $TRANSMART_GWAVA_WAR_URL > $CATALINA_HOME/webapps/gwava.war
 
 ENTRYPOINT ["./bin/catalina.sh", "run"]

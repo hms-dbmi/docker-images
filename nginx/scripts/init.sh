@@ -31,6 +31,8 @@ if [ -s /tmp/err ]; then
 	echo
 fi
 
+# allows for nginx to stay up even if services are down
+# see default.conf - Andre 
 export NAMESERVER=`cat /etc/resolv.conf | grep "nameserver" | awk '{print $2}' | tr '\n' ' '`
 
 echo "Nameserver is: $NAMESERVER"

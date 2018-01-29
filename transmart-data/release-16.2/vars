@@ -1,0 +1,96 @@
+### make calls requires this to always be set, even if not using postgres table
+TABLESPACES=dummy
+
+# {{{ PostgreSQL
+#
+# These database settings are probably fine if you built postgres from source
+# and you running it under your user. If you installed it from a package
+# manager, like apt-get/dpkg in debian/ubuntu, this won't work.
+# See the template in env/vars-ubuntu.php
+if [[ "$DB_TYPE" =~ ["postgres*"] ]]; then
+    PGHOST=$DB_HOST
+    PGPORT=$DB_PORT
+    PGDATABASE=$DB_DB
+    PGUSER=$DB_USER
+    PGPASSWORD=$DB_PASSWORD
+
+    # This directory must exist. If you are running PostgreSQL under your own user,
+    # you just have to make sure the directory is owned by you.
+    # Otherwise, you must create some directories under it and assign ownership to
+    # them to the postgres user. For instance:
+    #     mkdir -p $TABLESPACES/{biomart,deapp,indx,search_app,transmart}
+    #     chown -R postgres:postgres $TABLESPACES
+    # end with /
+    TABLESPACES=$HOME/pg/tablespaces/
+
+
+    # The directory where the postgres client utilities are
+    # If using a package manager, probably /usr/bin/
+    # end with /
+    PGSQL_BIN=/usr/bin/
+fi
+# }}}
+
+# {{{ Oracle
+if [[ "$DB_TYPE" =~ ["oracle*"] ]]; then
+    ORACLE=1
+    ORAHOST=$DB_HOST
+    ORAPORT=$DB_PORT
+    ORASID=$DB_ORASID
+    # If ORASVC (Oracle Service) specified it will be used over ORASID
+    ORASVC=$DB_ORASVC
+    ORAUSER=$DB_USER
+    ORAPASSWORD=$DB_PASSWORD
+
+
+    # Set this to 1 if you want Oracle tablespaces to be created (and dropped!)
+    # by transmart-data. In that case, you must also specify an oracle owned
+    # directory that will be used to set the system param DB_CREATE_FILE_DEST
+    ORACLE_MANAGE_TABLESPACES=1
+    # Comment the line below when you use an Oracle Database instance from Amazon RDS.
+    ORACLE_TABLESPACES_DIR=/opt/oracle/oradata
+fi
+# }}}
+
+### ETL variables moved to ETL Dockerfile
+### Removed TAR_COMMAND. Unncessary with Docker
+### Removed groovy 2.1.9 fix
+### Oracle connection blocking moved to transmart-data Dockerfile
+#### - Andre
+
+#only needed for configuration
+#end with /
+TSUSER_HOME=$HOME/
+
+# {{{ DB user passwords
+#     They default to the same as the username.
+#     These are set when the database is created and they are used when
+#     connecting to the database (e.g. for ETL).
+#     You can reset passwords to the values specified here with:
+#       make -C ddl/postgres/GLOBAL load_passwords
+#       make -C ddl/oracle load_passwords
+#     Depending on whether you're using oracle or postgres.
+#
+#export BIOMART_USER_PWD=biomart_user
+#export BIOMART_PWD=biomart
+#export DEAPP_PWD=deapp
+#export I2B2METADATA_PWD=i2b2metadata
+#export I2B2DEMODATA_PWD=i2b2demodata
+#export SEARCHAPP_PWD=searchapp
+#export TM_CZ_PWD=tm_cz
+#export TM_LZ_PWD=tm_lz
+#export TM_WZ_PWD=tm_wz
+# }}}
+
+# To use transmart-batch where supported
+#export USE_TRANSMART_BATCH=1
+#
+# If you need to proxy (you may need to combine with option above)
+# export _JAVA_OPTIONS="-Dhttp.proxyHost=$proxy_host -Dhttp.proxyPort=$proxy_port"
+
+export PGHOST PGPORT PGDATABASE PGUSER PGPASSWORD TABLESPACES PGSQL_BIN \
+	R_JOBS_PSQL KETTLE_JOBS_PSQL KETTLE_JOBS_ORA KITCHEN TSUSER_HOME ORAHOST ORAPORT \
+	ORASID ORASVC ORAUSER ORAPASSWORD ORACLE_MANAGE_TABLESPACES \
+	ORACLE_TABLESPACES_DIR ORACLE
+
+# vim: fdm=marker

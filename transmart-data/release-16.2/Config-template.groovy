@@ -18,10 +18,10 @@ def solrPort          = 8983 //port of appserver where solr runs (under ctx path
 def searchIndex       = catalinaBase + '/searchIndex' //create this directory
 // for running transmart as WAR, create this directory and then create an alias
 def jobsDirectory     = "/var/tmp/jobs/"
-def oauthEnabled      = false
-def samlEnabled       = false
-def gwavaEnabled      = false
-def transmartURL      = "http://i2b2transmart:8080/transmart"
+def oauthEnabled      = ${System.getenv("OAUTH")} //true
+def samlEnabled       = ${System.getenv("SAML")} //false
+def gwavaEnabled      = ${System.getenv("GWAVA")} //false
+def transmartURL      = "http://transmart:8080/transmart"
 
 //Disabling/Enabling UI tabs
 ui {
@@ -52,7 +52,6 @@ ui {
     */
 }
 
-// I001 – Insertion point 'post-WAR-variables'
 
 /* Other things you may want to change:
  * – Log4j configuration
@@ -193,14 +192,14 @@ environments { development {
 
 // Whether to enable guest auto login.
 // If it's enabled no login is required to access tranSMART.
-com.recomdata.guestAutoLogin = true
+com.recomdata.guestAutoLogin = false
 environments { development { com.recomdata.guestAutoLogin = true } }
 
 // Guest account user name - if guestAutoLogin is true, this is the username of
 // the account that tranSMART will automatically authenticate users as. This will
 // control the level of access anonymous users will have (the access will match
 // that of the account specified here).
-com.recomdata.guestUserName = 'publicuser'
+com.recomdata.guestUserName = 'guest'
 /* }}} */
 
 /* {{{ Search tool configuration */
@@ -365,7 +364,7 @@ grails { plugin { springsecurity {
     logout.afterLogoutUrl = '/login/forceAuth'
 
     // configurable requestmap functionality in transmart is deprecated
-    def useRequestMap = true
+    def useRequestMap = false
 
     if (useRequestMap) {
         // requestmap in db
@@ -466,6 +465,7 @@ grails { plugin { springsecurity {
                 transmartURL - ~/transmart\/?$/ + 'connections',
         ]
         // for dev, node reverse proxy runs on 8001
+        // TODO: resolve localhost
         glowingBearRedirectUris << 'http://localhost:8001/connections'
 
         oauthProvider {
@@ -526,7 +526,8 @@ if (samlEnabled) {
                 id = "gustavo-transmart"
 
                 // URL of the service provider. This should be autodected, but it isn't
-                url = "http://i2b2transmart:8080/transmart"
+                // TODO: resolve localhost
+                url = "http://localhost:8080/transmart"
 
                 // Alias of the Service Provider
                 alias = "transmart"
@@ -705,6 +706,7 @@ com.thomsonreuters.transmart.demoMapBaseURL = "http://pathwaymaps.com/maps/"
 //com.thomsonreuters.transmart.metacoreSettingsMode = "demo"
 
 /* these settings are used to override the demo settings */
+// TODO: resolve localhost
 //com.thomsonreuters.transmart.metacoreURL = "http://localhost/"
 //com.thomsonreuters.transmart.metacoreDefaultLogin = ""
 //com.thomsonreuters.transmart.metacoreDefaultPassword = ""
@@ -717,10 +719,6 @@ com.thomsonreuters.transmart.demoMapBaseURL = "http://pathwaymaps.com/maps/"
 
 com.galaxy.blend4j.galaxyEnabled = false
 com.galaxy.blend4j.galaxyURL = "http://usegalaxy.org/"
-
-
-org.transmart.configFine = true
-
 
 /* }}} */
 
