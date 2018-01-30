@@ -140,7 +140,7 @@
                     </security>
                 </datasource>
                 <datasource jta="false" jndi-name="java:/CRCBootStrapDS" pool-name="CRCBootStrapDS" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/ORCL</connection-url>
+                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/${env.ORACLEDB}</connection-url>
                     <driver-class>oracle.jdbc.OracleDriver</driver-class>
                     <driver>ojdbc6.jar</driver>
                     <security>
@@ -156,7 +156,7 @@
                     </statement>
                 </datasource>
                 <datasource jta="false" jndi-name="java:/QueryToolDemoDS" pool-name="QueryToolDemoDS" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/ORCL</connection-url>
+                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/${env.ORACLEDB}</connection-url>
                     <driver-class>oracle.jdbc.OracleDriver</driver-class>
                     <driver>ojdbc6.jar</driver>
                     <security>
@@ -172,7 +172,7 @@
                     </statement>
                 </datasource>
                 <datasource jta="false" jndi-name="java:/OntologyDemoDS" pool-name="OntologyDemoDS" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/ORCL</connection-url>
+                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/${env.ORACLEDB}</connection-url>
                     <driver-class>oracle.jdbc.OracleDriver</driver-class>
                     <driver>ojdbc6.jar</driver>
                     <security>
@@ -188,7 +188,7 @@
                     </statement>
                 </datasource>
                 <datasource jta="false" jndi-name="java:/OntologyBootStrapDS" pool-name="OntologyBootStrapDS" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/ORCL</connection-url>
+                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/${env.ORACLEDB}</connection-url>
                     <driver-class>oracle.jdbc.OracleDriver</driver-class>
                     <driver>ojdbc6.jar</driver>
                     <security>
@@ -204,7 +204,7 @@
                     </statement>
                 </datasource>
                 <datasource jta="false" jndi-name="java:/PMBootStrapDS" pool-name="PMBootStrapDS" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/ORCL</connection-url>
+                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/${env.ORACLEDB}</connection-url>
                     <driver-class>oracle.jdbc.OracleDriver</driver-class>
                     <driver>ojdbc6.jar</driver>
                     <security>
@@ -220,7 +220,7 @@
                     </statement>
                 </datasource>
                 <datasource jta="false" jndi-name="java:/WorkplaceBootStrapDS" pool-name="WorkplaceBootStrapDS" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/ORCL</connection-url>
+                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/${env.ORACLEDB}</connection-url>
                     <driver-class>oracle.jdbc.OracleDriver</driver-class>
                     <driver>ojdbc6.jar</driver>
                     <security>
@@ -236,7 +236,7 @@
                     </statement>
                 </datasource>
                 <datasource jta="false" jndi-name="java:/WorkplaceDemoDS" pool-name="WorkplaceDemoDS" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/ORCL</connection-url>
+                    <connection-url>jdbc:oracle:thin:@${env.ORACLEHOST}:${env.DB_PORT}/${env.ORACLEDB}</connection-url>
                     <driver-class>oracle.jdbc.OracleDriver</driver-class>
                     <driver>ojdbc6.jar</driver>
                     <security>

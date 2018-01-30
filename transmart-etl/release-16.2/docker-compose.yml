@@ -1,0 +1,75 @@
+version: '3'
+services:
+
+    # transmart-data:
+    #     image: dtr.avl.dbmi.hms.harvard.edu/dbmi/transmart-data:release-16.2
+    #     environment:
+    #         - ORACLE_SID=ORCLCDB
+    #         - ORACLE_HOST=transmartdb
+    #         - ORACLE_PORT=1521
+    #     depends_on:
+    #         - oracledb
+    #         - transmart-etl
+    #     volumes:
+    #         - data-integration:/path/to/data-integration:rw
+    #         - transmart-etl:/path/to/transmart-ETL:rw
+    #         - transmart-etl:/transmat-data/env/transmart-ETL:rw
+    #         - data-integration:/transmart-data/env/data-integration:rw
+    #     networks:
+    #         - i2b2-net
+
+    transmart-etl:
+        image: dbmi/transmart-etl:release-16.2
+        environment:
+            - DB_TYPE=oracle
+            - DB_DB=ORCLCDB
+            - DB_HOST=db
+            - DB_PORT=1521
+            - DB_PASSWORD=password
+            - DB_USER=system
+#            - POSTGRES_USER=postgres
+#            - POSTGRES_HOST=transmartdb
+#            - POSTGRES_PORT=5432
+        #command: "source ./vars; make -C samples/oracle load_clinical_GSE8581"
+        depends_on:
+            - db
+        networks:
+            - transmart
+
+    solr:
+        image: dbmi/solr:release-16.2
+        ports:
+            - 8983:8983
+        networks:
+            - transmart
+
+    # local running Oracle DB
+    db:
+        image: dbmi/transmart-db:oracle.12.2.0.1-ee-tm.release-16.2
+        labels:
+            - "app.name=${APPLICATION_NAME}"
+            - "app.environment=${ACCOUNT_ID}"
+        restart: always
+#        volumes:
+#            - tablespaces:/var/lib/postgresql/tablespace
+#            - data:/var/lib/postgresql/data
+        ports:
+            - 1521:1521
+            - 5432:5432
+        expose:
+            - 1521
+            - 5432
+        networks:
+            - transmart
+
+#volumes:
+#    tablespaces:
+#        external: true
+#    data:
+#        external: true
+
+
+networks:
+    transmart:
+
+#        internal: true

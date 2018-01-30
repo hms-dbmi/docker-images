@@ -1,0 +1,67 @@
+version: '3.3'
+services:
+    nginx:
+        image: dbmi/nginx:tm.release-16.2
+        restart: always
+        ports:
+            - 80:80
+            - 443:443
+        networks:
+            - transmart
+            - public
+
+    transmart:
+        image: dbmi/transmart:release-16.2
+        environment:
+            - ORACLEHOST=db
+            - DB_PORT=1521
+            - DB_USER=biomart_user
+            - BIOMART_USER=biomart_user
+            - RSERVE_HOST=rserve
+            - RSERVE_PORT=6311
+        restart: always
+        depends_on:
+            - db
+        networks:
+            - transmart
+        expose:
+            - 8080
+
+    gwava:
+        image: dbmi/gwava:release-16.2
+        restart: always
+        networks:
+            - transmart
+        expose:
+            - 8080
+
+    rserve:
+        image: dbmi/rserve:3.2.1
+        restart: always
+        networks:
+            - transmart
+        expose:
+            - 6311
+
+    solr:
+        image: dbmi/solr:4.5.0
+        restart: always
+        networks:
+            - transmart
+        expose:
+            - 8983
+
+    db:
+        image: dbmi/transmart-db:${DB_VERSION}
+        networks:
+            - transmart
+        expose:
+            - 1521
+
+
+
+networks:
+    transmart:
+        # encrypted network
+        internal: true
+    public:

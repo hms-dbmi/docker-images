@@ -1,0 +1,42 @@
+version: '3.3'
+services:
+
+    # TODO: build i2b2transmart-schema image
+    # i2b2transmart-schema image =
+    #   transmart schema install
+    #   i2b2 schema install
+    #   custom script so they play along
+    #
+    # i2b2transmart-schema:
+    #     image: dbmi/i2b2transmart-data:i2b2.1.7.09-tm.release-16.2
+    #     environment:
+    #         - DB_TYPE=${DB_TYPE}
+    #         - DB_HOST=db
+    #         - DB_PORT=1521
+    #         - DB_ORASVC=ORCLPDB1
+    #         - DB_USER=pdbadmin
+    #         - DB_PASSWORD=password
+    #     depends_on:
+    #         - db
+    #     networks:
+    #         - public
+
+    db:
+        image: dbmi/${DB_TYPE}:${DB_VERSION}
+        environment:
+            # used to initialize system passwords
+            - DB_PASSWORD=password
+        networks:
+            # public network used to access DB from outside (e.g. SQLDeveloper)
+            - public
+        volumes:
+            - ./startup:/opt/oracle/scripts/startup:ro
+        expose:
+            - 1521
+        ports:
+            - 1521:1521
+
+
+
+networks:
+    public:
