@@ -45,7 +45,7 @@ services:
       - 8000:8000
     volumes:
       # local transmart.war directory (for simple development)
-      - ${LOCAL_TRANSMART}:/usr/local/tomcat/webapps/:rw
+      - ${LOCAL_TRANSMART}:/usr/local/tomcat/webapps/:cached
       # required for DI-1026 i2b2-hack localhost fix -Andre
       - ./hosts/nsswitch.conf:/etc/nsswitch.conf:ro
 
@@ -85,7 +85,7 @@ services:
 
   # remote database ssh tunnel
   db:
-    image: thomass/ssh-client
+    image: thomass/ssh-client:${db_version}
     hostname: ${ORACLEHOST}
     #container_name: ${ORACLEHOST}
     env_file:
@@ -96,53 +96,10 @@ services:
     volumes:
       - ~/.ssh:/ssh:ro
     command: ssh -Ngv -L ${DOCKER_DB_PORT}:${ORACLEHOST}:${DB_PORT} -i /ssh/${SSH_KEY} -o StrictHostKeyChecking=no ${SSH_HOST}
-    tty: true
-    stdin_open: true
     networks:
       - i2b2-net
-
     ports:
       - ${DOCKER_DB_PORT}:${DB_PORT}
-
-  ## PIC-SURE API Stack ##
-  # IRCT
-  irct:
-    image: dbmi/irct:${irct_version}
-    labels:
-      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    depends_on:
-       - irctdb
-    env_file:
-      - ${ENV_FILE}
-    # debug command
-    command: --debug --server-config=standalone.xml
-    restart: always
-    networks:
-      - i2b2-net
-    expose:
-      - 8080
-    ports:
-      # debug port
-      - 8787:8787
-    volumes:
-      - ${LOCAL_IRCT}:/opt/jboss/wildfly/standalone/deployments/:rw
-
-  # IRCT DB tunnel
-  irctdb:
-    image: thomass/ssh-client
-    hostname: ${IRCTMYSQLADDRESS}
-    container_name: ${IRCTMYSQLADDRESS}
-    labels:
-      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    volumes:
-      - ~/.ssh:/ssh:ro
-    command: ssh -Ng -L ${DOCKER_IRCT_DB_PORT}:${IRCTMYSQLADDRESS}:${IRCT_DB_PORT} -i /ssh/${SSH_KEY} -o StrictHostKeyChecking=no ${SSH_HOST}
-    networks:
-      - i2b2-net
-    ports:
-      - ${DOCKER_IRCT_DB_PORT}:${IRCT_DB_PORT}
 
 networks:
     i2b2-net:
