@@ -1,7 +1,7 @@
 
-IRCT/target/IRCT-CL.war
+IRCT/*/target/*
 
-i2b2transmart/target/transmart.war
+i2b2transmart/*/target/*
 
 *.env
 !sample_project.env
