@@ -6,3 +6,5 @@ i2b2transmart/*/target/*
 *.env
 !sample_project.env
 !dev.env
+
+i2b2-data/**/diff/*
