@@ -28,7 +28,6 @@ services:
        - nginx
     env_file:
       - ${ENV_FILE}
-
     # debug command
     command: --debug --server-config=standalone.xml
     restart: always
@@ -54,21 +53,33 @@ services:
       - i2b2-net
 
   # IRCT DB
+  # remote database ssh tunnel
   db:
-    image: mysql:latest
-    hostname: ${MYSQLADDRESS}
+    image: thomass/ssh-client:${db_version}
+    hostname: ${IRCTMYSQLADDRESS}
+    env_file:
+      - ${ENV_FILE}
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent/ssh-agent.sock
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    env_file:
-      - ${ENV_FILE}
-    restart: always
-    expose:
-      - 3306
+    volumes:
+      # ssh config file throws bad owner/permissions error if we don't map it to /etc/ssh - Andre
+      - ${SSH_CONFIG_LOCATION}/config:/etc/ssh/ssh_config:ro
+      - ssh-agent:/ssh-agent
+    entrypoint: ssh -Ngv -L ${DOCKER_IRCT_DB_PORT}:${IRCTMYSQLADDRESS}:${IRCT_DB_PORT} -o StrictHostKeyChecking=no -F /etc/ssh/ssh_config
+    command: ${SSH_CONFIG_CONFIG}
     networks:
       - i2b2-net
     ports:
-      - ${DOCKER_IRCT_DB_PORT}:${IRCT_DB_PORT}
+      - ${DOCKER_IRCT_DB_PORT}:${DOCKER_IRCT_DB_PORT}
 
 networks:
     i2b2-net:
+volumes:
+    # ssh-agent used to skip tty response for ssh key passphrase
+    # allows for local machine to forward its ssh-agent
+    # see docker-images/deployments/ssh-agent - Andre
+    ssh-agent:
+        external: true

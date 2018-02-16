@@ -9,6 +9,7 @@
 nginx_version=i2b2tm.1.0-GA
 irct_version=1.4.2
 irct_init_version=1.2.4
+db_version=latest
 
 #### container environment variables ###
 ENV_FILE=sample_project.env
