@@ -27,21 +27,16 @@ services:
        - nginx
     env_file:
       - ${ENV_FILE}
-    # debug command
-    command: --debug --server-config=standalone.xml
     restart: always
     networks:
       - i2b2-net
     expose:
       - 8080
-    ports:
-      # debug port
-      - 8787:8787
-    volumes:
-      - ${LOCAL_IRCT}/IRCT-CL.war:/opt/jboss/wildfly/standalone/deployments/IRCT-CL.war:cached
 
   irct-init:
     image: dbmi/irct-init:${irct_init_version}
+    depends_on:
+      - irct
     env_file:
       - ${ENV_FILE}
     restart: on-failure:10

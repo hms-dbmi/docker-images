@@ -24,7 +24,6 @@ services:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     depends_on:
-       - db
        - nginx
     env_file:
       - ${ENV_FILE}
@@ -43,9 +42,6 @@ services:
 
   irct-init:
     image: dbmi/irct-init:${irct_init_version}
-    depends_on:
-      - db
-      - irct
     env_file:
       - ${ENV_FILE}
     restart: on-failure:10
@@ -56,7 +52,7 @@ services:
   # remote database ssh tunnel
   db:
     image: thomass/ssh-client:${db_version}
-    hostname: ${IRCTMYSQLADDRESS}
+    container_name: ${IRCTMYSQLADDRESS}
     env_file:
       - ${ENV_FILE}
     environment:

@@ -19,4 +19,4 @@ ENV SCIDB_PASSWORD scidbpassword
 COPY init-db/ /scratch/irct/sql/
 
 # must use shell form; docker does not parse env variables for ENTRYPOINT[] or CMD[]
-ENTRYPOINT ./scratch/irct/sql/init-db.sh -d irct
+ENTRYPOINT ["./scratch/irct/sql/init-db.sh", "-d", "irct"]

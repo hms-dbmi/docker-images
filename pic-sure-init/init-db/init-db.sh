@@ -1,8 +1,8 @@
 #!/bin/bash
 
-usage() { echo "Usage: $0 [-h host] [-u user] [-p password] [-d database] optional: [-c (true|false) confirm only]" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-h host] [-u user] [-p password] [-d database] [-r resource] optional: [-c (true|false) confirm only]" 1>&2; exit 1; }
 
-while getopts ":h:u:p:d:c:" args; do
+while getopts ":h:u:p:d:c:r:" args; do
   case "${args}" in
     h)
       IRCTMYSQLADDRESS=${OPTARG}
@@ -19,6 +19,9 @@ while getopts ":h:u:p:d:c:" args; do
     c)
       confirm=${OPTARG}
       ;;
+    r)
+      resource=${OPTARG}
+      ;;
     *)
       usage
       ;;
@@ -30,7 +33,7 @@ host=${IRCTMYSQLADDRESS}
 user=${IRCT_DB_CONNECTION_USER}
 pass=${IRCTMYSQLPASS}
 
-if [ -z "${host}" ] || [ -z "${user}" ] || [ -z "${pass}" ] || [ -z "${db}" ]; then
+if [ -z "${host}" ] || [ -z "${user}" ] || [ -z "${pass}" ] || [ -z "${db}" ] || [ -z "${resource}" ]; then
     usage
 fi
 
@@ -39,7 +42,7 @@ export MYSQL_PWD=${pass}
 # confirm connection to database
 echo "check IRCT DB connection"
 {
-    mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db}
+    mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db} -e "SHOW SESSION STATUS"
 } || {
     exit $?
 }
@@ -51,7 +54,9 @@ if [ "${confirm}" == "true" ]; then
 fi
 
 {
-    # I2B2TranSMARTResource
+
+# I2B2TranSMARTResource
+if [ "${resource}" == "i2b2transmart" ]; then
     count=`mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db} -ss -e "SELECT COUNT(*) FROM Resource WHERE name = '${IRCT_RESOURCE_NAME}'"`
     if [ ${count} -gt 0 ]; then
         echo "I2B2TranSMARTResource already exists"
@@ -88,8 +93,11 @@ fi
         mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db}  -e \
           "SELECT * FROM event_parameters;"
     fi
+fi
+# end I2B2Transmart
 
-    # SciDBAFLResource
+# SciDBAFLResource
+if [ "${resource}" == "scidb" ]; then
     count=`mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db} -ss -e "SELECT COUNT(*) FROM Resource WHERE name = 'SciDBAFL'"`
     if [ ${count} -gt 0 ]; then
         echo "SciDBAFLResource already exists"
@@ -103,6 +111,25 @@ fi
 
     echo "confirm IRCT DB populated"
     mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db}  -e "SELECT * FROM Resource"
+fi
+# end SciDBAFLResource
+
+# I2B2 Resource
+if [ "${resource}" == "i2b2" ]; then
+    # i2b2.org resource
+    count=`mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db} -ss -e "SELECT COUNT(*) FROM Resource WHERE name = 'i2b2-i2b2-org'"`
+
+    if [ ${count} -gt 0 ]; then
+        echo "i2b2 resource already exists"
+    else
+        mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db}  -e \
+            "source /scratch/irct/sql/ResourceInterface_i2b2.sql;"
+    fi
+
+    echo "confirm IRCT DB populated"
+    mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db}  -e "SELECT * FROM Resource"
+fi
+# end I2B2 Resource
 
 } || {
     exit $?
