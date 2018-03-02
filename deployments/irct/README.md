@@ -15,8 +15,6 @@ Latest available versions:
 
 - _localdb.yml_ deploys a local MySQL database container with a corresponding named volume for data persistence
 
-- _remotedb.yml_ deploys an ssh-tunnel container with access to a remote database
-
 - _dev.yml_ deploys the PIC-SURE stack with debug ports open
 
 - _prod.yml_ deploys the production PIC-SURE stack
@@ -51,11 +49,6 @@ LOCAL_IRCT=
 
 # local port (port must be available on docker host, check for conflicts -Andre)
 DOCKER_IRCT_DB_PORT=
-
-## ssh tunnel (for remote use only)
-# location of your ssh_config file & config to use
-SSH_CONFIG_LOCATION=
-SSH_CONFIG_CONFIG=
 ```
 
 ## Project Configuration
@@ -103,28 +96,9 @@ $ cd deployments/irct
 $ docker-compose -f localdb.yml up -d db
 ```
 
-### b. ssh-tunneling to remote database (development purposes only)
+### b. remote database
 
-ssh-tunneling allows access to restricted remote databases.
-
-We use <https://github.com/uber-common/docker-ssh-agent-forward/> forwards your localhost's ssh-agent socket to your docker host. This allows for Docker container database connections without passphrase checks and use of your existing ssh configuration file.
-
-```
-$ cd deployments/ssh-agent
-
-# required once only, pull down the submodule
-$ git submodule update --init --recursive
-
-# required on every machine reboot
-$ ./pinata-ssh-forward.sh
-
-$ cd ../deployments/irct
-$ docker-compose -f remotedby.yml up -d
-```
-
-### c. remote database
-
-Make sure your docker host has access to your database host and port. Set IRCTMYSQLADDRESS in your project env file to the database URL. Updating the value in .env is not required since you are _not_ using the database as a container (local db container or ssh-tunnel container)
+Make sure your docker host has access to your database host and port. Set IRCTMYSQLADDRESS in your project env file to the database URL. Updating the value in .env is not required since you are _not_ using the database as a container (local db container)
 
 ## Initialize Database
 
