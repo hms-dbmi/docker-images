@@ -34,7 +34,7 @@ IRCTMYSQLADDRESS=
 
 ## container environment variables file
 # loads these values into the container
-ENV_FILE=
+ENV_FILE=sample_project.env
 ```
 
 ### For Development Purposes Only
@@ -56,6 +56,8 @@ DOCKER_IRCT_DB_PORT=
 ### Create Project Env File
 
 Either use the existing sample_project.env or create your own project environment variable file. Set values for keys with empty values.
+
+If you use your own project env file, update your .env file, and set the value for key "ENV_FILE" to the name of your project environment file.
 
 ```
 APPLICATION_NAME=
