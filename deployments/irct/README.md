@@ -19,7 +19,7 @@ Latest available Docker image versions:
 
 - _localdb.yml_ deploys a local MySQL database container with a corresponding named volume for data persistence
 
-- _dev.yml_ deploys the PIC-SURE stack with debug ports open
+- _dev.yml_ deploys the PIC-SURE stack with debug ports open for enable remote debugging
 
 - _prod.yml_ deploys the production PIC-SURE stack
 
@@ -41,18 +41,22 @@ IRCTMYSQLADDRESS=
 ENV_FILE=sample_project.env
 ```
 
-### For Development Purposes Only
+### For Local Database Purposes (localdb.yml)
 
-Add the following to the .env file
+If you plan to use localdb.yml for your database, instead of a remote database, add the following to your .env file. Set the port to an open available port on your docker host, e.g. 3306
 
 ```
-### for development purposes only ###
-
-## local volumes
-LOCAL_IRCT=
-
 # local port (port must be available on docker host, check for conflicts -Andre)
 DOCKER_IRCT_DB_PORT=
+```
+
+### For Development Purposes Only
+
+If you plan to use dev.yml and deploy a development stack, add the following to the .env file. Set the value to the path to your localhost's directory containing the IRCT-CL.war file, e.g. /home/user/irct/IRCT-CL/target
+
+```
+## local volumes
+LOCAL_IRCT=
 ```
 
 ## Project Configuration
