@@ -335,8 +335,9 @@
                 <simple name="java:global/client_secret" value="${env.AUTH0_CLIENT_SECRET}"/>
                 <simple name="java:global/client_id" value="${env.AUTH0_CLIENT_ID}"/>
                 <simple name="java:global/KeyTimeOutInMinutes" value="${env.IRCT_KEY_TIMEOUT_IN_MINUTES}"/>
-                <!-- security service introduced in IRCT build 65.hackathon -->
-                <simple name="java:global/check_token_endpoint" value="${env.IRCT_SECURITY_SERVICE}"/>
+                <!-- DI-994 if don't need this whitelist functionality, just put false in the value field below.
+                	currently only support absolute location -->
+                <simple name="java:global/whitelist_config_file" value="${env.WHITELIST_PATH}" />
             </bindings>
             <remote-naming/>
         </subsystem>
