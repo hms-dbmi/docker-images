@@ -2,12 +2,12 @@
 
 ## Versioning
 
-Latest available versions:
+Latest available Docker image versions:
 
-- nginx_version: irct.1.4.2
-- irct_version: 1.4.2
-- irct_init_version: 1.4.2
-- db_version: latest
+- dbmi/nginx:irct.1.4.2
+- dbmi/irct: 1.4.2
+- dbmi/irct-init: 1.4.2
+- mysql: latest
 
 # How To Deploy
 
@@ -18,6 +18,10 @@ Latest available versions:
 - _dev.yml_ deploys the PIC-SURE stack with debug ports open
 
 - _prod.yml_ deploys the production PIC-SURE stack
+
+## Quick-Start sample
+
+[PIC-SURE with i2b2.org Resource](quick-start/README.md)
 
 ## Populate .env File
 
