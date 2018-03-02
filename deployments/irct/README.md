@@ -11,6 +11,10 @@ Latest available Docker image versions:
 
 # How To Deploy
 
+## Quick-Start sample
+
+[PIC-SURE with i2b2.org Resource](quick-start/)
+
 ## Available Stacks
 
 - _localdb.yml_ deploys a local MySQL database container with a corresponding named volume for data persistence
@@ -18,10 +22,6 @@ Latest available Docker image versions:
 - _dev.yml_ deploys the PIC-SURE stack with debug ports open
 
 - _prod.yml_ deploys the production PIC-SURE stack
-
-## Quick-Start sample
-
-[PIC-SURE with i2b2.org Resource](quick-start/README.md)
 
 ## Populate .env File
 
