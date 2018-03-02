@@ -35,6 +35,10 @@ pass=${IRCTMYSQLPASS}
 
 if [ -z "${host}" ] || [ -z "${user}" ] || [ -z "${pass}" ] || [ -z "${db}" ] || [ -z "${resource}" ]; then
     usage
+    echo "Available resources:"
+    echo "i2b2transmart"
+    echo "scidb"
+    echo "i2b2"
 fi
 
 export MYSQL_PWD=${pass}

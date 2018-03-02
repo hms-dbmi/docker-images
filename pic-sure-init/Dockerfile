@@ -1,6 +1,8 @@
 FROM mysql:latest
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
+# NOTE: All going away. Will be replaced by small golang-alpine dynamic program -Andre
+
 # set default variables
 ENV IRCT_RESOURCE_NAME demo
 ENV IRCTMYSQLADDRESS localhost
