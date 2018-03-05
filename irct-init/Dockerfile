@@ -1,6 +1,8 @@
 FROM mysql:latest
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
+# NOTE: All going away. Will be replaced by small golang-alpine dynamic program -Andre
+
 # set default variables
 ENV IRCT_RESOURCE_NAME demo
 ENV IRCTMYSQLADDRESS localhost
@@ -19,4 +21,4 @@ ENV SCIDB_PASSWORD scidbpassword
 COPY init-db/ /scratch/irct/sql/
 
 # must use shell form; docker does not parse env variables for ENTRYPOINT[] or CMD[]
-ENTRYPOINT ./scratch/irct/sql/init-db.sh -d irct
+ENTRYPOINT ["./scratch/irct/sql/init-db.sh", "-d", "irct"]
