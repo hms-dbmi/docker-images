@@ -58,7 +58,7 @@ com.recomdata.hideSequenceVariantExplorer='true'
 com.recomdata.hideGeneSignature='true'
 
 //i2b2 Configs
-com.recomdata.datasetExplorer.pmServiceURL = "http://i2b2-wildfly:9090/i2b2/services/PMService/"
+com.recomdata.datasetExplorer.pmServiceURL = "http://${System.getenv("I2B2_WILDFLY_HOST")}:9090/i2b2/services/PMService/"
 com.recomdata.datasetExplorer.pmServiceProxy='true'
 
 com.recomdata.datasetExplorer.imageTempDir='/images/datasetExplorer'
