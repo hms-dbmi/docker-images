@@ -13,7 +13,7 @@ services:
       - 80:80
       - 443:443
     networks:
-      - i2b2-net
+      - public
 
 
   ## PIC-SURE API Stack ##
@@ -31,7 +31,7 @@ services:
     command: --debug --server-config=standalone.xml
     restart: always
     networks:
-      - i2b2-net
+      - public
     expose:
       - 8080
     ports:
@@ -46,7 +46,7 @@ services:
       - ${ENV_FILE}
     restart: on-failure:10
     networks:
-      - i2b2-net
+      - public
 
 networks:
-    i2b2-net:
+    public:

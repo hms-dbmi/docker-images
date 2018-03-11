@@ -16,14 +16,14 @@ services:
     expose:
       - 3306
     networks:
-      - i2b2-net
+      - public
     ports:
       - ${DOCKER_IRCT_DB_PORT}:3306
     volumes:
       - mysql-data:/var/lib/mysql
 
 networks:
-    i2b2-net:
+    public:
 
 
 volumes:

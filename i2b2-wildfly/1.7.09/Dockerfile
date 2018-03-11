@@ -3,8 +3,8 @@ MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
 # database connection
 ENV ORACLEHOST localhost
-ENV ORACLEDB ORCL
 ENV DB_PORT 1521
+ENV DB_DB ORCL
 
 ENV I2B2HIVE demouser
 ENV I2B2DEMODATA demouser
