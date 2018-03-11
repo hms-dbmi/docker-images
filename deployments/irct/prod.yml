@@ -13,7 +13,7 @@ services:
       - 80:80
       - 443:443
     networks:
-      - i2b2-net
+      - public
 
 
   ## PIC-SURE API Stack ##
@@ -29,7 +29,7 @@ services:
       - ${ENV_FILE}
     restart: always
     networks:
-      - i2b2-net
+      - public
     expose:
       - 8080
 
@@ -41,8 +41,8 @@ services:
       - ${ENV_FILE}
     restart: on-failure:10
     networks:
-      - i2b2-net
+      - public
 
 
 networks:
-    i2b2-net:
+    public:

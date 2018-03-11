@@ -14,7 +14,6 @@ services:
       - 443:443
     networks:
       - public
-      - private
 
   ## i2b2transmart stack ##
   # transmart
@@ -31,7 +30,7 @@ services:
       - i2b2-wildfly
       - nginx
     networks:
-      - private
+      - public
       - i2b2-hack
     expose:
       - 8080
@@ -50,7 +49,7 @@ services:
       - ${ENV_FILE}
     restart: always
     networks:
-      private:
+      public:
       # DI-1026 i2b2-hack localhost fix -Andre
       i2b2-hack:
           aliases:
@@ -70,15 +69,9 @@ services:
     expose:
       - 6311
     networks:
-      - private
+      - public
 
 networks:
-    # encrypted networks
-    # internal encrypted communication
-    private:
-        internal: true
     i2b2-hack:
         internal: true
-    # unencrypted network
-    # public-facing (nginx)
     public:
