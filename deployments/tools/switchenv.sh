@@ -77,7 +77,7 @@ fi
 regex=""
 
 if [ "${deploy_type}" == "transmart" ]; then
-    regex="ORACLEHOST=(.*)"
+    regex="ORACLEHOST|DB_HOST=(.*)"
 elif [ "${deploy_type}" == "irct" ]; then
     regex="IRCTMYSQLADDRESS=(.*)"
 else
