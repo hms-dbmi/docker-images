@@ -44,7 +44,6 @@ services:
     image: dbmi/irct-init:${irct_init_version}
     env_file:
       - ${ENV_FILE}
-    restart: on-failure:10
     networks:
       - public
 
