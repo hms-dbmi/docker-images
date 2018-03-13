@@ -77,9 +77,9 @@ fi
 regex=""
 
 if [ "${deploy_type}" == "transmart" ]; then
-    regex="ORACLEHOST|DB_HOST=(.*)"
+    regex="(ORACLEHOST|DB_HOST)=(.*)"
 elif [ "${deploy_type}" == "irct" ]; then
-    regex="IRCTMYSQLADDRESS=(.*)"
+    regex="(IRCTMYSQLADDRESS)=(.*)"
 else
     usage
     return 1
@@ -93,7 +93,8 @@ fi
 
 while read line; do
     if [[ $line =~ $regex ]]; then
-        db_host="${BASH_REMATCH[1]}"
+	db_var="${BASH_REMATCH[1]}"
+        db_host="${BASH_REMATCH[2]}"
         break
     fi
 done < "${env}.env"
@@ -114,17 +115,11 @@ echo ""
 echo "COMPOSE_PROJECT_NAME=${env}"
 echo "ENV_FILE=${env}.env"
 echo "SSH_CONFIG_CONFIG=${env}"
+echo "${db_var}=${db_host}"
 
 export COMPOSE_PROJECT_NAME=$env
 export ENV_FILE=$env.env
 export SSH_CONFIG_CONFIG=$env
-
-if [ "${deploy_type}" == "transmart" ]; then
-    echo "ORACLEHOST=${db_host}"
-    export ORACLEHOST=$db_host
-elif [ "${deploy_type}" == "irct" ]; then
-    echo "IRCTMYSQLADDRESS=$db_host"
-    export IRCTMYSQLADDRESS=$db_host
-fi
+export $db_var=$db_host
 
 return 0

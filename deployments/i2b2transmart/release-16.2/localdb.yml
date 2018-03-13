@@ -8,7 +8,7 @@ services:
         expose:
             - 1521
         ports:
-            - ${DOCKER_DB_PORT}:1521
+            - ${DOCKER_DB_PORT:-1521}:1521
 
 
 networks:

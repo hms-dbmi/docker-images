@@ -18,7 +18,7 @@ services:
     networks:
       - public
     ports:
-      - ${DOCKER_IRCT_DB_PORT}:3306
+      - ${DOCKER_IRCT_DB_PORT:-3306}:3306
     volumes:
       - mysql-data:/var/lib/mysql
 
