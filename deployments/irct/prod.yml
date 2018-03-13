@@ -39,7 +39,6 @@ services:
       - irct
     env_file:
       - ${ENV_FILE}
-    restart: on-failure:10
     networks:
       - public
 

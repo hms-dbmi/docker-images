@@ -38,6 +38,7 @@ if [ -z "${host}" ] || [ -z "${user}" ] || [ -z "${pass}" ] || [ -z "${db}" ] ||
     echo "i2b2transmart"
     echo "scidb"
     echo "i2b2"
+    echo "dataconverters"
     echo ""
     usage
 fi
@@ -75,7 +76,6 @@ if [ "${resource}" == "i2b2transmart" ]; then
             SET @transmartURL='${EXTERNAL_URL}'; \
             SET @resourceURL='${EXTERNAL_URL}/transmart/proxy?url=http://localhost:9090/i2b2/services/'; \
             source /scratch/irct/sql/i2b2tranSMARTsetup.sql;"
-        mysql --host=${IRCTMYSQLADDRESS} --user=${user}  ${db}  < /scratch/irct/sql/ResultDataConverters.sql
         mysql --host=${IRCTMYSQLADDRESS} --user=${user}  ${db}  < /scratch/irct/sql/Monitoring.sql
 
 
@@ -100,6 +100,22 @@ if [ "${resource}" == "i2b2transmart" ]; then
     fi
 fi
 # end I2B2Transmart
+
+# data converters
+if [ "${resource}" == "dataconverters" ]; then
+    count=`mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db} -ss -e \
+    "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY','')); \
+    SELECT COUNT(*) FROM DataConverterImplementation;"`
+    if [ ${count} -gt 0 ]; then
+        echo "Data Converters already exist"
+    else
+        mysql --host=${IRCTMYSQLADDRESS} --user=${user}  ${db}  < /scratch/irct/sql/ResultDataConverters.sql
+    fi
+    echo "confirm Data Converters added"
+    mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db}  -e \
+      "SELECT * FROM DataConverterImplementation;"
+fi
+# end data converters
 
 # SciDBAFLResource
 if [ "${resource}" == "scidb" ]; then
