@@ -9,6 +9,7 @@ $ docker-compose logs -f irct
 
 # initialize database
 $ docker-compose run --rm irct-init -d irct -r i2b2
+$ docker-compose run --rm irct-init -d irct -r dataconverters
 
 # restart irct
 $ docker-compose restart irct
