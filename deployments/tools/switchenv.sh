@@ -105,7 +105,7 @@ if [ -z "${db_host}" ]; then
     return 1
 fi
 
-if [[ $(docker ps --format "{{.Names}} {{.Ports}}" | grep -s ${COMPOSE_PROJECT_NAME} | grep "\->") ]]; then
+if [[ $(docker ps --format "{{.Names}} {{.Ports}}" | grep -s ${COMPOSE_PROJECT_NAME} | grep -s "\->") ]]; then
     echo "WARNING: Previous project has docker host bound ports still up."
     echo "WARNING: There may be possible port conflicts."
     eval 'docker ps --format "{{.Names}} {{.Ports}}" | grep ${COMPOSE_PROJECT_NAME} | grep "\->"'

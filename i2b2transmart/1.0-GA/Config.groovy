@@ -47,8 +47,8 @@ com.recomdata.searchtool.largeLogo="transmartlogo.jpg"
 com.recomdata.searchtool.smallLogo="transmartlogosmall.jpg"
 
 //Guest Login Configs
-com.recomdata.guestAutoLogin=true
-com.recomdata.guestUserName='publicuser'
+com.recomdata.guestAutoLogin="${System.getenv("GUEST_AUTO_LOGIN")}"
+com.recomdata.guestUserName="${System.getenv("GUEST_USER_NAME")}"
 
 //Configs to hide functionality
 com.recomdata.hideSearch='true'

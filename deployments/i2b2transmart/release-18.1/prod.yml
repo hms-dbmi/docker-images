@@ -26,12 +26,29 @@ services:
       - ${ENV_FILE}
     restart: always
     depends_on:
+      # - db
+      - i2b2-wildfly
       - nginx
     networks:
       - public
+      - i2b2-hack
     expose:
       - 8080
 
+
+  # i2b2-wildfly
+  i2b2-wildfly:
+    image: dbmi/i2b2-wildfly:${i2b2_wildfly_version}
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    env_file:
+      - ${ENV_FILE}
+    restart: always
+    networks:
+      public:
+    expose:
+      - 9090
 
 networks:
     public:
