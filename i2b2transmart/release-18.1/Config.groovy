@@ -91,4 +91,11 @@ grails {
 	}
 }
 
+fractalis {
+	// Must be a PIC-SURE endpoint unless i2b2-tranSMART supports additional data APIs.
+	dataSource = "${System.getenv("FRACTALIS_DATA_SOURCE")}"
+	// Must be a Fractalis endpoint. See https://git-r3lab.uni.lu/Fractalis for further information.
+	node = "${System.getenv("FRACTALIS_NODE")}"
+}
+
 org.transmart.configFine = true

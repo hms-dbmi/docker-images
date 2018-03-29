@@ -33,12 +33,10 @@ services:
     entrypoint: ./bin/catalina.sh jpda run
     restart: always
     depends_on:
-      # - db
       - i2b2-wildfly
       - nginx
     networks:
       - public
-      - i2b2-hack
     expose:
       - 8080
     ports:
@@ -47,8 +45,6 @@ services:
     volumes:
       # local transmart.war directory (for simple development)
       - ${LOCAL_TRANSMART}:/usr/local/tomcat/webapps/:cached
-      # required for DI-1026 i2b2-hack localhost fix -Andre
-      - ./hosts/nsswitch.conf:/etc/nsswitch.conf:ro
 
 
   # i2b2-wildfly
@@ -60,33 +56,14 @@ services:
     env_file:
       - ${ENV_FILE}
     restart: always
-    # depends_on:
-    #   - db
     networks:
       public:
-      i2b2-hack:
-          aliases:
-              - localhost
     expose:
       - 9090
     ports:
       - 9090:9090
 
-  # Rserve
-  rserve:
-    image: dbmi/rserve:${rserve_version}
-    labels:
-      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    restart: always
-    entrypoint: R CMD
-    command: Rserve.dbg --no-save --RS-conf /etc/Rserv.conf
-    expose:
-      - 6311
-    networks:
-      - public
 
 networks:
     # for development, keep these unencrypted -Andre
     public:
-    i2b2-hack:

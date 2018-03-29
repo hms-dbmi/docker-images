@@ -18,6 +18,10 @@ ENV AUTH0_DOMAIN domain
 ENV AUTH0_CLIENT_ID client_id
 ENV AUTH0_CLIENT_SECRET client_secret
 
+# guest login
+ENV GUEST_AUTO_LOGIN true
+ENV GUEST_USER_NAME publicuser
+
 # use bash instead of sh. easier for container debugging
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
