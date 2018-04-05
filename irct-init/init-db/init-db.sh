@@ -39,6 +39,7 @@ if [ -z "${host}" ] || [ -z "${user}" ] || [ -z "${pass}" ] || [ -z "${db}" ] ||
     echo "scidb"
     echo "i2b2"
     echo "dataconverters"
+    echo "i2b2-wildfly"
     echo ""
     usage
 fi
@@ -152,8 +153,28 @@ if [ "${resource}" == "i2b2" ]; then
 fi
 # end I2B2 Resource
 
+
+# I2B2 local Resource
+if [ "${resource}" == "i2b2-wildfly-${IRCT_RESOURCE_NAME}" ]; then
+    count=`mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db} -ss -e "SELECT COUNT(*) FROM Resource WHERE name = '${IRCT_RESOURCE_NAME}'"`
+    if [ ${count} -gt 0 ]; then
+        echo "i2b2-wildfly-${IRCT_RESOURCE_NAME} resource already exists"
+    else
+        echo "add i2b2-wildfly resource to IRCT DB"
+        mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db}  -e \
+            "SET @resourceName ='i2b2-wildfly-${IRCT_RESOURCE_NAME}'; \
+            source /scratch/irct/sql/i2b2setup.sql;"
+    fi
+
+    echo "confirm IRCT DB populated"
+    mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db}  -e "SELECT * FROM Resource"
+fi
+# end I2B2 local resource
 } || {
     exit $?
 }
+
+
+
 
 # TODO: Add UMLS Synonym and Capitalization initalization options

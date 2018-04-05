@@ -31,7 +31,6 @@ services:
       - nginx
     networks:
       - public
-      - i2b2-hack
     expose:
       - 8080
 
@@ -46,7 +45,7 @@ services:
       - ${ENV_FILE}
     restart: always
     networks:
-      public:
+      - public
     expose:
       - 9090
 

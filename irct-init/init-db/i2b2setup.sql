@@ -1,10 +1,14 @@
 -- Set the resource parameters
-set @resourceName = 'i2b2-i2b2-org';
+-- parameter, resource name
+-- set @resourceName = 'i2b2-wildfly-${IRCT_RESOURCE_NAME}';
 
 -- parameter, option to point to i2b2-wildfly instance
-set @resourceURL = 'http://services.i2b2.org:9090/i2b2/services/';
+set @resourceURL = 'http://i2b2-wildfly:9090/i2b2/services/';
+-- parameter, domain for i2b2 resource
 set @domain = 'i2b2demo';
+-- parameter, i2b2 user
 set @userName = 'demo';
+-- parameter, i2b2 user password
 set @password = 'demouser';
 set @ignoreCertificate = 'true';
 

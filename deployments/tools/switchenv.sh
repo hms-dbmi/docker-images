@@ -81,6 +81,7 @@ if [ "${deploy_type}" == "transmart" ]; then
 elif [ "${deploy_type}" == "irct" ]; then
     regex="(IRCTMYSQLADDRESS)=(.*)"
 else
+    echo "ERROR: Could not find appropriate database host values in ${env}.env for ${deploy_type}."	
     usage
     return 1
 fi
