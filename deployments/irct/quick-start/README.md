@@ -26,6 +26,6 @@ Test query:
 ```
 $ curl -k -i -L -H "Accept: application/json" \
 -H "Content-Type: application/json" \
--H "Authorization: Bearer <JWT Toke>" \
+-H "Authorization: Bearer <JWT Token>" \
 -X GET https://<docker host>/rest/v1/systemService/about
 ```

@@ -1,38 +1,36 @@
 # secret-getter
 
-## code
-
-<https://github.com/hms-dbmi/vault-getter>
-
-## build image
+## Build secret-getter
 
 Build the secret-getter executable
 
 ```
-$ cd build/
-$ docker build -t dbmi/secret-getter:latest ./
+# build the executable-only Docker image
+# e.g. docker build --build-arg version=0.9-alpha -t dbmi/secret-getter:0.9-alpha --target=executable ./
+$ docker build --build-arg version=<github tag or branch> -t dbmi/secret-getter:<github tag or branch> --target=executable ./
+
+# build the runtime Docker image
+# e.g. docker build --build-arg version=0.9-alpha -t dbmi/secret-getter:0.9-alpha-runtime --target=runtime ./
+$ docker build --build-arg version=<github tag or branch> -t dbmi/secret-getter:<github tag or branch>-runtime --target=runtime ./
 ```
 
-## add secret-getter to image
+## Add secret-getter to your Dockerfile
 
-The following build command will add the secret-getter executable to your image
-
-```
-$ docker build -t dbmi/<image>:<version> \
---build-arg SERVICE=<image> --build-arg VERSION=version ./
-$ # e.g.
-$ docker build -t dbmi/i2b2transmart:1.0-GA \
---build-arg SERVICE=i2b2transmart --build-arg VERSION=1.0-GA ./
-```
-
-## use secret-getter
-
-To read secrets, replace the entrypoint of the service with the secret-getter command followed by "--" followed by the existing entrypoint. secret-getter will retrieve secrets then execute the entrypoint after, e.g.
+Append the following lines into your Dockerfile, then build your Dockerfile. This will update your Docker image by adding the secret_getter executable into /usr/bin, and change your ENTRYPOINT to run /usr/bin/secret_getter, and CMD to "--help"
 
 ```
-$ docker run --entrypoint=sh -c "secret-getter vault \
- -addr=https://localhost --path=/path/to/secrets \
- -token=<vault_token> --files=/files/for/string/regex \
+FROM dbmi/secret-getter:<release> AS executable
+FROM dbmi/secret-getter:<release>-runtime
+```
+
+## Use secret-getter
+
+To read secrets, replace the command of the service with the secret-getter subcommands (vault, file) and its parameters, followed by `--` with the process entrypoint and command options. secret-getter will retrieve secrets and execute the entrypoint after, e.g.
+
+```
+$ docker run --entrypoint=sh dbmi/<image> \
+ vault --addr=https://localhost --path=/path/to/secrets \
+ --token=<vault_token> --files=/files/for/string/regex \
  -prefix=\\{ --suffix=\\} \
- -- /docker-entrypoint" dbmi/<image> env
+ -- /docker-entrypoint cmd_option1
 ```
