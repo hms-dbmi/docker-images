@@ -6,6 +6,11 @@ FROM dbmi/transmart-data:release-16.2 AS transmart-data
 FROM alpine:3.6 AS install_solr
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
+# install solr
+# options: db_type: postgres, oracle
+ARG db_type
+
+ENV DB_TYPE ${db_type:-oracle}
 ENV TRANSMART_DATA_HOME /transmart-data
 COPY --from=transmart-data /transmart-data $TRANSMART_DATA_HOME
 
@@ -22,7 +27,8 @@ RUN apk upgrade --update \
     ##
     && sed -i 's/p0 </p0 solrconfig.xml/g' solr/Makefile \
     && sed -i 's/--touch/--touch --ignore-failed-read/g' solr/Makefile \
-    && source vars; make -C solr solr_home \
+    && bash -c "source vars; make -C solr solr_home" \
+    && rm -rf /transmart-data/solr/*.tgz \
     && apk del $DEPENDENCIES && rm -rf /var/cache/apk/
 
 
@@ -34,4 +40,5 @@ EXPOSE 8983
 
 COPY --from=install_solr /transmart-data/solr/ $SOLR_HOME
 WORKDIR $SOLR_HOME
+
 ENTRYPOINT ["java", "-jar", "start.jar"]
