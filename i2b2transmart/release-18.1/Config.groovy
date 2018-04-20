@@ -94,6 +94,27 @@ grails {
 	}
 }
 
+    // This is to target a remove Rserv. Bear in mind the need for shared network storage
+    RModules.host = "rserve"
+    RModules.port = 6311
+
+    // This is not used in recent versions; the URL is always /analysisFiles/
+    RModules.imageURL = "/tempImages/" //must end and start with /
+
+    production {
+        // The working directory for R scripts, where the jobs get created and
+        // output files get generated
+        RModules.tempFolderDirectory = jobsDirectory
+    }
+    development {
+        RModules.tempFolderDirectory = "/tmp"
+
+        /* we don't need to specify temporaryImageDirectory, because we're not copying */
+    }
+
+    // Used to access R jobs parent directory outside RModules (e.g. data export)
+    com.recomdata.plugins.tempFolderDirectory = RModules.tempFolderDirectory
+
 fractalis {
 	active = "${System.getenv("FRACTALIS_ACTIVE")}"
 	// Must be a PIC-SURE endpoint unless i2b2-tranSMART supports additional data APIs.
