@@ -51,15 +51,22 @@ RUN DEPENDENCIES=" \
 
 
 ### Rserve production ###
-FROM alpine:3.6
+FROM alpine:3.6 AS production
 
+# copy executables, libs, and conf, respectively
 COPY --from=install_Rserve /transmart-data/R/root/bin/* /usr/bin/
 COPY --from=install_Rserve /transmart-data/R/root/lib /transmart-data/R/root/lib
 COPY --from=install_Rserve /transmart-data/R/Rserv_nodaemon.conf /etc/Rserv.conf
 
 RUN apk upgrade \
     && apk --no-cache --update add cairo readline libxt pcre libbz2 pango libgomp gfortran zlib \
+    #
+    # package readline-7 not available on Alpine -Andre
+    && ln -s libreadline.so.6 /usr/lib/libreadline.so.7 \
     && rm -rf /var/cache/apk/*
 
 ENTRYPOINT ["R", "CMD"]
-CMD ["Rserve.dbg", "--no-save", "--RS-conf", "/etc/Rserv.conf"]
+
+# "daemon no" option in Rserv.conf does not work
+# to run Rserve in the main process requires using the debug executable - Andre
+CMD ["Rserve.dbg", "--vanilla", "--RS-conf", "/etc/Rserv.conf"]
