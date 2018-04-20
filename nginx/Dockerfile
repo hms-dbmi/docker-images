@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM nginx:alpine AS production
 LABEL maintainer="andre_rosa@hms.harvard.edu"
 
 RUN apk update \

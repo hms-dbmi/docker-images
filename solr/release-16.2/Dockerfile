@@ -33,7 +33,7 @@ RUN apk upgrade --update \
 
 
 ### SOLR Production ###
-FROM openjdk:7-jre-alpine
+FROM openjdk:7-jre-alpine AS production
 
 ENV SOLR_HOME /opt/solr
 EXPOSE 8983
