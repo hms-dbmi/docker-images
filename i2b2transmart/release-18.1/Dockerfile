@@ -81,6 +81,10 @@ COPY Config.groovy /root/.grails/transmartConfig
 # With nginx as our front-end, make sure scheme protocol and IP is forwarded to tomcat - Andre
 COPY server.xml $CATALINA_HOME/conf/
 
+# temporary hack: disable HTTP request validation -Andre
+# see https://hms-dbmi.atlassian.net/browse/I2B2TM-24
+RUN sed -i 's/#\(tomcat\.util\.http\.parser\.HttpParser\.requestTargetAllow.*$\)/\1/g' conf/catalina.properties
+
 # transmart.war
 COPY --from=transmart-war /transmartWar/*.war $CATALINA_HOME/webapps/transmart.war
 
@@ -88,5 +92,5 @@ ENTRYPOINT ["./bin/catalina.sh", "run"]
 
 
 ### tranSMART Production with Secrets Management
-FROM dbmi/secret-getter:0.9-alpha AS executable 
+FROM dbmi/secret-getter:0.9-alpha AS executable
 FROM dbmi/secret-getter:0.9-runtime AS secure

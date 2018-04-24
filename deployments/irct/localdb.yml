@@ -3,7 +3,7 @@ services:
 
   # IRCT DB
   db:
-    image: mysql:latest
+    image: mysql:${db_version}
     container_name: ${IRCTMYSQLADDRESS}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
