@@ -40,6 +40,7 @@ services:
     expose:
       - 8080
     ports:
+      - 8080:8080
       # debug port
       - 8000:8000
     volumes:
@@ -57,11 +58,26 @@ services:
       - ${ENV_FILE}
     restart: always
     networks:
-      public:
+      - public
     expose:
       - 9090
     ports:
       - 9090:9090
+
+  # Rserve
+  rserve:
+    image: dbmi/rserve:${rserve_version}
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    restart: always
+    networks:
+      - public
+    expose:
+      - 6311
+    ports:
+      - 6311:6311
+
 
   # solr
   solr:
@@ -80,6 +96,7 @@ services:
     networks:
       - public
     ports:
+      - 8983:8983
       # debug port
       - 1044:1044
     expose:

@@ -33,7 +33,10 @@ RUN apk upgrade --update \
 
 
 ### SOLR Production ###
-FROM openjdk:7-jre-alpine
+FROM openjdk:7-jre-alpine AS production
+
+# dockerfile author
+LABEL maintainer="andre_rosa@hms.harvard.edu"
 
 ENV SOLR_HOME /opt/solr
 EXPOSE 8983
