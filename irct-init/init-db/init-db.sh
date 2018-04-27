@@ -72,7 +72,7 @@ if [ "${resource}" == "i2b2transmart" ]; then
         mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db} -e "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"
         mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db}  -e \
             "SET @resourceName='${IRCT_RESOURCE_NAME}'; \
-            SET @auth0ClientId='${AUTH0_CLIENT_ID}'; \
+            SET @auth0ClientId='${CLIENT_ID}'; \
             SET @auth0Domain='${AUTH0_DOMAIN}'; \
             SET @transmartURL='${EXTERNAL_URL}'; \
             SET @resourceURL='${EXTERNAL_URL}/transmart/proxy?url=http://localhost:9090/i2b2/services/'; \

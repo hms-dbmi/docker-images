@@ -3,7 +3,7 @@ FROM dbmi/transmart-data:release-16.2 AS transmart-data
 
 
 ### Build SOLR ###
-FROM alpine:3.6 AS install_solr
+FROM alpine:3.7 AS install_solr
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
 # install solr

@@ -332,8 +332,8 @@
                 <simple name="java:global/resultDataFolder" value="/scratch/irct"/>
                 <simple name="java:global/userField" value="${env.IRCT_USER_FIELD}"/>
                 <simple name="java:global/domain" value="${env.AUTH0_DOMAIN}"/>
-                <simple name="java:global/client_secret" value="${env.AUTH0_CLIENT_SECRET}"/>
-                <simple name="java:global/client_id" value="${env.AUTH0_CLIENT_ID}"/>
+                <simple name="java:global/client_secret" value="${env.CLIENT_SECRET}"/>
+                <simple name="java:global/client_id" value="${env.CLIENT_ID}"/>
                 <simple name="java:global/KeyTimeOutInMinutes" value="${env.IRCT_KEY_TIMEOUT_IN_MINUTES}"/>
                 <!-- DI-994 if don't need this whitelist functionality, just put false in the value field below.
                 	currently only support absolute location -->

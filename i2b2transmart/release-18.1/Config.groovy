@@ -8,9 +8,9 @@ grails {
 
 			/* {{{ Auth0 configuration */
 			auth0 {
-				active = "${System.getenv("AUTH0_ACTIVE")}"
-				clientId = "${System.getenv("AUTH0_CLIENT_ID")}"
-				clientSecret = "${System.getenv("AUTH0_CLIENT_SECRET")}"
+				active = "${System.getenv("AUTH0_ACTIVE")}" ? true : false
+				clientId = "${System.getenv("CLIENT_ID")}"
+				clientSecret = "${System.getenv("CLIENT_SECRET")}"
 				domain = "${System.getenv("AUTH0_DOMAIN")}"
 				useRecaptcha = false
 				webtaskBaseUrl = "${System.getenv("AUTH0_WEBTASK_URL")}"
@@ -199,7 +199,7 @@ grails {
 
 /* {{{ Fractalis configuration */
 fractalis {
-	active = "${System.getenv("FRACTALIS_ACTIVE")}"
+	active = "${System.getenv("FRACTALIS_ACTIVE")}" ? true: false
 	// Must be a PIC-SURE endpoint unless i2b2-tranSMART supports additional data APIs.
 	dataSource = "${System.getenv("FRACTALIS_DATA_SOURCE")}"
 	// Must be a resource name that 'fractalis.dataSource' has access to. E.g. '/nhanes/Demo'

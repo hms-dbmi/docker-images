@@ -1,5 +1,5 @@
 ### download tranSMART war ###
-FROM alpine:latest AS transmart-war
+FROM alpine:3.7 AS transmart-war
 
 ARG version
 ARG artifact_url
@@ -63,8 +63,9 @@ ENV NOTIFICATION_EMAILS example@gmail.com
 # enable auth0: set AUTH0_ACTIVE=true
 ENV AUTH0_ACTIVE=
 ENV AUTH0_DOMAIN domain
-ENV AUTH0_CLIENT_ID client_id
-ENV AUTH0_CLIENT_SECRET client_secret
+# JWT Token authentication 
+ENV CLIENT_ID client_id
+ENV CLIENT_SECRET client_secret
 
 ## Fractalis (disabled by default)
 # disable fractalis: set FRACTALIS_ACTIVE= (empty string)
