@@ -3,7 +3,7 @@ services:
 
   # IRCT DB
   db:
-    image: mysql:${db_version}
+    image: dbmi/irct-db:${db_version}
     container_name: ${IRCTMYSQLADDRESS}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
@@ -20,11 +20,11 @@ services:
     ports:
       - ${DOCKER_IRCT_DB_PORT:-3306}:3306
     volumes:
-      - mysql-data:/var/lib/mysql
+      - irct-data:/var/lib/mysql
 
 networks:
     public:
 
 
 volumes:
-    mysql-data:
+    irct-data:

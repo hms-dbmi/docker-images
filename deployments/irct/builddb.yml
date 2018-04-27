@@ -1,21 +1,6 @@
 version: '3.3'
 services:
 
-  # nginx
-  nginx:
-    image: dbmi/nginx:${nginx_version}
-    labels:
-      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    restart: always
-    # application stack exposed ports
-    ports:
-      - 80:80
-      - 443:443
-    networks:
-      - public
-
-
   ## PIC-SURE API Stack ##
   # IRCT
   irct:
@@ -24,8 +9,7 @@ services:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     depends_on:
-       - nginx
-       - db
+      - db
     env_file:
       - ${ENV_FILE}
     restart: always
@@ -37,7 +21,7 @@ services:
   irct-init:
     image: dbmi/irct-init:${irct_init_version}
     depends_on:
-      - irct
+      - db
     env_file:
       - ${ENV_FILE}
     networks:
@@ -45,25 +29,21 @@ services:
 
   # IRCT DB
   db:
-    image: dbmi/irct-db:${db_version}
+    image: mysql:${mysql_version}
     container_name: ${IRCTMYSQLADDRESS}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     env_file:
       - ${ENV_FILE}
+    command: --datadir=/mysql/data
     restart: always
     expose:
       - 3306
     ports:
-      - 3306:3306
+      - ${DOCKER_IRCT_DB_PORT:-3306}:3306
     networks:
       - public
-    volumes:
-      - irct-data:/mysql/data
 
 networks:
     public:
-
-volumes:
-    irct-data:
