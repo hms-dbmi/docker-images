@@ -10,8 +10,8 @@ services:
     restart: always
     # application stack exposed ports
     ports:
-      - 80:80
-      - 443:443
+      - ${HTTP_PORT:-80}:80
+      - ${HTTPS_PORT:-443}:443
     networks:
       - public
 
@@ -34,15 +34,6 @@ services:
     expose:
       - 8080
 
-  irct-init:
-    image: dbmi/irct-init:${irct_init_version}
-    depends_on:
-      - irct
-    env_file:
-      - ${ENV_FILE}
-    networks:
-      - public
-
   # IRCT DB
   db:
     image: dbmi/irct-db:${db_version}
@@ -52,11 +43,12 @@ services:
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     env_file:
       - ${ENV_FILE}
+    command: --datadir=/mysql/data
     restart: always
     expose:
       - 3306
     ports:
-      - 3306:3306
+      - ${DOCKER_IRCT_DB_PORT:-3306}:3306
     networks:
       - public
     volumes:
