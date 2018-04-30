@@ -13,6 +13,7 @@ services:
     environment:
       - MYSQL_DATABASE=irct
     restart: always
+    command: --datadir=/mysql/data
     expose:
       - 3306
     networks:
@@ -20,7 +21,7 @@ services:
     ports:
       - ${DOCKER_IRCT_DB_PORT:-3306}:3306
     volumes:
-      - irct-data:/var/lib/mysql
+      - irct-data:/mysql/data
 
 networks:
     public:

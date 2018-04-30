@@ -40,7 +40,7 @@ nginx_version=irct.1.4.2
 irct_version=1.4.2
 irct_init_version=1.4.2
 mysql_version=5.7.22
-db_version=mysql.5.7.22-irct.1.4.2-i2b2-i2b2-org
+db_version=mysql.5.7.22-irct.1.4.2
 
 ## database host (required by container_name yaml tag)
 # this sets a DNS entry for the container
@@ -83,60 +83,68 @@ Either use the existing `sample_project.env` or create your own project environm
 
 If you use your own project env file, update your `.env` file, and set the value for key `ENV_FILE=` to the name of your project environment file.
 
-    APPLICATION_NAME=
+```bash
+APPLICATION_NAME=
 
-    # pic-sure-init
-    # deprecated
-    IRCT_RESOURCE_NAME=
+# pic-sure
+IRCTMYSQLADDRESS=
+IRCT_DB_PORT=3306
+IRCT_DB_CONNECTION_USER=root
 
-    # pic-sure
-    # Note: the value here *must* equal the value in the .env file
-    # To-do: resolve requiring db host in 2 places - Andre
-    IRCTMYSQLADDRESS=
-    IRCT_DB_PORT=3306
-    IRCT_DB_CONNECTION_USER=root
+# Note: IRCTMYSQLPASS *must* equal MYSQL_ROOT_PASSWORD
+# former required by pic-sure service,
+# latter required by localdb service only -Andre
+IRCTMYSQLPASS=
+MYSQL_ROOT_PASSWORD=
 
-    # Note: IRCTMYSQLPASS *must* equal MYSQL_ROOT_PASSWORD
-    # former required by irct service,
-    # latter required by db service (localdb.yml only) -Andre
-    IRCTMYSQLPASS=
-    MYSQL_ROOT_PASSWORD=
+IRCT_USER_FIELD=email
 
-    IRCT_USER_FIELD=email
-    AUTH0_DOMAIN=avillachlab.auth0.com
-    CLIENT_ID=
-    CLIENT_SECRET=
-    EXTERNAL_URL=
+# required for any JWT tokens generation,
+CLIENT_ID=
+CLIENT_SECRET=
 
-    # pic-sure s3 support
-    S3_BUCKET_NAME=
+### Resources ####
+
+# i2b2-wildfly
+# deprecated
+IRCT_RESOURCE_NAME=
+
+# i2b2/tranSMART 1.0-GA
+AUTH0_DOMAIN=avillachlab.auth0.com
+EXTERNAL_URL=
+
+# AWS S3 event
+S3_BUCKET_NAME=
+```
 
 ## Create Database Snapshot
 
-    $ cd deployments/irct
-    $ docker-compose -f builddb.yml up -d irct db
+```bash
+$ cd deployments/irct
+$ docker-compose -f builddb.yml up -d irct db
 
-    # wait for irct to populate the database with an irct database and tables
-    $ docker-compose -f builddb.yml logs -f irct
-    # irct_1       | 18:30:14,857 INFO HHH000228: Running hbm2ddl schema update
-    # irct_1       | 18:30:14,881 INFO HHH000262: Table not found: ClauseAbstract
-    # irct_1       | 18:30:14,901 INFO HHH000262: Table not found: DataConverterImplementation
-    ....
-    ....
-    # irct_1       | 18:30:17,954 INFO Starting IRCT Application
-    ....
+# wait for irct to populate the database with an irct database and tables
+$ docker-compose -f builddb.yml logs -f irct
+# irct_1       | 18:30:14,857 INFO HHH000228: Running hbm2ddl schema update
+# irct_1       | 18:30:14,881 INFO HHH000262: Table not found: ClauseAbstract
+# irct_1       | 18:30:14,901 INFO HHH000262: Table not found: DataConverterImplementation
+# ....
+# ....
+# irct_1       | 18:30:17,954 INFO Starting IRCT Application
+# ....
 
-    # see available resources to install
-    $ docker-compose -f builddb.yml run --rm irct-init
+# see available resources to install
+$ docker-compose -f builddb.yml run --rm irct-init
 
-    # required: add data converters
-    $ docker-compose -f builddb.yml run --rm irct-init -d irct -r dataconverters
+# required: add data converters
+$ docker-compose -f builddb.yml run --rm irct-init -d irct -r dataconverters
 
-    # e.g., to install i2b2.org resource, e.g.
-    $ docker-compose -f builddb.yml run --rm irct-init -d irct -r i2b2
+# e.g., to install i2b2.org resource, e.g.
+$ docker-compose -f builddb.yml run --rm irct-init -d irct -r i2b2
 
-    # save state of the database
-    $ docker commit db dbmi/irct-db:mysql.5.7.22-irct.1.4.2-i2b2-org
+# save state of the database
+$ docker commit db dbmi/irct-db:mysql.5.7.22-irct.1.4.2-i2b2-org
+```
 
 Update the `db_version=` in .env to the saved database snapshot. There are sample databases available at [Docker Hub](https://hub.docker.com/r/dbmi/irct-db/)
 
@@ -164,7 +172,7 @@ You may continue to add resources to the database by `docker-compose -f prod.yml
 
 ## Generate JWT token
 
-Generate a JWT token with the client secret in your project's environment file with [JWT Creator](https://github.com/hms-dbmi/jwt-creator.git)
+Generate a JWT token with the `CLIENT_SECRET` in your project's environment file with [JWT Creator](https://github.com/hms-dbmi/jwt-creator.git)
 
 ## Test PIC-SURE Access
 
@@ -174,10 +182,12 @@ Show logs:
 
 Test query:
 
-    $ curl -k -i -L -H "Accept: application/json" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer <JWT Token>" \
-    -X GET https://<docker host>/rest/v1/systemService/about
+```bash
+$ curl -k -i -L -H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <JWT Token>" \
+-X GET https://<docker host>/rest/v1/systemService/about
+```
 
 ## Shutdown PIC-SURE
 
