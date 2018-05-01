@@ -1,4 +1,4 @@
-FROM i2b2/i2b2-wildfly:release-v1.7.09c.0001
+FROM i2b2/i2b2-wildfly:release-v1.7.09c.0001 AS production
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
 # database connection
@@ -27,3 +27,7 @@ COPY standalone.xml /opt/jboss/wildfly/standalone/configuration/
 # do not use bin/prescript.sh
 # uses default passwords only. not usable in production environments - Andre
 ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
+
+### i2b2-wildfly Production with Secrets Management
+FROM dbmi/secret-getter:0.9-alpha AS executable
+FROM dbmi/secret-getter:0.9-runtime AS secure

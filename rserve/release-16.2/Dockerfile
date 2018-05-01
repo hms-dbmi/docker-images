@@ -51,7 +51,7 @@ RUN DEPENDENCIES=" \
 
 
 ### Rserve production ###
-FROM alpine:3.6 AS production
+FROM alpine:3.7 AS production
 
 # copy executables, libs, and conf, respectively
 COPY --from=install_Rserve /transmart-data/R/root/bin/* /usr/bin/

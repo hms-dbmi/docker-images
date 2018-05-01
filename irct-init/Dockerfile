@@ -1,7 +1,14 @@
-FROM mysql:latest
-MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
+FROM alpine:3.7 AS production
 
 # NOTE: All going away. Will be replaced by small golang-alpine dynamic program -Andre
+
+# dockerfile author
+LABEL maintainer="andre_rosa@hms.harvard.edu"
+
+RUN apk upgrade \
+    && apk --no-cache --update add bash mysql-client \
+    && rm /bin/sh && ln -s /bin/bash /bin/sh \
+    && apk del $DEPENDENCIES && rm -rf /var/cache/apk/
 
 # set default variables
 ENV IRCT_RESOURCE_NAME demo
@@ -9,7 +16,7 @@ ENV IRCTMYSQLADDRESS localhost
 ENV IRCT_DB_CONNECTION_USER root
 ENV IRCTMYSQLPASS my-secret-pw
 ENV AUTH0_DOMAIN domain
-ENV AUTH0_CLIENT_ID client_id
+ENV CLIENT_ID client_id
 ENV TRANSMART_RESOURCE https://transmart:8080
 
 # sci db service introduced in IRCT build 2493.hackathon

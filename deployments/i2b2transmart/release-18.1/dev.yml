@@ -40,29 +40,50 @@ services:
     expose:
       - 8080
     ports:
+      - 8080:8080
       # debug port
       - 8000:8000
     volumes:
       # local transmart.war directory (for simple development)
       - ${LOCAL_TRANSMART}:/usr/local/tomcat/webapps/:cached
 
+  # Rserve
+  rserve:
+    image: dbmi/rserve:${rserve_version}
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    restart: always
+    networks:
+      - public
+    expose:
+      - 6311
+    ports:
+      - 6311:6311
 
-  # i2b2-wildfly
-  i2b2-wildfly:
-    image: dbmi/i2b2-wildfly:${i2b2_wildfly_version}
+
+  # solr
+  solr:
+    image: dbmi/solr:${solr_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     env_file:
       - ${ENV_FILE}
+    environment:
+      # debug options
+      - JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,address=1044,server=y,suspend=y"
+      - JPDA_ADDRESS=1044
+      - JPDA_TRANSPORT=dt_socket
     restart: always
     networks:
-      public:
-    expose:
-      - 9090
+      - public
     ports:
-      - 9090:9090
-
+      - 8983:8983
+      # debug port
+      - 1044:1044
+    expose:
+      - 8983
 
 networks:
     # for development, keep these unencrypted -Andre

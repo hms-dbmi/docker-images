@@ -1,9 +1,29 @@
-ARG SERVICE=latest
-ARG VERSION=latest
-FROM dbmi/secret-getter:latest AS secrets
-MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
+FROM golang:1.10-rc-alpine AS builder
 
+ARG version
 
-FROM dbmi/$SERVICE:$VERSION
+ENV SECRET_GETTER_REPO https://github.com/hms-dbmi/secret-getter.git
+ENV SECRET_GETTER_VERSION ${version:-master}
 
-COPY --from=secrets /usr/bin/vault_getter /usr/bin/
+RUN apk update && DEPENDENCIES="make git" \
+    && apk --no-cache add $DEPENDENCIES \
+    && git clone $SECRET_GETTER_REPO -b ${SECRET_GETTER_VERSION} \
+    && cd secret-getter \
+    && make all \
+    && cd .. \
+    && rm -rf secret-getter \
+    && apk del $DEPENDENCIES && rm -rf /var/cache/apk/
+
+#### secret-getter executable ###
+FROM scratch AS executable
+
+COPY --from=builder /go/bin/secret_getter /usr/bin/
+
+#### secret-getter runtime ###
+FROM scratch AS runtime
+
+ONBUILD COPY --from=executable /usr/bin/ /usr/bin/
+
+ONBUILD ENTRYPOINT ["/usr/bin/secret_getter"]
+# example command line options
+ONBUILD CMD ["--help"]

@@ -11,19 +11,32 @@ openssl rsa -check -noout -in $APP_KEY 2>>/tmp/err
 
 if [ -s /tmp/err ]; then
 
-	# Generate private key
+	# Generate CA private key
+	openssl genrsa -out $CERT_DIR/ca.key 2048
+	openssl rsa -in $CERT_DIR/ca.key -out $CERT_DIR/ca.key
+	# Generate CA
+	openssl req -new -x509 -days 365 -key $CERT_DIR/ca.key -sha256 -subj "/C=US/ST=California/L=Everywhere/CN=$APPLICATION_NAME" -out $APP_CA
+
+	# Generate domain private key
 	openssl genrsa -out $APP_KEY 2048
 	# Remove password from private key
 	openssl rsa -in $APP_KEY -out $APP_KEY
+
 	# Generate CSR (make sure the common name CN field matches your server
 	# address. It's set to "RO_COMMONNAME" environment variable here.)
 	openssl req -new -key $APP_KEY -out $CERT_DIR/server.csr -subj "/C=US/ST=California/L=Everywhere/CN=$APPLICATION_NAME"
 	# Sign the CSR and create certificate
-	openssl x509 -req -days 365 -in $CERT_DIR/server.csr -signkey $APP_KEY -out $APP_CERT
+	openssl x509 -req -days 365 -in $CERT_DIR/server.csr -CA $APP_CA -CAkey $CERT_DIR/ca.key -CAcreateserial -signkey $APP_KEY -out $APP_CERT
 
 	# Clean up
 	rm $CERT_DIR/server.csr
-	chmod 600 $APP_CERT $APP_KEY
+	rm $CERT_DIR/ca.key
+	rm $CERT_DIR/ca.srl
+	chmod 600 $APP_CERT $APP_KEY $APP_CA
+
+	cp $APP_CERT /usr/local/share/ca-certificates/
+	update-ca-certificates
+
     rm /tmp/err
 
 	echo
@@ -32,7 +45,7 @@ if [ -s /tmp/err ]; then
 fi
 
 # allows for nginx to stay up even if services are down
-# see default.conf - Andre 
+# see default.conf - Andre
 export NAMESERVER=`cat /etc/resolv.conf | grep "nameserver" | awk '{print $2}' | tr '\n' ' '`
 
 echo "Nameserver is: $NAMESERVER"
