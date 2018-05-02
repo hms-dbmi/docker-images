@@ -106,6 +106,45 @@ com {
 }
 /* }}} */
 
+/* {{{ Personalization */
+// application logo to be used in the login page
+com.recomdata.largeLogo = "transmartlogo.jpg"
+
+// application logo to be used in the search page
+com.recomdata.smallLogo="transmartlogosmall.jpg"
+
+// contact email address
+com.recomdata.contactUs = "transmart-discuss@googlegroups.com"
+
+// site administrator contact email address
+com.recomdata.adminEmail = "transmart-discuss@googlegroups.com"
+
+// application title
+com.recomdata.appTitle = "tranSMART v" + org.transmart.originalConfigBinding.appVersion
+
+// Location of the help pages. Should be an absolute URL.
+// Currently, these are distribution with transmart,
+// so it can also point to that location copy.
+com.recomdata.adminHelpURL = "$transmartURL/help/adminHelp/default.htm"
+
+environments { development {
+    com.recomdata.bugreportURL = 'https://jira.transmartfoundation.org'
+} }
+
+// Keys without defaults (see Config-extra.php.sample):
+// name and URL of the supporter entity shown on the welcome page
+// com.recomdata.providerName = "tranSMART Foundation"
+// com.recomdata.providerURL = "http://www.transmartfoundation.org"
+// com.recomdata.providerLogo = "/transmart/static/images/transmartlogo.jpg"
+
+// name and URL and logo of the project
+// shown on the login page
+// com.recomdata.projectName = "My project"
+// com.recomdata.projectURL = "http://myproject.org/"
+// com.recomdata.projectLogo = "/myprojectbanner.jpg"
+/* }}} */
+
+
 /* {{{ Sample Explorer configuration */
 
 // This is an object to dictate the names and 'pretty names' of the SOLR fields.
