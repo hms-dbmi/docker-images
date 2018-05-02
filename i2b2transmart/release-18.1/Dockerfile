@@ -76,6 +76,9 @@ ENV FRACTALIS_DATA_SOURCE localhost
 ENV FRACTALIS_RESOURCE_NAME resource/Demo
 
 
+# transmart.war
+COPY --from=transmart-war /transmartWar/*.war $CATALINA_HOME/webapps/transmart.war
+
 # configuration files
 COPY DataSource.groovy /root/.grails/transmartConfig
 COPY Config.groovy /root/.grails/transmartConfig
@@ -85,9 +88,6 @@ COPY server.xml $CATALINA_HOME/conf/
 # temporary hack: disable HTTP request validation -Andre
 # see https://hms-dbmi.atlassian.net/browse/I2B2TM-24
 RUN sed -i 's/#\(tomcat\.util\.http\.parser\.HttpParser\.requestTargetAllow.*$\)/\1/g' conf/catalina.properties
-
-# transmart.war
-COPY --from=transmart-war /transmartWar/*.war $CATALINA_HOME/webapps/transmart.war
 
 ENTRYPOINT ["./bin/catalina.sh", "run"]
 

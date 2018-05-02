@@ -2,6 +2,30 @@ import org.transmart.searchapp.AuthUser
 import org.transmart.searchapp.Requestmap
 import org.transmart.searchapp.Role
 
+
+//Disabling/Enabling UI tabs
+ui {
+    tabs {
+        //Search was not part of 1.2. It's not working properly. You need to set `show` to `true` to see it on UI
+        //search.show = false
+        //browse.hide = false
+        //Note: analyze tab is always shown
+        //sampleExplorer.hide = false
+        //geneSignature.hide = false
+        //gwas.hide = false
+        uploadData.hide = true
+        /*datasetExplorer {
+            gridView.hide = false
+            dataExport.hide = false
+            dataExportJobs.hide = false
+            // Note: by default the analysisJobs panel is NOT shown
+            // Currently, it is only used in special cases
+            analysisJobs.show = false
+            workspace.hide = false
+        }*/
+    }
+}
+
 grails {
 	plugin {
 		springsecurity {
@@ -212,6 +236,30 @@ development {
 
 // Used to access R jobs parent directory outside RModules (e.g. data export)
 com.recomdata.plugins.tempFolderDirectory = RModules.tempFolderDirectory
+/* }}} */
+
+/* {{{ GWAS Configuration */
+com.recomdata.dataUpload.appTitle="Upload data to tranSMART"
+com.recomdata.dataUpload.stageScript="run_analysis_stage"
+
+// Directory path of com.recomdata.dataUpload.stageScript
+def gwasEtlDirectory = new File(System.getProperty("user.home"), '.grails/transmart-gwasetl')
+
+// Directory to hold GWAS file uploads
+def gwasUploadsDirectory = new File(System.getProperty("user.home"), '.grails/transmart-datauploads')
+
+// Directory to preload with template files with names <type>-template.txt
+def gwasTemplatesDirectory = new File(System.getProperty("user.home"), '.grails/transmart-templates')
+
+com.recomdata.dataUpload.templates.dir = gwasTemplatesDirectory.absolutePath
+com.recomdata.dataUpload.uploads.dir = gwasUploadsDirectory.absolutePath
+com.recomdata.dataUpload.etl.dir = gwasEtlDirectory.absolutePath
+
+[gwasTemplatesDirectory, gwasUploadsDirectory, gwasEtlDirectory].each {
+    if (!it.exists()) {
+        it.mkdir()
+    }
+}
 /* }}} */
 
 
