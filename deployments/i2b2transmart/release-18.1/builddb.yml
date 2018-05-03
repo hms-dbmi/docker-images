@@ -1,28 +1,36 @@
 version: '3.3'
 services:
 
-    # TODO: build i2b2transmart-schema image
-    # i2b2transmart-schema image =
-    #   transmart schema install
-    #   i2b2 schema install
-    #   custom script so they play along
-    #
-    # i2b2transmart-schema:
-    #     image: dbmi/i2b2transmart-data:i2b2.1.7.09-tm.release-16.2
-    #     environment:
-    #         - DB_TYPE=${DB_TYPE}
-    #         - DB_HOST=db
-    #         - DB_PORT=1521
-    #         - DB_ORASVC=ORCLPDB1
-    #         - DB_USER=pdbadmin
-    #         - DB_PASSWORD=password
-    #     depends_on:
-    #         - db
-    #     networks:
-    #         - public
+    i2b2-schema:
+        image: dbmi/i2b2-data:1.7.09
+        environment:
+            - DB_TYPE=${db_type:-oracle}
+            - DB_HOST=db
+            - DB_PORT=1521
+            - DB_ORASVC=ORCLPDB1
+            - DB_USER=pdbadmin
+            - DB_PASSWORD=password
+        depends_on:
+            - db
+        networks:
+            - public
+
+    transmart-schema:
+        image: dbmi/transmart-data:release-18.1-edge
+        environment:
+            - DB_TYPE=${db_type:-oracle}
+            - DB_HOST=db
+            - DB_PORT=1521
+            - DB_ORASVC=ORCLPDB1
+            - DB_USER=pdbadmin
+            - DB_PASSWORD=password
+        depends_on:
+            - db
+        networks:
+            - public
 
     db:
-        image: dbmi/${DB_TYPE}:${DB_VERSION}
+        image: dbmi/${db_type:-oracle}:${db_version:-12.2.0.1-ee}
         environment:
             # used to initialize system passwords
             - DB_PASSWORD=password
