@@ -1,0 +1,44 @@
+version: '3.3'
+services:
+
+  # nginx
+  nginx:
+    image: dbmi/nginx:${nginx_version}
+    restart: always
+    networks:
+      - public
+    # application stack exposed ports
+    ports:
+      - ${HTTP_PORT:-80}:80
+      - ${HTTPS_PORT:-443}:443
+
+  # i2b2-wildfly
+  i2b2-wildfly:
+    image: dbmi/i2b2-wildfly:${i2b2_wildfly_version}
+    env_file:
+      - ${ENV_FILE}
+    restart: always
+    networks:
+      - public
+    expose:
+      - 9090
+
+  # i2b2 database
+  db:
+    image: dbmi/i2b2-db:${db_version}
+    networks:
+      - public
+    expose:
+      - 1521
+    # i2b2 database exposed port
+    ports:
+      - ${DOCKER_DB_PORT:-1521}:1521
+    volumes:
+      - i2b2-data:/opt/oracle/oradata:rw
+
+
+volumes:
+  i2b2-data:
+
+networks:
+  public:
