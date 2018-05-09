@@ -12,7 +12,7 @@ set @userName = 'demo';
 set @password = 'demouser';
 set @ignoreCertificate = 'true';
 
-set @resourceImplementingInterface = 'edu.harvard.hms.dbmi.bd2k.irct.ri.i2b2.I2B2XMLResourceImplementation';
+set @resourceImplementingInterface = 'edu.harvard.hms.dbmi.bd2k.irct.ri.i2b2.I2B2XMLOnlyCountRI';
 set @resourceOntology = 'TREE';
 
 
