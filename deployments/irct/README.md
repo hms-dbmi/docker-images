@@ -55,52 +55,6 @@ STACK_ENV=
 STACK_NAME=
 ```
 
-## install Resources into PIC-SURE database
-
--   this database is already available as dbmi/irct-db:mysql.5.7.22-irct.1.4.2
-
-```bash
-$ cd deployments/irct
-$ docker-compose -f builddb.yml up -d
-
-# wait for irct to populate the database
-$ docker-compose -f builddb.yml logs -f irct
-# ....
-# HHH000262: Table not found: VisualizationType_Field
-# HHH000262: Table not found: where_values
-# HHH000262: Table not found: where_values
-# Starting IRCT Application
-
-
-# install data converters resource
-$ docker-compose -f builddb.yml run --rm irct-init -r dataconverters
-
-
-# install i2b2.org resource
-$ docker-compose -f builddb.yml run --rm irct-inint -r i2b2.org
-
-
-# install additional resources (optional)
-$ docker-compose -f builddb.yml run --rm irct-init -r availableResource
-# options:
-# -e external URL       required: for i2b2transmart Resource
-# -b bucket name        optional: for i2b2transmart Resource. add AWS S3 bucket
-# -s true|false         optional: for i2b2-wildfly Resource. Simple install only
-# -c true|false         optional: confirms Resource is installed
-
-# Available resources:
-# i2b2transmart-[name of resource]
-# scidb
-# i2b2.org
-# dataconverters
-# i2b2-wildfly-[name of resource]
-# monitor
-
-$ docker-compose -f builddb.yml restart irct
-```
-
-If you would like to save the database state, run `docker commit db dbmi/irct-db:mysql.5.7.22-irct.1.4.2`
-
 ### For Local Database Purposes (localdb.yml)
 
 If you plan to use `localdb.yml` for your database, instead of a remote database, add the following to your `.env` file. Set the port to an open available port on your docker host. By default, `localdb.yml` will expose 3306.
@@ -154,34 +108,52 @@ CLIENT_SECRET=
 # i2b2/tranSMART 1.0-GA
 AUTH0_DOMAIN=avillachlab.auth0.com
 ```
-
-## Create Database Snapshot
+## Install Resources into PIC-SURE database, Create Snapshot
 
 ```bash
 $ cd deployments/irct
-$ docker-compose -f builddb.yml up -d irct db
+$ docker-compose -f builddb.yml up -d
 
-# wait for irct to populate the database with an irct database and tables
+# wait for irct to populate the database
 $ docker-compose -f builddb.yml logs -f irct
-# irct_1       | 18:30:14,857 INFO HHH000228: Running hbm2ddl schema update
-# irct_1       | 18:30:14,881 INFO HHH000262: Table not found: ClauseAbstract
-# irct_1       | 18:30:14,901 INFO HHH000262: Table not found: DataConverterImplementation
+# HHH000228: Running hbm2ddl schema update
 # ....
-# ....
-# irct_1       | 18:30:17,954 INFO Starting IRCT Application
-# ....
+# HHH000262: Table not found: VisualizationType_Field
+# HHH000262: Table not found: where_values
+# HHH000262: Table not found: where_values
+# Starting IRCT Application
 
-# see available resources to install
-$ docker-compose -f builddb.yml run --rm irct-init
 
-# required: add data converters
-$ docker-compose -f builddb.yml run --rm irct-init -d irct -r dataconverters
+# install data converters resource
+$ docker-compose -f builddb.yml run --rm irct-init -r dataconverters
 
-# e.g., to install i2b2.org resource, e.g.
-$ docker-compose -f builddb.yml run --rm irct-init -d irct -r i2b2
+
+# install i2b2.org resource
+$ docker-compose -f builddb.yml run --rm irct-inint -r i2b2.org
+
+
+# install additional resources (optional)
+$ docker-compose -f builddb.yml run --rm irct-init -r [availableResource]
+# options:
+# -e external URL       required: for i2b2transmart Resource
+# -b bucket name        optional: for i2b2transmart Resource. add AWS S3 bucket
+# -s true|false         optional: for i2b2-wildfly Resource. Simple install only
+# -c true|false         optional: confirms Resource is installed
+
+# Available resources:
+# i2b2transmart-[name of resource]
+# scidb
+# i2b2.org
+# dataconverters
+# i2b2-wildfly-[name of resource]
+# monitor
+#
+# ex: docker-compose -f builddb.yml run --rm irct-init -r i2b2-wildfly-demo -s true
 
 # save state of the database
 $ docker commit db dbmi/irct-db:mysql.5.7.22-irct.1.4.2-i2b2-org
+
+$ docker-compose -f builddb.yml restart irct
 ```
 
 Update the `db_version=` in .env to the saved database snapshot. There are sample databases available at [Docker Hub](https://hub.docker.com/r/dbmi/irct-db/)
