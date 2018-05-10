@@ -38,7 +38,7 @@ Latest available Docker image versions:
 # versions
 nginx_version=irct.1.4.2
 irct_version=1.4.2
-irct_init_version=1.4.2
+irct_init_version=1.4.2b
 mysql_version=5.7.22
 db_version=mysql.5.7.22-irct.1.4.2
 
@@ -54,6 +54,52 @@ ENV_FILE=sample_project.env
 STACK_ENV=
 STACK_NAME=
 ```
+
+## install Resources into PIC-SURE database
+
+-   this database is already available as dbmi/irct-db:mysql.5.7.22-irct.1.4.2
+
+```bash
+$ cd deployments/irct
+$ docker-compose -f builddb.yml up -d
+
+# wait for irct to populate the database
+$ docker-compose -f builddb.yml logs -f irct
+# ....
+# HHH000262: Table not found: VisualizationType_Field
+# HHH000262: Table not found: where_values
+# HHH000262: Table not found: where_values
+# Starting IRCT Application
+
+
+# install data converters resource
+$ docker-compose -f builddb.yml run --rm irct-init -r dataconverters
+
+
+# install i2b2.org resource
+$ docker-compose -f builddb.yml run --rm irct-inint -r i2b2.org
+
+
+# install additional resources (optional)
+$ docker-compose -f builddb.yml run --rm irct-init -r availableResource
+# options:
+# -e external URL       required: for i2b2transmart Resource
+# -b bucket name        optional: for i2b2transmart Resource. add AWS S3 bucket
+# -s true|false         optional: for i2b2-wildfly Resource. Simple install only
+# -c true|false         optional: confirms Resource is installed
+
+# Available resources:
+# i2b2transmart-[name of resource]
+# scidb
+# i2b2.org
+# dataconverters
+# i2b2-wildfly-[name of resource]
+# monitor
+
+$ docker-compose -f builddb.yml restart irct
+```
+
+If you would like to save the database state, run `docker commit db dbmi/irct-db:mysql.5.7.22-irct.1.4.2`
 
 ### For Local Database Purposes (localdb.yml)
 
@@ -105,16 +151,8 @@ CLIENT_SECRET=
 
 ### Resources ####
 
-# i2b2-wildfly
-# deprecated
-IRCT_RESOURCE_NAME=
-
 # i2b2/tranSMART 1.0-GA
 AUTH0_DOMAIN=avillachlab.auth0.com
-EXTERNAL_URL=
-
-# AWS S3 event
-S3_BUCKET_NAME=
 ```
 
 ## Create Database Snapshot

@@ -1,5 +1,6 @@
 -- Set the resource parameters
 -- parameter, resource name
+-- IRCT_RESOURCE_NAME: deprecated
 -- set @resourceName = 'i2b2-wildfly-${IRCT_RESOURCE_NAME}';
 
 -- parameter, option to point to i2b2-wildfly instance

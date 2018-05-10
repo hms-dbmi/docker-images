@@ -1,17 +1,22 @@
 #!/bin/bash
 usage() { echo "
-    Usage: switchenv.sh [-e environment] [-d (transmart|irct)] optional: [-s (true|false)]
-    -e: environment/project name
-    -d: deployment application stack
-    -s: enable ssh-tunnel
+    Usage: switchenv.sh -e environment -d transmart|irct [-s true|false]
+	options:
+    		-e environment/project name		name of the environment to deploy. 
+							requires matching [env name].env file in directory.
 
-    e.g. source switchenv.sh -e sample_project -d transmart
+    		-d deployment type			deployment types available. Used to seek specific stack type variables.
+
+    		-s true|false				enables ssh-tunneling for remote database use. 
+							requires ssh-agent and matching /.ssh/config option for [env name].
+
+    ex: source switchenv.sh -e sample_project -d transmart
 
     Your ssh configuration in ~/.ssh/config and your project env *must* have the same name,
     e.g. ssh sample_project, sample_project.env
 
     To forward you ssh-agent for remote ssh-tunneling, set argument -s true
-    e.g. source switchenv.sh -e sample_project -d transmart -s true"
+    ex: source switchenv.sh -e sample_project -d transmart -s true"
     return 1;
 }
 
@@ -106,10 +111,10 @@ if [ -z "${db_host}" ]; then
     return 1
 fi
 
-if [[ $(docker ps --format "{{.Names}} {{.Ports}}" | grep -s ${COMPOSE_PROJECT_NAME} | grep -s "\->") ]]; then
-    echo "WARNING: Previous project has docker host bound ports still up."
+if [[ $(docker ps --format "{{.Names}} {{.Ports}}" | grep -s "\->") ]]; then
+    echo "WARNING: Docker host bound ports still up."
     echo "WARNING: There may be possible port conflicts."
-    eval 'docker ps --format "{{.Names}} {{.Ports}}" | grep ${COMPOSE_PROJECT_NAME} | grep "\->"'
+    eval 'docker ps --format "{{.Names}} {{.Ports}}" | grep -s "\->"' 
 fi
 
 echo ""

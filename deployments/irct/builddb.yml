@@ -36,6 +36,8 @@ services:
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     env_file:
       - ${ENV_FILE}
+    environment:
+      - MYSQL_DATABASE=irct
     command: --datadir=/mysql/data
     restart: always
     expose:

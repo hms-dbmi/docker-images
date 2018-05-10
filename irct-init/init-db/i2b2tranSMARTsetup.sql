@@ -1,5 +1,6 @@
 -- Set the resource parameters
 -- These are now set in init-db script
+-- IRCT_RESOURCE_NAME: deprecated
 -- set @resourceName = '${IRCT_RESOURCE_NAME}';
 -- set @transmartURL = 'http://i2b2transmart:8080/transmart';
 -- set @resourceURL = 'http://i2b2transmart:8080/transmart/proxy?url=http://i2b2-wildfly:9090/i2b2/services/';
