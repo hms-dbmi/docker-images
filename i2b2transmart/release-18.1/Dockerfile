@@ -69,7 +69,7 @@ ENV CLIENT_SECRET client_secret
 
 ## Rserve
 ENV RSERVE_HOST rserve
-ENV RSCRIPT_DIR Rscripts
+ENV RSCRIPTS_DIR Rscripts
 
 ## Auth0 (disabled by default)
 # disable auth0: set AUTH0_ACTIVE= (empty string)
