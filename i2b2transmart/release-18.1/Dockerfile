@@ -57,15 +57,25 @@ ENV EMAIL_USER example@gmail.com
 ENV EMAIL_PASS email_pass
 ENV NOTIFICATION_EMAILS example@gmail.com
 
+# guest login
+ENV GUEST_AUTO_LOGIN false
+ENV GUEST_USER guest
+
 ### Available Plugins ###
+
+## JWT Token authentication
+ENV CLIENT_ID client_id
+ENV CLIENT_SECRET client_secret
+
+## Rserve
+ENV RSERVE_HOST rserve
+ENV RSCRIPT_DIR Rscripts
+
 ## Auth0 (disabled by default)
 # disable auth0: set AUTH0_ACTIVE= (empty string)
 # enable auth0: set AUTH0_ACTIVE=true
 ENV AUTH0_ACTIVE=
 ENV AUTH0_DOMAIN domain
-# JWT Token authentication 
-ENV CLIENT_ID client_id
-ENV CLIENT_SECRET client_secret
 
 ## Fractalis (disabled by default)
 # disable fractalis: set FRACTALIS_ACTIVE= (empty string)

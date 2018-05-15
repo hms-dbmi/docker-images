@@ -39,7 +39,9 @@ RUN DEPENDENCIES=" \
     #
     # QDNAseq_1.10.0 no longer available at bioconductor.org - Andre
     # downloading R packages fails. h/t @dennyverbeeck
-    && sed -i 's/QDNAseq_1\.10\.0/QDNAseq_1\.14\.0/g' R/other_pkg.R \
+    # QDNAseq_1.14.0 no longer available (my previous fix)
+    # TODO: get available version number first  - Andre
+    && sed -i 's/QDNAseq_1\.10\.0/QDNAseq_1\.16\.0/g' R/other_pkg.R \
     && until make -C R install_packages; do echo "Failed, retrying..."; done \
     #
     # fix nodaemon conf
@@ -49,6 +51,34 @@ RUN DEPENDENCIES=" \
     && rm -rf R/R-* \
     && apk del $DEPENDENCIES && rm -rf /var/cache/apk/*
 
+## Get Rscripts ##
+FROM alpine:3.7 AS install_scripts
+
+ARG version
+ARG artifact_url
+ARG artifact
+
+ENV ARTIFACT Rmodules
+ENV ARTIFACT_VERSION ${version:-release-16.2}
+ENV ARTIFACT_URL ${artifact_url:-https://github.com/i2b2-tranSMART/${ARTIFACT}/archive}
+ENV ARTIFACT_REL ${artifact:-web-app/Rscripts}
+
+ENV RSCRIPT_DIR /Rscripts
+
+RUN apk upgrade --update --no-cache \
+    && DEPENDENCIES="curl unzip" \
+    && apk --no-cache --update add $DEPENDENCIES \
+    #
+    # get Rscripts
+    #
+    && curl -L ${ARTIFACT_URL}/${ARTIFACT_VERSION}.zip -o ${ARTIFACT}-${ARTIFACT_VERSION}.zip \
+    && unzip ${ARTIFACT}-${ARTIFACT_VERSION}.zip \
+    && mv ${ARTIFACT}-${ARTIFACT_VERSION}/${ARTIFACT_REL} $RSCRIPT_DIR \
+    #
+    # sanity check
+    && ls -a $RSCRIPT_DIR \
+    && rm -rf ${ARTIFACT}-${ARTIFCAT_VERSION}* \
+    && apk del $DEPENDENCIES && rm -rf /var/cache/apk/*
 
 ### Rserve production ###
 FROM alpine:3.7 AS production
@@ -58,12 +88,15 @@ COPY --from=install_Rserve /transmart-data/R/root/bin/* /usr/bin/
 COPY --from=install_Rserve /transmart-data/R/root/lib /transmart-data/R/root/lib
 COPY --from=install_Rserve /transmart-data/R/Rserv_nodaemon.conf /etc/Rserv.conf
 
+COPY --from=install_scripts ${RSCRIPT_DIR} /transmart-data/R/
+
 RUN apk upgrade \
-    && apk --no-cache --update add cairo readline libxt pcre libbz2 pango libgomp gfortran zlib \
-    #
-    # package readline-7 not available on Alpine -Andre
-    && ln -s libreadline.so.6 /usr/lib/libreadline.so.7 \
+    && apk --no-cache --update add cairo readline libxt \
+        pcre libbz2 pango libgomp \
+        gfortran zlib ttf-dejavu \
     && rm -rf /var/cache/apk/*
+
+WORKDIR /transmart-data/R
 
 ENTRYPOINT ["R", "CMD"]
 

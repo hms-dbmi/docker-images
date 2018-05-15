@@ -84,6 +84,7 @@ Either use the existing `sample_project.env` or create your own project environm
 If you use your own project env file, update your `.env` file, and set the value for key `ENV_FILE=` to the name of your project environment file.
 
 ```bash
+# nginx (server name)
 APPLICATION_NAME=
 
 # pic-sure
@@ -108,6 +109,7 @@ CLIENT_SECRET=
 # i2b2/tranSMART 1.0-GA
 AUTH0_DOMAIN=avillachlab.auth0.com
 ```
+
 ## Install Resources into PIC-SURE database, Create Snapshot
 
 ```bash

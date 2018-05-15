@@ -44,6 +44,7 @@ services:
       # debug port
       - 8000:8000
     volumes:
+      - rserve-jobs:/tmp:rw
       # local transmart.war directory (for simple development)
       - ${LOCAL_TRANSMART}:/usr/local/tomcat/webapps/:cached
 
@@ -60,6 +61,8 @@ services:
       - 6311
     ports:
       - 6311:6311
+    volumes:
+      - rserve-jobs:/tmp:rw
 
 
   # solr
@@ -84,6 +87,10 @@ services:
       - 1044:1044
     expose:
       - 8983
+
+volumes:
+  # shared volume for R jobs
+  rserve-jobs:
 
 networks:
     # for development, keep these unencrypted -Andre
