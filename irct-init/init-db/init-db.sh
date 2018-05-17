@@ -5,7 +5,7 @@ usage() {
     echo "options:"
     echo "-e external URL       required: for i2b2transmart Resource"
     echo "-b bucket name        optional: for i2b2transmart Resource. add AWS S3 bucket"
-    echo "-s true|false         optional: for i2b2-wildfly Resource. Simple install only"
+    echo "-s special name       optional: for i2b2-wildfly Resource. specify the special version of i2b2-wildfly. now support: count_only|patient_mapping"
     echo "-c true|false         optional: confirms Resource is installed"
     echo ""
     echo ""
@@ -45,7 +45,7 @@ while getopts ":h:u:p:d:c:r:e:s:b:" args; do
       externalUrl=${OPTARG}
       ;;
     s)
-      simple=${OPTARG}
+      special=${OPTARG}
       ;;
     b)
       bucket=${OPTARG}
@@ -213,8 +213,8 @@ if [[ "${resource}" =~ ^i2b2\-wildfly\-(.+)$ ]]; then
     if [ ${count} -gt 0 ]; then
         echo "i2b2 wildfly ${specificName} resource already exists"
     else
-        if [ "${simple}" == "true" ]; then
-
+      # patient mapping RI sql is not working yet
+        if [ "${special}" =~^count(.+)$ ]; then
             echo "add i2b2-wildfly ${specificName} resource (counts only) to IRCT DB"
             mysql --host=${IRCTMYSQLADDRESS} --user=${user} ${db}  -e \
                 "SET @resourceName ='${resource}'; \
