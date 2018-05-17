@@ -63,7 +63,7 @@ ENV ARTIFACT_VERSION ${version:-release-16.2}
 ENV ARTIFACT_URL ${artifact_url:-https://github.com/i2b2-tranSMART/${ARTIFACT}/archive}
 ENV ARTIFACT_REL ${artifact:-web-app/Rscripts}
 
-ENV RSCRIPT_DIR /Rscripts
+ENV RSCRIPT_INSTALL_DIR /Rscripts
 
 RUN apk upgrade --update --no-cache \
     && DEPENDENCIES="curl unzip" \
@@ -73,22 +73,27 @@ RUN apk upgrade --update --no-cache \
     #
     && curl -L ${ARTIFACT_URL}/${ARTIFACT_VERSION}.zip -o ${ARTIFACT}-${ARTIFACT_VERSION}.zip \
     && unzip ${ARTIFACT}-${ARTIFACT_VERSION}.zip \
-    && mv ${ARTIFACT}-${ARTIFACT_VERSION}/${ARTIFACT_REL} $RSCRIPT_DIR \
+    && mv ${ARTIFACT}-${ARTIFACT_VERSION}/${ARTIFACT_REL} $RSCRIPT_INSTALL_DIR \
     #
     # sanity check
-    && ls -a $RSCRIPT_DIR \
+    && ls -a $RSCRIPT_INSTALL_DIR \
+    #
+    # clean up
     && rm -rf ${ARTIFACT}-${ARTIFCAT_VERSION}* \
     && apk del $DEPENDENCIES && rm -rf /var/cache/apk/*
 
 ### Rserve production ###
 FROM alpine:3.7 AS production
 
-# copy executables, libs, and conf, respectively
-COPY --from=install_Rserve /transmart-data/R/root/bin/* /usr/bin/
-COPY --from=install_Rserve /transmart-data/R/root/lib /transmart-data/R/root/lib
-COPY --from=install_Rserve /transmart-data/R/Rserv_nodaemon.conf /etc/Rserv.conf
+ENV RSERVE_HOME /transmart-data/R
+WORKDIR $RSERVE_HOME
 
-COPY --from=install_scripts ${RSCRIPT_DIR} /transmart-data/R/
+# copy executables, libs, and conf, respectively
+COPY --from=install_Rserve $RSERVE_HOME/root/bin/* /usr/bin/
+COPY --from=install_Rserve $RSERVE_HOME/root/lib $RSERVE_HOME/root/lib
+COPY --from=install_Rserve $RSERVE_HOME/Rserv_nodaemon.conf /etc/Rserv.conf
+
+COPY --from=install_scripts $RSCRIPT_INSTALL_DIR $RSERVE_HOME
 
 RUN apk upgrade \
     && apk --no-cache --update add cairo readline libxt \
@@ -96,7 +101,6 @@ RUN apk upgrade \
         gfortran zlib ttf-dejavu \
     && rm -rf /var/cache/apk/*
 
-WORKDIR /transmart-data/R
 
 ENTRYPOINT ["R", "CMD"]
 

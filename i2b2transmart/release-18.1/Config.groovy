@@ -37,7 +37,7 @@ grails {
 
 			/* {{{ Auth0 configuration */
 			auth0 {
-				active = "${System.getenv("AUTH0_ACTIVE")}" ? true : false
+				active = "${System.getenv("AUTH0_ACTIVE")}".toBoolean()
 				clientId = "${System.getenv("CLIENT_ID")}"
 				clientSecret = "${System.getenv("CLIENT_SECRET")}"
 				domain = "${System.getenv("AUTH0_DOMAIN")}"
@@ -191,7 +191,7 @@ environments { development {
 
 // Whether to enable guest auto login.
 // If it's enabled no login is required to access tranSMART.
-com.recomdata.guestAutoLogin=${System.getenv("GUEST_AUTO_LOGIN")}
+com.recomdata.guestAutoLogin="${System.getenv("GUEST_AUTO_LOGIN")}".toBoolean()
 
 // Guest account user name – if guestAutoLogin is true, this is the username of
 // the account that tranSMART will automatically authenticate users as. This will
@@ -250,7 +250,7 @@ edu.harvard.transmart.sampleBreakdownMap = [
 
 
 /* {{{ Rserve configuration */
-
+RModules.external = "${System.getenv("RSERVE_EXTERNAL")}".toBoolean()
 RModules.host = "${System.getenv("RSERVE_HOST")}"
 RModules.port = 6311
 
@@ -353,7 +353,7 @@ grails {
 
 /* {{{ Fractalis configuration */
 fractalis {
-	active = "${System.getenv("FRACTALIS_ACTIVE")}" ? true: false
+	active = "${System.getenv("FRACTALIS_ACTIVE")}".toBoolean()
 	// Must be a PIC-SURE endpoint unless i2b2-tranSMART supports additional data APIs.
 	dataSource = "${System.getenv("FRACTALIS_DATA_SOURCE")}"
 	// Must be a resource name that 'fractalis.dataSource' has access to. E.g. '/nhanes/Demo'
