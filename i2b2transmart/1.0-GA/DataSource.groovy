@@ -10,7 +10,7 @@ dataSource {
  // standard jdbc driver
  driverClassName ="oracle.jdbc.driver.OracleDriver"
 
- url = "jdbc:oracle:thin:@${System.getenv("ORACLEHOST")}:${System.getenv("DB_PORT")}:ORCL"
+ url = "jdbc:oracle:thin:@${System.getenv("ORACLEHOST")}:${System.getenv("DB_PORT")}/${System.getenv("DB_DB")}"
  username = "${System.getenv("DB_USER")}"
  password = "${System.getenv("BIOMART_USER")}"
 

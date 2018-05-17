@@ -7,8 +7,8 @@ services:
             - 80:80
             - 443:443
         networks:
-            - transmart
             - public
+            - private
 
     transmart:
         image: dbmi/transmart:release-16.2
@@ -23,7 +23,7 @@ services:
         depends_on:
             - db
         networks:
-            - transmart
+            - private
         expose:
             - 8080
 
@@ -31,7 +31,7 @@ services:
         image: dbmi/gwava:release-16.2
         restart: always
         networks:
-            - transmart
+            - private
         expose:
             - 8080
 
@@ -39,7 +39,7 @@ services:
         image: dbmi/rserve:3.2.1
         restart: always
         networks:
-            - transmart
+            - private
         expose:
             - 6311
 
@@ -47,21 +47,21 @@ services:
         image: dbmi/solr:4.5.0
         restart: always
         networks:
-            - transmart
+            - private
         expose:
             - 8983
 
     db:
         image: dbmi/transmart-db:${DB_VERSION}
         networks:
-            - transmart
+            - private
         expose:
             - 1521
 
 
 
 networks:
-    transmart:
+    private:
         # encrypted network
         internal: true
     public:

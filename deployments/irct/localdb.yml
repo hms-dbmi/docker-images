@@ -1,72 +1,29 @@
 version: '3.3'
 services:
 
-  # nginx
-  nginx:
-    image: dbmi/nginx:${nginx_version}
-    labels:
-      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    restart: always
-    # application stack exposed ports
-    ports:
-      - 80:80
-      - 443:443
-    networks:
-      - i2b2-net
-
-
-  ## PIC-SURE API Stack ##
-  # IRCT
-  irct:
-    image: dbmi/irct:${irct_version}
-    labels:
-      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    depends_on:
-       - db
-       - nginx
-    env_file:
-      - ${ENV_FILE}
-    # debug command
-    command: --debug --server-config=standalone.xml
-    restart: always
-    networks:
-      - i2b2-net
-    expose:
-      - 8080
-    ports:
-      # debug port
-      - 8787:8787
-    volumes:
-      - ${LOCAL_IRCT}/IRCT-CL.war:/opt/jboss/wildfly/standalone/deployments/IRCT-CL.war:cached
-
-  irct-init:
-    image: dbmi/irct-init:${irct_init_version}
-    depends_on:
-      - db
-      - irct
-    env_file:
-      - ${ENV_FILE}
-    restart: on-failure:10
-    networks:
-      - i2b2-net
-
   # IRCT DB
   db:
-    image: mysql:latest
+    image: dbmi/irct-db:${db_version}
+    container_name: ${IRCTMYSQLADDRESS}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     env_file:
       - ${ENV_FILE}
     restart: always
+    command: --datadir=/mysql/data
     expose:
       - 3306
     networks:
-      - i2b2-net
+      - public
     ports:
-      - ${DOCKER_IRCT_DB_PORT}:${IRCT_DB_PORT}
+      - ${DOCKER_IRCT_DB_PORT:-3306}:3306
+    volumes:
+      - irct-data:/mysql/data
 
 networks:
-    i2b2-net:
+    public:
+
+
+volumes:
+    irct-data:

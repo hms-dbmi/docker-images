@@ -1,4 +1,4 @@
-FROM jboss/wildfly:10.1.0.Final
+FROM jboss/wildfly:10.1.0.Final AS production
 MAINTAINER Jeremy R. Easton-Marks <Jeremy_Easton-Marks@hms.harvard.edu>
 
 # SET DEFAULT ENV VARIABLES
@@ -7,8 +7,8 @@ ENV IRCTMYSQLADDRESS localhost
 ENV IRCT_DB_PORT 3306
 ENV IRCTMYSQLPASS password
 ENV AUTH0_DOMAIN domain
-ENV AUTH0_CLIENT_ID client_id
-ENV AUTH0_CLIENT_SECRET client_secret
+ENV CLIENT_ID client_id
+ENV CLIENT_SECRET client_secret
 ENV IRCT_USER_FIELD email
 ENV IRCT_KEY_TIMEOUT_IN_MINUTES 720
 
@@ -36,3 +36,7 @@ RUN mkdir -p /scratch/irct
 COPY target/IRCT-CL.war /opt/jboss/wildfly/standalone/deployments/
 
 ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
+
+### PIC-SURE Production with Secrets Management
+FROM dbmi/secret-getter:0.9-alpha AS executable
+FROM dbmi/secret-getter:0.9-runtime AS secure

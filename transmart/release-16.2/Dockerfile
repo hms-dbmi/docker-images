@@ -1,7 +1,7 @@
 FROM dbmi/transmart-data:release-16.2 AS transmart-data
 
 ### Build Transmart Configurations ###
-FROM alpine:3.6 AS install_config
+FROM alpine:3.7 AS install_config
 
 COPY --from=transmart-data /transmart-data/ /transmart-data/
 

@@ -1,0 +1,51 @@
+version: '3.3'
+services:
+
+  ## PIC-SURE API Stack ##
+  # IRCT
+  irct:
+    image: dbmi/irct:${irct_version}
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    depends_on:
+      - db
+    env_file:
+      - ${ENV_FILE}
+    restart: always
+    networks:
+      - public
+    expose:
+      - 8080
+
+  irct-init:
+    image: dbmi/irct-init:${irct_init_version}
+    depends_on:
+      - db
+    env_file:
+      - ${ENV_FILE}
+    networks:
+      - public
+
+  # IRCT DB
+  db:
+    image: mysql:${mysql_version}
+    container_name: ${IRCTMYSQLADDRESS}
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    env_file:
+      - ${ENV_FILE}
+    environment:
+      - MYSQL_DATABASE=irct
+    command: --datadir=/mysql/data
+    restart: always
+    expose:
+      - 3306
+    ports:
+      - ${DOCKER_IRCT_DB_PORT:-3306}:3306
+    networks:
+      - public
+
+networks:
+    public:

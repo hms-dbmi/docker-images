@@ -1,9 +1,9 @@
-FROM nginx:alpine
-MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
+FROM nginx:alpine AS production
+LABEL maintainer="andre_rosa@hms.harvard.edu"
 
 RUN apk update \
     && apk upgrade \
-    && apk add --update openssl \
+    && apk add --update openssl ca-certificates \
     && rm -rf /var/cache/apk/*
 
 WORKDIR /etc/nginx
