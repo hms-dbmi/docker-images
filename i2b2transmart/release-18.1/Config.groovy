@@ -2,19 +2,18 @@ import org.transmart.searchapp.AuthUser
 import org.transmart.searchapp.Requestmap
 import org.transmart.searchapp.Role
 
-
 //Disabling/Enabling UI tabs
 ui {
     tabs {
         //Search was not part of 1.2. It's not working properly. You need to set `show` to `true` to see it on UI
-        //search.show = false
-        //browse.hide = false
+        search.show = false
+        browse.hide = false
         //Note: analyze tab is always shown
-        //sampleExplorer.hide = false
-        //geneSignature.hide = false
-        //gwas.hide = false
-        uploadData.hide = true
-        /*datasetExplorer {
+        sampleExplorer.hide = false
+        geneSignature.hide = false
+        gwas.hide = false
+        uploadData.hide = false
+        datasetExplorer {
             gridView.hide = false
             dataExport.hide = false
             dataExportJobs.hide = false
@@ -22,8 +21,14 @@ ui {
             // Currently, it is only used in special cases
             analysisJobs.show = false
             workspace.hide = false
-        }*/
+        }
     }
+    /*
+    //The below disclaimer appears on the login screen, just below the login button.
+    loginScreen {
+        disclaimer = "Please be aware that tranSMART is a data-integration tool that allows for exploration of available study data. The information shown in tranSMART, and derived from performed analyses, are for research purposes only. NOT for decision making in e.g. clinical trial studies."
+    }
+    */
 }
 
 grails {
@@ -32,7 +37,7 @@ grails {
 
 			/* {{{ Auth0 configuration */
 			auth0 {
-				active = "${System.getenv("AUTH0_ACTIVE")}" ? true : false
+				active = "${System.getenv("AUTH0_ACTIVE")}".toBoolean()
 				clientId = "${System.getenv("CLIENT_ID")}"
 				clientSecret = "${System.getenv("CLIENT_SECRET")}"
 				domain = "${System.getenv("AUTH0_DOMAIN")}"
@@ -80,11 +85,6 @@ grails {
 	}
 }
 
-/* {{{ UI Configuration */
-com.recomdata.searchtool.largeLogo = 'transmartlogoHMS.jpg'
-com.recomdata.searchtool.appTitle = 'Department of Biomedical Informatics – tranSMART'
-/* }}} */
-
 
 /* {{{ Logging Configuration */
 grails.logging.jul.usebridge = true
@@ -111,7 +111,6 @@ log4j = {
 
 
 /* {{{ Faceted Search Configuration */
-/* {{{ File store and indexing configuration */
 com.rwg.solr.scheme = 'http'
 com.rwg.solr.host   = 'solr:' + 8983
 com.rwg.solr.path   = '/solr/rwg/select/'
@@ -130,7 +129,12 @@ com {
 }
 /* }}} */
 
+
 /* {{{ Personalization */
+com.recomdata.searchtool.largeLogo = 'transmartlogoHMS.jpg'
+
+com.recomdata.searchtool.appTitle = 'Department of Biomedical Informatics – tranSMART'
+
 // application logo to be used in the login page
 com.recomdata.largeLogo = "transmartlogo.jpg"
 
@@ -167,6 +171,36 @@ environments { development {
 // com.recomdata.projectURL = "http://myproject.org/"
 // com.recomdata.projectLogo = "/myprojectbanner.jpg"
 /* }}} */
+
+
+
+
+/* {{{ Login */
+// Session timeout and heartbeat frequency (ping interval)
+com.recomdata.sessionTimeout = 300
+com.recomdata.heartbeatLaps = 30
+
+environments { development {
+    com.recomdata.sessionTimeout = Integer.MAX_VALUE / 1000 as int /* ~24 days */
+    com.recomdata.heartbeatLaps = 900
+} }
+
+// Not enabled by default (see Config-extra.php.sample)
+//com.recomdata.passwordstrength.pattern
+//com.recomdata.passwordstrength.description
+
+// Whether to enable guest auto login.
+// If it's enabled no login is required to access tranSMART.
+com.recomdata.guestAutoLogin="${System.getenv("GUEST_AUTO_LOGIN")}".toBoolean()
+
+// Guest account user name – if guestAutoLogin is true, this is the username of
+// the account that tranSMART will automatically authenticate users as. This will
+// control the level of access anonymous users will have (the access will be match
+// that of the account specified here).
+com.recomdata.guestUserName="${System.getenv("GUEST_USER")}"
+/* }}} */
+
+
 
 
 /* {{{ Sample Explorer configuration */
@@ -213,30 +247,38 @@ edu.harvard.transmart.sampleBreakdownMap = [
 /* }}} */
 
 
-/* {{{ Rserve configuration */
-// This is to target a remove Rserve. Bear in mind the need for shared network storage
-def jobsDirectory     = "/var/tmp/jobs/"
 
-RModules.host = "rserve"
+
+/* {{{ Rserve configuration */
+RModules.external = "${System.getenv("RSERVE_EXTERNAL")}".toBoolean()
+RModules.host = "${System.getenv("RSERVE_HOST")}"
 RModules.port = 6311
+
+RModules.pluginScriptDirectory="${System.getenv("RSCRIPTS_DIR")}"
+
+// This is a remote Rserve directory. Bear in mind the need for shared network storage
+def jobsDirectory     = "/tmp"
 
 // This is not used in recent versions; the URL is always /analysisFiles/
 RModules.imageURL = "/tempImages/" //must end and start with /
 
-production {
-    // The working directory for R scripts, where the jobs get created and
-    // output files get generated
-    RModules.tempFolderDirectory = jobsDirectory
-}
-development {
-    RModules.tempFolderDirectory = "/tmp"
+/* Grabbed from Miscellaneous Configuration */
+grails.resources.adhoc.excludes = [ '/images' + RModules.imageURL + '**' ]
 
-    /* we don't need to specify temporaryImageDirectory, because we're not copying */
-}
+// The working directory for R scripts, where the jobs get created and
+// output files get generated
+RModules.tempFolderDirectory = jobsDirectory
+
+/* we don't need to specify temporaryImageDirectory, because we're not copying */
 
 // Used to access R jobs parent directory outside RModules (e.g. data export)
 com.recomdata.plugins.tempFolderDirectory = RModules.tempFolderDirectory
+
+
 /* }}} */
+
+
+
 
 /* {{{ GWAS Configuration */
 com.recomdata.dataUpload.appTitle="Upload data to tranSMART"
@@ -263,6 +305,31 @@ com.recomdata.dataUpload.etl.dir = gwasEtlDirectory.absolutePath
 /* }}} */
 
 
+
+/* {{{ Quartz jobs configuration */
+// start delay for the sweep job
+com.recomdata.export.jobs.sweep.startDelay =60000 // d*h*m*s*1000
+// repeat interval for the sweep job
+com.recomdata.export.jobs.sweep.repeatInterval = 86400000 // d*h*m*s*1000
+// specify the age of files to be deleted (in days)
+com.recomdata.export.jobs.sweep.fileAge = 3
+/* }}} *
+
+
+
+/* {{{ File store and indexing configuration */
+def fileStoreDirectory = new File(System.getProperty("user.home"), '.grails/transmart-filestore')
+def fileImportDirectory = new File(System.getProperty("java.io.tmpdir"), 'transmart-fileimport')
+com.recomdata.FmFolderService.filestoreDirectory = fileStoreDirectory.absolutePath
+com.recomdata.FmFolderService.importDirectory = fileImportDirectory.absolutePath
+
+[fileStoreDirectory, fileImportDirectory].each {
+    if (!it.exists()) {
+        it.mkdir()
+    }
+}
+/* }}} */
+
 /* {{{ Email notification configuration */
 edu.harvard.transmart.email.notify = "${System.getenv("NOTIFICATION_EMAILS")}"
 edu.harvard.transmart.email.logo = '/images/info_security_logo_rgb.png'
@@ -286,7 +353,7 @@ grails {
 
 /* {{{ Fractalis configuration */
 fractalis {
-	active = "${System.getenv("FRACTALIS_ACTIVE")}" ? true: false
+	active = "${System.getenv("FRACTALIS_ACTIVE")}".toBoolean()
 	// Must be a PIC-SURE endpoint unless i2b2-tranSMART supports additional data APIs.
 	dataSource = "${System.getenv("FRACTALIS_DATA_SOURCE")}"
 	// Must be a resource name that 'fractalis.dataSource' has access to. E.g. '/nhanes/Demo'

@@ -1,6 +1,8 @@
 # i2b2/tranSMART release-18.1 Quick-Start
+*Database is pre-populated with the NHANES public dataset*
 
-## Docker Machine Hardware Requirements
+
+## Docker Host Hardware Requirements
 
 -   8GB RAM
 -   128GB Hard Drive
