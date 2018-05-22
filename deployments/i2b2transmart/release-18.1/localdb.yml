@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
     db:
-        image: dbmi/i2b2transmart-db:${DB_VERSION}
+        image: dbmi/i2b2transmart-db:${db_version:-oracle.12.2.0.1-ee-i2b2.1.7.09-tm.release-18.1-v.1.0}
         networks:
             - public
         expose:
