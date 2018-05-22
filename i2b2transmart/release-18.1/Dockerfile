@@ -57,20 +57,28 @@ ENV EMAIL_USER example@gmail.com
 ENV EMAIL_PASS email_pass
 ENV NOTIFICATION_EMAILS example@gmail.com
 
+# guest login
+ENV GUEST_AUTO_LOGIN false
+ENV GUEST_USER guest
+
 ### Available Plugins ###
-## Auth0 (disabled by default)
-# disable auth0: set AUTH0_ACTIVE= (empty string)
-# enable auth0: set AUTH0_ACTIVE=true
-ENV AUTH0_ACTIVE=
-ENV AUTH0_DOMAIN domain
-# JWT Token authentication 
+
+## JWT Token authentication
 ENV CLIENT_ID client_id
 ENV CLIENT_SECRET client_secret
 
+## Rserve
+ENV RSERVE_EXTERNAL true
+ENV RSERVE_HOST rserve
+# Rscripts must be an *absolute* path
+ENV RSCRIPTS_DIR /transmart-data/R/Rscripts
+
+## Auth0 (disabled by default)
+ENV AUTH0_ACTIVE false
+ENV AUTH0_DOMAIN domain
+
 ## Fractalis (disabled by default)
-# disable fractalis: set FRACTALIS_ACTIVE= (empty string)
-# enable fractalis: set FRACTALIS_ACTIVE=true
-ENV FRACTALIS_ACTIVE=
+ENV FRACTALIS_ACTIVE false
 ENV FRACTALIS_NODE /fractalis
 ENV FRACTALIS_DATA_SOURCE localhost
 ENV FRACTALIS_RESOURCE_NAME resource/Demo
@@ -88,6 +96,7 @@ COPY server.xml $CATALINA_HOME/conf/
 # temporary hack: disable HTTP request validation -Andre
 # see https://hms-dbmi.atlassian.net/browse/I2B2TM-24
 RUN sed -i 's/#\(tomcat\.util\.http\.parser\.HttpParser\.requestTargetAllow.*$\)/\1/g' conf/catalina.properties
+
 
 ENTRYPOINT ["./bin/catalina.sh", "run"]
 

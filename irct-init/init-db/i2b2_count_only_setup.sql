@@ -1,31 +1,32 @@
 -- Set the resource parameters
--- These are now set in init-db script
--- IRCT_RESOURCE_NAME: deprecated
--- set @resourceName = '${IRCT_RESOURCE_NAME}';
--- set @transmartURL = 'http://i2b2transmart:8080/transmart';
--- set @resourceURL = 'http://i2b2transmart:8080/transmart/proxy?url=http://i2b2-wildfly:9090/i2b2/services/';
-set @domain = 'i2b2demo';
-set @userName = 'Demo';
-set @password = 'demouser';
--- set @auth0ClientId = '${IRCT_AUTH0_CLIENT_ID}';
--- set @auth0Domain = '${IRCT_AUTH0_DOMAIN}';
-set @ignoreCertificate = 'false';
+-- parameter, resource name
+-- set @resourceName = 'i2b2-wildfly-${IRCT_RESOURCE_NAME}';
 
-set @resourceImplementingInterface = 'edu.harvard.hms.dbmi.bd2k.irct.ri.i2b2transmart.I2B2TranSMARTResourceImplementation';
+-- parameter, option to point to i2b2-wildfly instance
+set @resourceURL = 'http://i2b2-wildfly:9090/i2b2/services/';
+-- parameter, domain for i2b2 resource
+set @domain = 'i2b2demo';
+-- parameter, i2b2 user
+set @userName = 'demo';
+-- parameter, i2b2 user password
+set @password = 'demouser';
+set @ignoreCertificate = 'true';
+
+set @resourceImplementingInterface = 'edu.harvard.hms.dbmi.bd2k.irct.ri.i2b2.I2B2XMLOnlyCountRI';
 set @resourceOntology = 'TREE';
 
 
 -- Set the resource variables
-set @resourceId = (select IF(id is NULL,0,max(id)) from Resource) + 1;
+set @resourceId = (select IFNULL(max(id), 0) from Resource) + 1;
 
 -- Set the resource predicates
-set @containsId = (select IF(id is NULL,0,max(id)) from PredicateType) + 1;
+set @containsId = (select IFNULL(max(id), 0) from PredicateType) + 1;
 set @constrainModifierId = @containsId + 1;
 set @constrainValueId = @containsId + 2;
 set @constrainDateId = @containsId + 3;
 
 -- Set the Fields
-set @encounter_ContainsId = (select IF(id is NULL,0,max(id)) from Field) + 1;
+set @encounter_ContainsId = (select IFNULL(max(id), 0) from Field) + 1;
 
 set @modifier_FieldId = @encounter_ContainsId + 1;
 set @encounter_ModifierId = @modifier_FieldId + 1;
@@ -82,7 +83,7 @@ insert into PredicateType_dataTypes(PredicateType_id, dataTypes) values(@contain
 insert into PredicateType_dataTypes(PredicateType_id, dataTypes) values(@containsId, 'edu.harvard.hms.dbmi.bd2k.irct.model.resource.PrimitiveDataType:INTEGER');
 insert into PredicateType_dataTypes(PredicateType_id, dataTypes) values(@containsId, 'edu.harvard.hms.dbmi.bd2k.irct.model.resource.PrimitiveDataType:FLOAT');
 
-insert into Field(id, description, name, path, relationship, required) values(@encounter_ContainsId, 'By Encounter', 'By Encounter', 'ENOUNTER', null, 1);
+insert into Field(id, description, name, path, relationship, required) values(@encounter_ContainsId, 'By Encounter', 'By Encounter', 'ENCOUNTER', null, 0);
 insert into Field_permittedValues(Field_Id, permittedValues) values(@encounter_ContainsId, 'YES');
 insert into Field_permittedValues(Field_Id, permittedValues) values(@encounter_ContainsId, 'NO');
 
@@ -98,7 +99,7 @@ insert into PredicateType_dataTypes(PredicateType_id, dataTypes) values(@constra
 
 insert into Field(id, description, name, path, relationship, required) values(@modifier_FieldId, 'Constrain by a modifier of this entity', 'Modifier', 'MODIFIER_KEY', 'edu.harvard.hms.dbmi.bd2k.irct.ri.i2b2.I2B2OntologyRelationship:MODIFIER', 1);
 
-insert into Field(id, description, name, path, relationship, required) values(@encounter_ModifierId, 'By Encounter', 'By Encounter', 'ENOUNTER', null, 1);
+insert into Field(id, description, name, path, relationship, required) values(@encounter_ModifierId, 'By Encounter', 'By Encounter', 'ENCOUNTER', null, 0);
 insert into Field_permittedValues(Field_Id, permittedValues) values(@encounter_ModifierId, 'YES');
 insert into Field_permittedValues(Field_Id, permittedValues) values(@encounter_ModifierId, 'NO');
 
@@ -135,7 +136,7 @@ insert into Field_dataTypes(Field_id, dataTypes) values(@constraint_ConstrainVal
 insert into Field(id, description, name, path, relationship, required) values(@unitOfMeasure_ConstrainValueId, 'Unit of Measure', 'Unit of Measure', 'UNIT_OF_MEASURE', null, 0);
 insert into Field_dataTypes(Field_id, dataTypes) values(@unitOfMeasure_ConstrainValueId, 'edu.harvard.hms.dbmi.bd2k.irct.model.resource.PrimitiveDataType:STRING');
 
-insert into Field(id, description, name, path, relationship, required) values(@encounter_ConstrainValueId, 'By Encounter', 'By Encounter', 'ENOUNTER', null, 1);
+insert into Field(id, description, name, path, relationship, required) values(@encounter_ConstrainValueId, 'By Encounter', 'By Encounter', 'ENCOUNTER', null, 0);
 insert into Field_permittedValues(Field_Id, permittedValues) values(@encounter_ConstrainValueId, 'YES');
 insert into Field_permittedValues(Field_Id, permittedValues) values(@encounter_ConstrainValueId, 'NO');
 
@@ -175,7 +176,7 @@ insert into Field_permittedValues(Field_Id, permittedValues) values(@toTime_Cons
 insert into Field(id, description, name, path, relationship, required) values(@toDate_ConstrainDateId, 'To Date', 'To Date', 'TO_DATE', null, 1);
 insert into Field_dataTypes(Field_id, dataTypes) values(@toDate_ConstrainDateId, 'edu.harvard.hms.dbmi.bd2k.irct.model.resource.PrimitiveDataType:DATE');
 
-insert into Field(id, description, name, path, relationship, required) values(@encounter_ConstrainDateId, 'By Encounter', 'By Encounter', 'ENOUNTER', null, 1);
+insert into Field(id, description, name, path, relationship, required) values(@encounter_ConstrainDateId, 'By Encounter', 'By Encounter', 'ENCOUNTER', null, 0);
 insert into Field_permittedValues(Field_Id, permittedValues) values(@encounter_ConstrainDateId, 'YES');
 insert into Field_permittedValues(Field_Id, permittedValues) values(@encounter_ConstrainDateId, 'NO');
 

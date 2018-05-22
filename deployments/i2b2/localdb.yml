@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
     i2b2-wildfly:
-        image: dbmi/i2b2-wildfly:1.7.09
+        image: dbmi/i2b2-wildfly:1.7.09c
         environment:
             - ORACLEHOST=db
             - DB_PORT=1521

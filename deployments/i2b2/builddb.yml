@@ -1,7 +1,7 @@
 version: '3.3'
 services:
     schema:
-        image: dbmi/i2b2-data:1.7.09
+        image: dbmi/i2b2-data:1.7.09c
         environment:
             - DB_TYPE=${DB_TYPE}
             - DB_HOST=db

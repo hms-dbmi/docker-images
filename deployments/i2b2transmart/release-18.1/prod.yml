@@ -27,8 +27,12 @@ services:
     restart: always
     depends_on:
       - nginx
+      - rserve
+      - solr
     networks:
       - public
+    volumes:
+      - rserve-jobs:/tmp:rw
     expose:
       - 8080
 
@@ -43,6 +47,8 @@ services:
       - public
     expose:
       - 6311
+    volumes:
+      - rserve-jobs:/tmp:rw
 
   # solr
   solr:
@@ -57,6 +63,10 @@ services:
       - public
     expose:
       - 8983
+
+volumes:
+    # shared volume for R jobs
+    rserve-jobs:
 
 networks:
     public:
