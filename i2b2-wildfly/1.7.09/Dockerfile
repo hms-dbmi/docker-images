@@ -12,6 +12,9 @@ ENV I2B2METADATA demouser
 ENV I2B2PM demouser
 ENV I2B2WORKDATA demouser
 
+## picsure-36, i2b2tm-34 (resolve OOM errors) - Andre
+JAVA_OPTS "$JAVA_OPTS Xms512m -Xmx1024m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true
+
 # moved datasource usernames & passwords to standalone.xml.
 # standalone.xml allows for env variable interpolation.
 # datasources do not
@@ -27,7 +30,3 @@ COPY standalone.xml /opt/jboss/wildfly/standalone/configuration/
 # do not use bin/prescript.sh
 # uses default passwords only. not usable in production environments - Andre
 ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
-
-### i2b2-wildfly Production with Secrets Management
-FROM dbmi/secret-getter:0.9-alpha AS executable
-FROM dbmi/secret-getter:0.9-runtime AS secure

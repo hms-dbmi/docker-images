@@ -99,8 +99,3 @@ RUN sed -i 's/#\(tomcat\.util\.http\.parser\.HttpParser\.requestTargetAllow.*$\)
 
 
 ENTRYPOINT ["./bin/catalina.sh", "run"]
-
-
-### tranSMART Production with Secrets Management
-FROM dbmi/secret-getter:0.9-alpha AS executable
-FROM dbmi/secret-getter:0.9-runtime AS secure
