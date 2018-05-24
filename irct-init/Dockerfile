@@ -38,15 +38,7 @@ RUN apk upgrade \
 ENV IRCTMYSQLADDRESS localhost
 ENV IRCT_DB_CONNECTION_USER root
 ENV IRCTMYSQLPASS my-secret-pw
-<<<<<<< HEAD
-ENV AUTH0_DOMAIN domain
-ENV CLIENT_ID client_id
-=======
->>>>>>> master
 
-
-
-RUN chmod +x /scratch/irct/sql/init-db.sh
 
 # must use shell form; docker does not parse env variables for ENTRYPOINT[] or CMD[]
 ENTRYPOINT ["./sql/install.sh"]
