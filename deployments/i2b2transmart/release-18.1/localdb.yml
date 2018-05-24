@@ -5,6 +5,7 @@ services:
         image: dbmi/i2b2transmart-db:${db_version:-oracle.12.2.0.1-ee-i2b2.1.7.09-tm.release-18.1-v.1.0}
         networks:
             - public
+            - private
         expose:
             - 1521
         ports:
@@ -13,3 +14,7 @@ services:
 
 networks:
     public:
+    # database exposed on public network makes private network irrelevant
+    # useful for local testing with prod.yml -Andre
+    private:
+        external: true

@@ -3,7 +3,7 @@ FROM dbmi/transmart-data:release-16.2 AS transmart-data
 
 
 ### Build Rserve ###
-FROM openjdk:7-jdk-alpine AS install_Rserve
+FROM openjdk:7-jdk-alpine AS install_rserve
 
 ENV TRANSMART_DATA_HOME /transmart-data
 COPY --from=transmart-data /transmart-data $TRANSMART_DATA_HOME
@@ -34,8 +34,7 @@ RUN DEPENDENCIES=" \
     make \
     curl" \
     && apk upgrade \
-    && apk --no-cache --update add $DEPENDENCIES bash \
-    && rm /bin/sh && ln -s /bin/bash /bin/sh \
+    && apk --no-cache --update add $DEPENDENCIES \
     #
     # QDNAseq_1.10.0 no longer available at bioconductor.org - Andre
     # downloading R packages fails. h/t @dennyverbeeck
@@ -98,7 +97,8 @@ COPY --from=install_scripts $RSCRIPT_INSTALL_DIR $RSERVE_HOME
 RUN apk upgrade \
     && apk --no-cache --update add cairo readline libxt \
         pcre libbz2 pango libgomp \
-        gfortran zlib ttf-dejavu \
+        gfortran zlib ttf-dejavu bash \
+    && rm /bin/sh && ln -s /bin/bash /bin/sh \
     && rm -rf /var/cache/apk/*
 
 
