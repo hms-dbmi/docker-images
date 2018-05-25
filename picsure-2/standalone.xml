@@ -148,14 +148,6 @@
                         <password>sa</password>
                     </security>
                 </datasource>
-                <datasource jndi-name="java:/PicsureDS" pool-name="PicsureDS" enabled="true" use-java-context="true">
-                    <connection-url>jdbc:h2:mem:picsure;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
-                    <driver>h2</driver>
-                    <security>
-                        <user-name>sa</user-name>
-                        <password>sa</password>
-                    </security>
-                </datasource>
 		<datasource jndi-name="java:jboss/datasources/java:jboss/datasources/PicsureDS" pool-name="PicsureDS" use-java-context="true">
                     <connection-url>jdbc:mysql://${env.PICSURE2_MYSQLADDRESS}:${env.PICSURE2_DB_PORT}/picsure?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;autoReconnectForPools=true</connection-url>
                     <driver>mysql</driver>
@@ -414,9 +406,6 @@
             <expose-resolved-model/>
             <expose-expression-model/>
             <remoting-connector/>
-        </subsystem>
-        <subsystem xmlns="urn:jboss:domain:jpa:1.1">
-            <jpa default-datasource="" default-extended-persistence-inheritance="DEEP"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:jsf:1.1"/>
         <subsystem xmlns="urn:jboss:domain:mail:3.0">
