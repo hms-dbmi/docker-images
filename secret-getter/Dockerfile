@@ -1,3 +1,6 @@
+ARG base_image=scratch
+ARG image_tag=latest
+
 FROM golang:1.10-rc-alpine AS builder
 
 ARG version
@@ -20,10 +23,10 @@ FROM scratch AS executable
 COPY --from=builder /go/bin/secret_getter /usr/bin/
 
 #### secret-getter runtime ###
-FROM scratch AS runtime
+FROM ${base_image}:${image_tag} AS runtime
 
-ONBUILD COPY --from=executable /usr/bin/ /usr/bin/
+COPY --from=executable /usr/bin/ /usr/bin/
 
-ONBUILD ENTRYPOINT ["/usr/bin/secret_getter"]
+ENTRYPOINT ["/usr/bin/secret_getter"]
 # example command line options
-ONBUILD CMD ["--help"]
+CMD ["--help"]

@@ -36,6 +36,7 @@ RUN mkdir -p /scratch/irct
 COPY target/IRCT-CL.war /opt/jboss/wildfly/standalone/deployments/
 
 ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
+<<<<<<< HEAD
 
 ### PIC-SURE Production with Secrets Management
 FROM dbmi/secret-getter:0.9-alpha AS executable
@@ -44,3 +45,5 @@ RUN \cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && yum update -y \
     && yum install -y zip unzip tar curl \
     && echo "alias 
+=======
+>>>>>>> dbmi-master
