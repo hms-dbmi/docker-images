@@ -15,13 +15,26 @@ services:
     networks:
       - public
 
+
+  ## PIC-SURE API Stack ##
+  # PICSURE2
   picsure2:
-    image: dbmi/picsure2:0.0.0
+    image: dbmi/picsure2:${picsure2_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     depends_on:
-       - nginx  
+       - nginx
+    env_file:
+      - ${ENV_FILE}
+    restart: always
+    networks:
+      - public
+    expose:
+      - 8080
+
+  wildfly12:
+    image: dbmi/wildfly-docker-image:12
     networks:
       - public
     expose:

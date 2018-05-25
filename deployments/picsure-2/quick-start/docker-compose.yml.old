@@ -1,15 +1,30 @@
 version: '3.3'
 services:
 
+  # nginx
+  nginx:
+    image: dbmi/nginx:${nginx_version}
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    restart: always
+    # application stack exposed ports
+    ports:
+      - ${HTTP_PORT:-80}:80
+      - ${HTTPS_PORT:-443}:443
+    networks:
+      - public
+
+
   ## PIC-SURE API Stack ##
-  # IRCT
+  # PICSURE2
   picsure2:
     image: dbmi/picsure2:${picsure2_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     depends_on:
-      - db
+       - nginx
     env_file:
       - ${ENV_FILE}
     restart: always
@@ -18,34 +33,28 @@ services:
     expose:
       - 8080
 
-  picsure2-init:
-    image: dbmi/irct-init:${irct_init_version}
-    depends_on:
-      - db
-    env_file:
-      - ${ENV_FILE}
-    networks:
-      - public
-
   # IRCT DB
   db:
-    image: mysql:${mysql_version}
-    container_name: ${PICSURE2_MYSQLADDRESS}
+    image: dbmi/irct-db:${db_version}
+    container_name: ${IRCTMYSQLADDRESS}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     env_file:
       - ${ENV_FILE}
-    environment:
-      - MYSQL_DATABASE=picsure
     command: --datadir=/mysql/data
     restart: always
     expose:
       - 3306
     ports:
-      - ${DOCKER_PICSURE2_DB_PORT:-3306}:3306
+      - ${DOCKER_IRCT_DB_PORT:-3306}:3306
     networks:
       - public
+    volumes:
+      - picsure-data:/mysql/data
 
 networks:
     public:
+
+volumes:
+    picsure-data:
