@@ -39,6 +39,9 @@ services:
       - 8787:8787
     volumes:
       - ${LOCAL_IRCT}/IRCT-CL.war:/opt/jboss/wildfly/standalone/deployments/IRCT-CL.war:cached
+      - ${LOCAL_IRCT_CONFIG}:/opt/jboss/wildfly/standalone/configuration/standalone.xml
+      - ${WHITELIST_PATH}:/whitelist-data:ro
+
 
   irct-init:
     image: dbmi/irct-init:${irct_init_version}
@@ -46,6 +49,12 @@ services:
       - ${ENV_FILE}
     networks:
       - public
+    volumes:
+      - ${IRCT_SCRIPTS}:/scratch/irct/sql:rw
+
+volumes:
+    whitelist-data:
+
 
 networks:
     public:
