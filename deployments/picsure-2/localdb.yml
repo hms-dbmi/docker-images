@@ -3,8 +3,8 @@ services:
 
   # IRCT DB
   db:
-    image: dbmi/irct-db:${db_version}
-    container_name: ${IRCTMYSQLADDRESS}
+    image: dbmi/picsure2-db:${db_version}
+    container_name: ${PICSURE2_MYSQLADDRESS}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
@@ -19,11 +19,11 @@ services:
     ports:
       - ${DOCKER_IRCT_DB_PORT:-3306}:3306
     volumes:
-      - irct-data:/mysql/data
+      - picsure2-data:/mysql/data
 
 networks:
     public:
 
 
 volumes:
-    irct-data:
+    picsure2-data:

@@ -21,11 +21,33 @@ services:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     depends_on:
-       - nginx  
+       - nginx
     networks:
       - public
     expose:
       - 9090
+
+# PICSURE2 DB
+  db:
+    image: mysql:${mysql_version}
+    container_name: ${PICSURE2_MYSQLADDRESS}
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${PICSURE2_MYSQL_ROOT_PASSWORD:-password}
+      - MYSQL_DATABASE=picsure
+    volumes:
+      - picsure-data:/var/lib/mysql
+      - ./db/picsure2-dump-initial.sql:/docker-entrypoint-initdb.d/dump_00.sql
+    command: --datadir=/mysql/data
+    restart: always
+    expose:
+      - 3306
+    #ports:
+    #  - ${DOCKER_PICSURE2_DB_PORT:-3306}:3306
+    networks:
+      - public
 
 networks:
     public:
