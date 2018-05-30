@@ -1,43 +1,31 @@
 version: '3.3'
 services:
 
-    # TODO: ETL process not working
-    # issue with ETL and Oracle DB Services
-    # ETL assumes Oralce DB SID -Andre
-    # etl:
-    #     image: dbmi/transmart-etl:release-16.2
-    #     environment:
-    #         - DB_TYPE=${DB_TYPE}
-    #         - DB_HOST=db
-    #         - DB_PORT=1521
-    #         # kettle ETL bug
-    #         - DB_ORASID=/ORCLPDB1
-    #         - DB_USER=pdbadmin
-    #         - DB_PASSWORD=password
-    #     depends_on:
-    #         - db
-    #     networks:
-    #         - public
+    etl:
+        image: dbmi/transmart-etl:${etl_version}
+        env_file:
+            - ${ENV_FILE}
+        environment:
+            # Kettle ETL bug
+            - DB_ORASID=${DB_ORASVC}
+        depends_on:
+            - db
+        networks:
+            - public
 
     schema:
-        image: dbmi/transmart-data:release-16.2
-        environment:
-            - DB_TYPE=${DB_TYPE}
-            - DB_HOST=db
-            - DB_PORT=1521
-            - DB_ORASVC=ORCLPDB1
-            - DB_USER=pdbadmin
-            - DB_PASSWORD=password
+        image: dbmi/transmart-data:${schema_version}
+        env_file:
+            - ${ENV_FILE}
         depends_on:
             - db
         networks:
             - public
 
     db:
-        image: dbmi/${DB_TYPE}:${DB_VERSION}
-        environment:
-            # used to initialize system passwords
-            - DB_PASSWORD=password
+        image: dbmi/${db_type}:${db_version}
+        env_file:
+            - ${ENV_FILE}
         networks:
             # public network used to access DB from outside (e.g. SQLDeveloper)
             - public
