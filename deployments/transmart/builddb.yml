@@ -23,7 +23,7 @@ services:
             - public
 
     db:
-        image: dbmi/${db_type}:${db_version}
+        image: dbmi/${db_type:-oracle}:${db_version}
         env_file:
             - ${ENV_FILE}
         networks:
