@@ -20,7 +20,7 @@ RUN apk upgrade --update --no-cache \
     && apk del $DEPENDENCIES && rm -rf /var/cache/apk/*
 
 ### tranSMART Production ###
-FROM tomcat:8.0-jre7-alpine AS production
+FROM tomcat:8.0-jre8-alpine AS production
 
     # use bash instead of sh. easier for container debugging
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
