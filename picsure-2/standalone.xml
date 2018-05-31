@@ -148,7 +148,7 @@
                         <password>sa</password>
                     </security>
                 </datasource>
-		<datasource jndi-name="java:jboss/datasources/java:jboss/datasources/PicsureDS" pool-name="PicsureDS" use-java-context="true">
+		<datasource jndi-name="java:jboss/datasources/PicsureDS" pool-name="PicsureDS" use-java-context="true">
                     <connection-url>jdbc:mysql://${env.PICSURE2_MYSQLADDRESS}:${env.PICSURE2_DB_PORT}/picsure?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;autoReconnectForPools=true</connection-url>
                     <driver>mysql</driver>
                     <pool>
@@ -415,8 +415,8 @@
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:naming:2.0">
             <bindings>
-                <simple name="java:global/client_secret" value="client"/>
-                <simple name="java:global/user_id_claim" value="email"/>
+                <simple name="java:global/client_secret" value="${env.PICSURE2_CLIENT_SECRET}"/>
+                <simple name="java:global/user_id_claim" value="${env.PICSURE2_USER_ID_CLAIM}"/>
             </bindings>
             <remote-naming/>
         </subsystem>
