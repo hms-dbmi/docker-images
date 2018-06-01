@@ -1,8 +1,8 @@
 FROM dbmi/wildfly-base-jdk:9
 
 # Set the WILDFLY_VERSION env variable
-ENV WILDFLY_VERSION 12.0.0.Final
-ENV WILDFLY_SHA1 b2039cc4979c7e50a0b6ee0e5153d13d537d492f
+ENV WILDFLY_VERSION 13.0.0.Final
+ENV WILDFLY_SHA1 3d63b72d9479fea0e3462264dd2250ccd96435f9
 ENV JBOSS_HOME /opt/jboss/wildfly
 
 USER root
@@ -23,9 +23,9 @@ ENV LAUNCH_JBOSS_IN_BACKGROUND true
 
 # wildfly 12.0.0.Final using jandex-2.0.4.Final which has a bug needs to be replaced by 2.0.5
 # but wildfly 13 is coming on May 31th, 2018
-COPY jandex-2.0.5.Final.jar $JBOSS_HOME/modules/system/layers/base/org/jboss/jandex/main
-RUN rm $JBOSS_HOME/modules/system/layers/base/org/jboss/jandex/main/jandex-2.0.4.Final.jar \
-    && sed -i 's/2.0.4/2.0.5/g' $JBOSS_HOME/modules/system/layers/base/org/jboss/jandex/main/module.xml
+# COPY jandex-2.0.5.Final.jar $JBOSS_HOME/modules/system/layers/base/org/jboss/jandex/main
+# RUN rm $JBOSS_HOME/modules/system/layers/base/org/jboss/jandex/main/jandex-2.0.4.Final.jar \
+#    && sed -i 's/2.0.4/2.0.5/g' $JBOSS_HOME/modules/system/layers/base/org/jboss/jandex/main/module.xml
 
 USER jboss
 

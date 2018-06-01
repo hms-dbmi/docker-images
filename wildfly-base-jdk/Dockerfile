@@ -12,6 +12,7 @@ USER jboss
 RUN curl -s "https://get.sdkman.io" | bash \
     && source "$HOME/.sdkman/bin/sdkman-init.sh" \ 
     && sdk version \
+    && sdk list java \
     && sdk i java 9.0.4-openjdk \
     && java -version \
     && which java

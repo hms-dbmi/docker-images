@@ -1,4 +1,4 @@
-FROM dbmi/wildfly:12 AS production
+FROM dbmi/wildfly:13 AS production
 
 # SET DEFAULT ENV VARIABLES
 ENV PICSURE2_DB_CONNECTION_USER root
@@ -25,7 +25,7 @@ COPY oracle/module.xml /opt/jboss/wildfly/modules/system/layers/base/com/oracle/
 USER root
 
 # COPY WAR FIle
-COPY target/pic-sure-api-2.war /opt/jboss/wildfly/standalone/deployments/
+COPY target/pic-sure-api*.war /opt/jboss/wildfly/standalone/deployments/
 
 ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
 
