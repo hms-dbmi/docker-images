@@ -23,8 +23,8 @@ services:
     environment:
       - PICSURE2_MYSQLADDRESS=${PICSURE2_MYSQLADDRESS}
     depends_on:
-       - nginx
-       - db
+      - nginx
+      - db
     networks:
       - public
     expose:
@@ -46,7 +46,7 @@ services:
     command: --datadir=/mysql/data
     restart: always
     expose:
-      - 3306
+      - ${PICSURE2_DB_PORT}
     #ports:
     #  - ${DOCKER_PICSURE2_DB_PORT:-3306}:3306
     networks:
