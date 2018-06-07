@@ -340,7 +340,7 @@
 				            token_introspection_url and token_introspection_token are only needed if verify_user_method is set to 'tokenIntrospection' -->
         				<simple name="java:global/verify_user_method" value="${env.IRCT_VERIFY_USER_METHOD}"/>
         				<simple name="java:global/token_introspection_url" value="${env.IRCT_TOKEN_INTROSPECTION_URL}" />
-        				<simple name="java:global/token_introspection_token" value="$env.IRCT_TOKEN_INTROSPECTION_TOKEN"/>
+        				<simple name="java:global/token_introspection_token" value="${env.IRCT_TOKEN_INTROSPECTION_TOKEN}"/>
 
                 <!-- DI-994 if don't need this whitelist functionality, just put false in the value field below.
                 	currently only support absolute location -->
