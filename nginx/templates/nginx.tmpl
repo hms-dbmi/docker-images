@@ -58,8 +58,10 @@ ssl_dhparam /etc/nginx/dhparam/dhparam.pem;
 
 # allows for nginx to stay up even if services are down
 # must be replaced by docker-entrypoint.sh - Andre
-#resolver {{ $.Env.RESOLVERS }} valid=10s;
-resolver 127.0.0.11 valid=10s;
+{{ $resolver := $.Env.RESOLVERS }}
+{{ if $resolver }}
+resolver {{ $resolver }} valid=10s;
+{{ end }}
 
 
 # error status mapping (not fully implemented)
@@ -181,14 +183,15 @@ upstream {{ $proxy_stream }} {
 
 {{/* Get the best matching cert  by name for the virtual host. */}}
 {{ $vhostCert := (closest (dir "/etc/nginx/certs") (printf "%s.crt" $host))}}
+{{ $vhostCert := trim $vhostCert }}
 
 {{/* vhostCert is actually a filename so remove any suffixes since they are added later */}}
 {{ $vhostCert := trimSuffix ".crt" $vhostCert }}
 {{ $vhostCert := trimSuffix ".key" $vhostCert }}
 
 {{/* Use the cert specified on the container or fallback to the best virtual host match */}}
-{{/* Temporary. Need to deal with certificates vs default.crt/default.key - Andre */}}
-{{ $cert := (coalesce $certName $vhostCert "default") }}
+{{ $cert := coalesce $certName $vhostCert }}
+{{ $cert := or $cert "default" }}
 
 {{/* Get the SSL_POLICY defined by containers w/ the same virhost, falling back to "Mozilla-Intermediate" */}}
 {{ $ssl_policy := or (first (groupByKeys $containers "Env.SSL_POLICY")) "Mozilla-Intermediate" }}

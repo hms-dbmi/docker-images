@@ -15,7 +15,7 @@ fi
 echo "Nameserver is: $RESOLVERS"
 echo
 
-sed -i "s/{{ \$\.Env\.RESOLVERS }}/$RESOLVERS/g" /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/nginx.tmpl
+sed -i "s/\$\.Env\.RESOLVERS/\"$RESOLVERS\"/g" /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/nginx.tmpl
 
 /app/generate-certs.sh $VIRTUAL_HOST $CERT_CA
 

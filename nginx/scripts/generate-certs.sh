@@ -6,13 +6,23 @@ CERT_CA=${2:-ca.pem}
 
 # if we are not bind mounting in certs or the user has not already generated certs
 # create self-signed certs
-echo "Verify (if existing) certificates"
-echo
+echo "Verifying certificate $VIRTUAL_HOST.crt"
+echo ""
+
+if [ ! -f $CERT_DIR/$VIRTUAL_HOST.crt ]; then
+	echo "$CERT_DIR/$VIRTUAL_HOST.crt: no such file"
+	VIRTUAL_HOST="default"
+	CERT_CA="ca.pem"
+	echo "Using $CERT_DIR/$VIRTUAL_HOST.crt"
+	echo ""
+fi
 
 openssl verify -CAfile $CERT_DIR/$CERT_CA $CERT_DIR/$VIRTUAL_HOST.crt 2>/tmp/err
 openssl rsa -check -noout -in $CERT_DIR/$VIRTUAL_HOST.key 2>>/tmp/err
 
 if [ -s /tmp/err ]; then
+
+	echo "Generating self-signed certificate $VIRTUAL_HOST.crt"
 
 	# Generate CA private key
 	openssl genrsa -out $CERT_DIR/${CERT_CA%.*}.key 2048
@@ -43,7 +53,7 @@ if [ -s /tmp/err ]; then
     rm /tmp/err
 
 	echo
-	echo "Generated default certificates for $VIRTUAL_HOST"
+	echo "Generated default certificate for $VIRTUAL_HOST"
 	echo
 fi
 
