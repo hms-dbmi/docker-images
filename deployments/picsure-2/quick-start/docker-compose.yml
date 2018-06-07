@@ -46,7 +46,7 @@ services:
     command: --datadir=/mysql/data
     restart: always
     expose:
-      - ${PICSURE2_DB_PORT}
+      - 3306
     #ports:
     #  - ${DOCKER_PICSURE2_DB_PORT:-3306}:3306
     networks:
