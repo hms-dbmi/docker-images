@@ -335,6 +335,13 @@
                 <simple name="java:global/client_secret" value="${env.CLIENT_SECRET}"/>
                 <simple name="java:global/client_id" value="${env.CLIENT_ID}"/>
                 <simple name="java:global/KeyTimeOutInMinutes" value="${env.IRCT_KEY_TIMEOUT_IN_MINUTES}"/>
+
+                <!-- If any of these three are missing, the system will default to sessionFilter.
+				            token_introspection_url and token_introspection_token are only needed if verify_user_method is set to 'tokenIntrospection' -->
+        				<simple name="java:global/verify_user_method" value="${env.IRCT_VERIFY_USER_METHOD}"/>
+        				<simple name="java:global/token_introspection_url" value="${env.IRCT_TOKEN_INTROSPECTION_URL}" />
+        				<simple name="java:global/token_introspection_token" value="$env.IRCT_TOKEN_INTROSPECTION_TOKEN"/>
+
                 <!-- DI-994 if don't need this whitelist functionality, just put false in the value field below.
                 	currently only support absolute location -->
                 <simple name="java:global/whitelist_config_file" value="${env.WHITELIST_PATH}" />

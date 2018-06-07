@@ -9,7 +9,7 @@ ENV IRCTMYSQLPASS password
 ENV AUTH0_DOMAIN domain
 ENV CLIENT_ID client_id
 ENV CLIENT_SECRET client_secret
-ENV IRCT_USER_FIELD email
+ENV IRCT_USER_FIELD sub
 ENV IRCT_KEY_TIMEOUT_IN_MINUTES 720
 
 # security service introduced in IRCT build 65.hackathon
@@ -36,14 +36,3 @@ RUN mkdir -p /scratch/irct
 COPY target/IRCT-CL.war /opt/jboss/wildfly/standalone/deployments/
 
 ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
-<<<<<<< HEAD
-
-### PIC-SURE Production with Secrets Management
-FROM dbmi/secret-getter:0.9-alpha AS executable
-FROM dbmi/secret-getter:0.9-runtime AS secure
-RUN \cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && yum update -y \
-    && yum install -y zip unzip tar curl \
-    && echo "alias 
-=======
->>>>>>> dbmi-master
