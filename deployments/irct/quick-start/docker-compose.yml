@@ -35,7 +35,7 @@ services:
       - 8080
 
   # IRCT DB
-  db:
+  irctdb:
     image: dbmi/irct-db:${db_version}
     container_name: ${IRCTMYSQLADDRESS}
     labels:
