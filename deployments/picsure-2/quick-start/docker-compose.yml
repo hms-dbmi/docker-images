@@ -24,7 +24,7 @@ services:
       - PICSURE2_MYSQLADDRESS=${PICSURE2_MYSQLADDRESS}
     depends_on:
       - nginx
-      - db
+      - picsuredb
     networks:
       - public
     expose:

@@ -25,7 +25,7 @@ services:
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     depends_on:
        - nginx
-       - db
+       - irctdb
     env_file:
       - ${ENV_FILE}
     restart: always
