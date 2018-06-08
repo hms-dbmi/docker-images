@@ -21,7 +21,6 @@ USE `picsure`;
 -- Table structure for table `query`
 --
 
-DROP TABLE IF EXISTS `query`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `query` (
@@ -42,7 +41,6 @@ CREATE TABLE `query` (
 -- Table structure for table `resource`
 --
 
-DROP TABLE IF EXISTS `resource`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `resource` (
@@ -59,7 +57,6 @@ CREATE TABLE `resource` (
 -- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
