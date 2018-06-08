@@ -1,6 +1,6 @@
-# PIC-SURE i2b2.org Resource Quick-Start
+# PIC-SURE 2.0 Quick-Start
 
-    $ cd deployments/irct/quick-start
+    $ cd deployments/picsure-2/quick-start
     $ docker-compose up -d
 
 ## Test PIC-SURE Access

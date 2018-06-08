@@ -25,12 +25,14 @@ services:
     depends_on:
       - nginx
       - picsuredb
+    env_file:
+      - ${ENV_FILE}
     networks:
       - public
     expose:
       - 8080
 
-# PICSURE2 DB
+# PICSURE2 DB directly build from mysql for now
   picsuredb:
     image: mysql:${mysql_version}
     container_name: ${PICSURE2_MYSQLADDRESS}
