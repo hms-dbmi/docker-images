@@ -20,8 +20,6 @@ services:
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    environment:
-      - PICSURE2_MYSQLADDRESS=${PICSURE2_MYSQLADDRESS}
     depends_on:
       - nginx
       - picsuredb
