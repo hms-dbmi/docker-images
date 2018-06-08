@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `query`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `query` (
-  `uuid` binary(255) NOT NULL,
+  `uuid` binary(16) NOT NULL,
   `query` longtext COLLATE utf8_bin,
   `readyTime` date DEFAULT NULL,
   `resourceResultId` varchar(255) COLLATE utf8_bin DEFAULT NULL,
@@ -46,7 +46,7 @@ DROP TABLE IF EXISTS `resource`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `resource` (
-  `uuid` binary(255) NOT NULL,
+  `uuid` binary(16) NOT NULL,
   `baseUrl` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   `description` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   `name` varchar(255) COLLATE utf8_bin DEFAULT NULL,
@@ -63,7 +63,7 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
-  `uuid` binary(255) NOT NULL,
+  `uuid` binary(16) NOT NULL,
   `roles` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   `subject` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   `userId` varchar(255) COLLATE utf8_bin DEFAULT NULL,
