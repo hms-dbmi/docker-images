@@ -1,36 +1,80 @@
+### production can only be deployed on Swarm ###
+
 version: '3.3'
 services:
 
   # nginx
   nginx:
-    image: dbmi/nginx:${nginx_version}
+    image: dbmi/nginx:${nginx_version}-sg.${secret_getter_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+      - "edu.hms.harvard.dbmi.stack.env=prod"
+    entrypoint: >-
+      secret_getter
+      -files=/etc/nginx/certs/
+      -prefix={{
+      -suffix=}}
+      -- /app/docker-entrypoint.sh
+    command: nginx -g "daemon off;"
     restart: always
+    ## enviornment file
+    env_file:
+      - ${ENV_FILE}
+    ## secrets file
+    secrets:
+      - secret
     # application stack exposed ports
     ports:
       - 80:80
       - 443:443
     networks:
-      - public
+      - open
+      - closed
+    volumes:
+      - nginx:/etc/nginx:rw
+
+  dockergen:
+    image: jwilder/docker-gen:latest
+    command: -notify-sighup ${COMPOSE_PROJECT_NAME}_nginx_1 -watch /etc/nginx/conf.d/nginx.tmpl /etc/nginx/conf.d/default.conf
+    networks:
+      - closed
+    depends_on:
+      - nginx
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - nginx:/etc/nginx:rw
 
   ## i2b2transmart stack ##
   # transmart
   transmart:
-    image: dbmi/i2b2transmart:${i2b2transmart_version}
+    image: dbmi/i2b2transmart:${i2b2transmart_version}-sg.${secret_getter_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    env_file:
-      - ${ENV_FILE}
+      - "edu.hms.harvard.dbmi.stack.env=prod"
     restart: always
     depends_on:
       - nginx
       - rserve
       - solr
+    ## enviornment file
+    env_file:
+      - ${ENV_FILE}
+    ## secrets file
+    secrets:
+      - secret
+    environment:
+      - PROXY=transmart
+      - PROXY_RULE=^~ /transmart/
+      - PROXY_PORT=8080
+    entrypoint: >-
+        secret_getter
+        -files=/root/.grails/transmartConfig/
+        -prefix='\$$\{(?:System\.getenv\(\")?'
+        -suffix='(?:\"\))?'
+        -- ./bin/catalina.sh run
     networks:
-      - public
+      - open
+      - closed
     volumes:
       - rserve-jobs:/tmp:rw
     expose:
@@ -41,32 +85,56 @@ services:
     image: dbmi/rserve:${rserve_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+      - "edu.hms.harvard.dbmi.stack.env=prod"
     restart: always
     networks:
-      - public
-    expose:
-      - 6311
+      - closed
     volumes:
       - rserve-jobs:/tmp:rw
+    expose:
+      - 6311
 
   # solr
   solr:
     image: dbmi/solr:${solr_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    env_file:
-      - ${ENV_FILE}
+      - "edu.hms.harvard.dbmi.stack.env=prod"
+    environment:
+      - PROXY=solr
+      - PROXY_PORT=8983
+      - PROXY_PATH=/solr
     restart: always
     networks:
-      - public
+      - closed
     expose:
       - 8983
 
+
 volumes:
+    # shared volume for nginx templates
+    nginx:
     # shared volume for R jobs
     rserve-jobs:
 
+secrets:
+    # encrypted secrets
+    secret:
+        file: ${SECRET_FILE}
+
 networks:
-    public:
+    # encrypted network
+    open:
+        driver: overlay
+        driver_opts:
+            encrypted: "true"
+        attachable: true
+    # no outbound access available on closed network
+    # only inter-container communication available
+    # encrypted network
+    closed:
+        driver: overlay
+        internal: true
+        driver_opts:
+            encrypted: "true"
+        attachable: true

@@ -1,6 +1,9 @@
-ARG base_image=scratch
-ARG image_tag=latest
+ARG image=alpine
+ARG tag=latest
 
+###########################
+# build secret-getter
+###########################
 FROM golang:1.10-rc-alpine AS builder
 
 ARG version
@@ -17,15 +20,29 @@ RUN apk update && DEPENDENCIES="make git" \
     && rm -rf secret-getter \
     && apk del $DEPENDENCIES && rm -rf /var/cache/apk/
 
-#### secret-getter executable ###
+
+###########################
+# secret-getter standalone
+###########################
 FROM scratch AS executable
 
 COPY --from=builder /go/bin/secret_getter /usr/bin/
 
-#### secret-getter runtime ###
-FROM ${base_image}:${image_tag} AS runtime
+ENTRYPOINT ["/usr/bin/secret_getter"]
+# example command line options
+CMD ["--help"]
 
-COPY --from=executable /usr/bin/ /usr/bin/
+
+###########################
+# secret-getter runtime
+###########################
+FROM ${image}:${tag} AS runtime
+
+COPY --from=builder /go/bin/secret_getter /usr/bin/
+
+# default secret-getter options
+ENV SG_COMMAND file
+ENV SG_OPTIONS -path=/run/secrets/secret
 
 ENTRYPOINT ["/usr/bin/secret_getter"]
 # example command line options
