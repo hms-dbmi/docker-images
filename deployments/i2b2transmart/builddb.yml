@@ -22,7 +22,7 @@ services:
     #         - public
 
     db:
-        image: dbmi/${db-type:-oracle}:${db_version:-12.2.0.1-ee}
+        image: dbmi/${db_type:-oracle}:${db_version:-12.2.0.1-ee}
         environment:
             # used to initialize system passwords
             # to do: allow building database with passwords -Andre
