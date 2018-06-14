@@ -15,20 +15,15 @@ usage() {
     echo ""
     echo "Secrets Arguments:"
     echo "  -s, --secrets vault|file|none   Secrets Vault to use [default: none]"
-    echo "  --path PATH                     PATH to Vault token (vault), PATH to encrypted secrets (file)"
-    echo ""
     echo "  --options OPTIONS...            OPTIONS available for secret_getter"
-    echo "  --options help                 usage for secret_getter"
-    echo "  --more MORE,...                  MORE options to be exported as environment variables"
+    echo "  --options help                  Usage for secret_getter"
     echo ""
     echo "Service Versioning Arguments:"
-    echo ""
-    echo "  --service SERVICE               Modify SERVICE to deploy."
-    echo ""
-    echo "  -v, --version VERSION           Set SERVICE VERSION to deploy. Overrides default VERSION in .env"
+    echo "  --service SERVICE           Modify SERVICE to deploy."
+    echo "  -v, --version VERSION       Set SERVICE VERSION to deploy. Overrides default VERSION in .env"
     echo ""
     echo "Other Arguments:"
-    echo "  --dry-run true|false            Dry run deployment settings [default: false]."
+    echo "  --dry-run true|false        Dry run deployment settings [default: false]."
     echo ""
     echo ""
 
@@ -66,7 +61,7 @@ remote="false"
 # secrets
 secrets=
 # secrets options
-options=
+options=""
 # service
 service=
 # version
@@ -90,7 +85,7 @@ while :; do
             secrets=$(param $1 $2 "-s" "--secrets")
             ;;
         --options)
-            options=$(param $1 $2 "--options" "--options")
+            options=$(param $1 "$2" "--options" "--options")
             ;;
         -r|--remote)
             remote=$(param $1 $2 "-r" "--remote")
@@ -139,16 +134,21 @@ if { [ "x${service}" != "x" ] && [ "x${version}" != "x" ]; }; then
         return 1
     fi
 # if only one is set
-elif [ "x${service}" != "x" ] || [ "x${version}" != "x" ]; then
+elif { [ "x${service}" != "x" ] && [ "x${version}" == "x" ]; } || \
+    { [ "x${service}" == "x" ] &&  [ "x${version}" != "x" ]; }; then
     usage "ERROR: Both --service and --version must be provided"
-    return 1
-elif [ -z "${env}" ] || [ -z "${type}" ]; then
-    usage "ERROR: required: --environment, --type"
     return 1
 fi
 #### /Service Versioning ####
 
 
+if [ -z "${env}" ] || [ -z "${type}" ]; then
+    usage "ERROR: required: --environment, --type"
+    return 1
+fi
+
+
+#### Remote ssh-tunnel ####
 # check if we can connect to Docker
 # TODO: docker-machine assumption no longer applicable
 if [ -z "${DOCKER_HOST}" ]; then
@@ -167,17 +167,26 @@ if [ "${remote}" == "true" ]; then
     echo ""
 
     echo "Test ssh connection"
-    eval "ssh -q ${env} return"
+    eval "ssh -q ${env} exit"
     ret=$?
     if [ $ret != 0 ]; then
         echo "ERROR: Could not ssh into ${env} ($ret). Check ssh configuration file."
-        usage
         return 1
     else
         echo "SUCCESS"
         echo ""
     fi
+
+    # we only care about setting up remote. Forget the rest of the script
+    # if other parameters are not, return - Andre
+    if [ -z "${secrets}" ] && [ -z "${service}" ]; then
+        return 0
+    fi
 fi
+##### /Remote ssh-tunnel ####
+
+
+### Environment Validation ####
 
 # does env file exist?
 echo "Using ${env}.env"
@@ -196,6 +205,7 @@ if [ ! -f "${env}.secret" ]; then
     usage
     return 1
 fi
+#### /Environment Validation ####
 
 ### Database Setup (for development)
 # We export the DB variable. Should only export with development
@@ -284,6 +294,7 @@ if [ "${secrets}" == "none" ]; then
     return 0
 fi
 
+# both are set
 if [ "x${secrets}" != "x" ] && [ "x${options}" != "x" ]; then
 
     # help?
@@ -303,9 +314,9 @@ if [ "x${secrets}" != "x" ] && [ "x${options}" != "x" ]; then
         export SG_OPTIONS=${options}
     fi
 # if only one is set
-elif [ "x${secrets}" != "x" ] || [ "x${options}" != "x" ]; then
-    echo "ERROR: Both --secrets and --options must be provided"
-    usage
+elif { [ "x${secrets}" == "x" ] && [ "x${options}" != "x" ]; } || \
+    { [ "x${secrets}" != "x" ] && [ "x${options}" == "x" ]; }; then
+    usage "ERROR: Both --secrets and --options must be provided"
     return 1
 fi
 ### /Secrets ####
