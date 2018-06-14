@@ -15,7 +15,10 @@ RUN apk update && DEPENDENCIES="make git" \
     && apk --no-cache add $DEPENDENCIES \
     && git clone $SECRET_GETTER_REPO -b ${SECRET_GETTER_VERSION} \
     && cd secret-getter \
-    && make all \
+    # disable crosscompiling
+    # compile linux only
+    # rebuild all packages
+    && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 REBUILD=1 make all \
     && cd .. \
     && rm -rf secret-getter \
     && apk del $DEPENDENCIES && rm -rf /var/cache/apk/
@@ -28,9 +31,9 @@ FROM scratch AS executable
 
 COPY --from=builder /go/bin/secret_getter /usr/bin/
 
-ENTRYPOINT ["/usr/bin/secret_getter"]
+ENTRYPOINT ["secret_getter"]
 # example command line options
-CMD ["--help"]
+CMD ["help"]
 
 
 ###########################
@@ -40,10 +43,9 @@ FROM ${image}:${tag} AS runtime
 
 COPY --from=builder /go/bin/secret_getter /usr/bin/
 
-# default secret-getter options
-ENV SG_COMMAND file
-ENV SG_OPTIONS -path=/run/secrets/secret
+ENV SG_COMMAND ""
+ENV SG_OPTIONS ""
 
-ENTRYPOINT ["/usr/bin/secret_getter"]
+ENTRYPOINT ["secret_getter"]
 # example command line options
-CMD ["--help"]
+CMD ["help"]
