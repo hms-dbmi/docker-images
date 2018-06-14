@@ -3,7 +3,7 @@ services:
 
   # nginx
   nginx:
-    image: dbmi/nginx:${nginx_version}
+    image: nginx:${nginx_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
@@ -14,6 +14,19 @@ services:
       - 443:443
     networks:
       - public
+      - private
+    volumes:
+      - nginx:/etc/nginx/conf.d/:rw
+
+  dockergen:
+    image: jwilder/docker-gen
+    command: -notify-sighup nginx -watch /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
+    networks:
+      - private
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - nginx:/etc/nginx/conf.d/:rw
+      - ./nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:rw
 
   ## i2b2transmart stack ##
   # transmart
@@ -24,29 +37,15 @@ services:
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     env_file:
       - ${ENV_FILE}
-    environment:
-      # debug options
-      - JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
-      - JPDA_ADDRESS=8000
-      - JPDA_TRANSPORT=dt_socket
-      - CATALINA_OPTS=-Xms512m -Xmx2g -Djava.awt.headless=true -XX:+UseConcMarkSweepGC -XX:PermSize=512m -XX:MaxPermSize=512m
-    entrypoint: ./bin/catalina.sh jpda run
     restart: always
     depends_on:
-      - i2b2-wildfly
       - nginx
+    environment:
+      - VIRTUAL_HOST=transmart
     networks:
-      - public
+      - private
     expose:
       - 8080
-    ports:
-      - 8080:8080
-      # debug port
-      - 8000:8000
-    volumes:
-      - rserve-jobs:/tmp:rw
-      # local transmart.war directory (for simple development)
-      - ${LOCAL_TRANSMART}:/usr/local/tomcat/webapps/:cached
 
   # Rserve
   rserve:
@@ -56,14 +55,9 @@ services:
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     restart: always
     networks:
-      - public
+      - private
     expose:
       - 6311
-    ports:
-      - 6311:6311
-    volumes:
-      - rserve-jobs:/tmp:rw
-
 
   # solr
   solr:
@@ -73,25 +67,23 @@ services:
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     env_file:
       - ${ENV_FILE}
-    environment:
-      # debug options
-      - JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,address=1044,server=y,suspend=y"
-      - JPDA_ADDRESS=1044
-      - JPDA_TRANSPORT=dt_socket
     restart: always
     networks:
-      - public
-    ports:
-      - 8983:8983
-      # debug port
-      - 1044:1044
+      - private
     expose:
       - 8983
 
+  db:
+    image: dbmi/i2b2transmart-db:${db_version:-oracle.12.2.0.1-ee-i2b2.1.7.09-tm.release-18.1-v.1.0}
+    networks:
+      - private
+    expose:
+      - 1521
+
 volumes:
-  # shared volume for R jobs
-  rserve-jobs:
+    nginx:
 
 networks:
-    # for development, keep these unencrypted -Andre
     public:
+    private:
+        internal: true
