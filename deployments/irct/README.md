@@ -32,7 +32,7 @@ Latest available Docker image versions:
 
 -   _Required_: `*_version=`, `IRCTMYSQLADDRESS=`, `ENV_FILE=`.
 
--   Optional: `STACK_ENV=`, `STACK_NAME`
+-   Optional: `STACK_ENV=`, `STACK_NAME`, `WHITELIST_PATH`
 
 ```bash
 # versions
@@ -53,6 +53,9 @@ ENV_FILE=sample_project.env
 ## labeling
 STACK_ENV=
 STACK_NAME=
+
+#To designate a whistlist file.  Should be named whitelist.json
+WHITELIST_PATH=
 ```
 
 ### For Local Database Purposes (localdb.yml)
@@ -99,6 +102,8 @@ IRCTMYSQLPASS=
 MYSQL_ROOT_PASSWORD=
 
 IRCT_USER_FIELD=email
+#Make sure the name of this file matches your file, if used
+WHITELIST_PATH=/whitelist-data/whitelist.json
 
 # required for any JWT tokens generation,
 CLIENT_ID=

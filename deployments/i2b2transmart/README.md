@@ -118,6 +118,14 @@ $ source ../tools/switchenv.sh --environment sample_project --type transmart --s
     LOCAL_TRANSMART=/Local/path/to/transmart-war/target
     ```
 
+-   You can override the published Database by setting meta environment variable `DOCKER_DB_PORT`:
+        ```bash
+        $ export DOCKER_DB_PORT=1522
+        ```
+          _OR_ append to `.env`:
+        ```bash
+        DOCKER_DB_PORT=1522
+        ```
 -   devlocaldb.yml
     -   local database with no volumes
 -   devremotedb.yml
