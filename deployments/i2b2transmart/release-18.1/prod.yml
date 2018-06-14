@@ -69,8 +69,8 @@ services:
     entrypoint: >-
         secret_getter
         -files=/root/.grails/transmartConfig/
-        -prefix='\$$\{(?:System\.getenv\(\")?'
-        -suffix='(?:\"\))?'
+        -prefix='\$${(?:System\.getenv\(\")?'
+        -suffix='(?:\"\))?}'
         -- ./bin/catalina.sh run
     networks:
       - open
