@@ -1,3 +1,6 @@
+###########################
+# nginx Production
+#########################
 FROM nginx:alpine AS production
 LABEL maintainer="andre_rosa@hms.harvard.edu"
 

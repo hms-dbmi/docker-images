@@ -1,3 +1,6 @@
+###########################
+# i2b2-wildfly Production
+#########################
 FROM i2b2/i2b2-wildfly:release-v1.7.09c.0001 AS production
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 

@@ -2,7 +2,9 @@
 FROM dbmi/transmart-data:release-16.2 AS transmart-data
 
 
-### Build SOLR ###
+###########################
+# Build SOLR
+##########################
 FROM alpine:3.7 AS install_solr
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
@@ -32,7 +34,9 @@ RUN apk upgrade --update \
     && apk del $DEPENDENCIES && rm -rf /var/cache/apk/
 
 
-### SOLR Production ###
+###########################
+# SOLR Production
+##########################
 FROM openjdk:7-jre-alpine AS production
 
 # dockerfile author

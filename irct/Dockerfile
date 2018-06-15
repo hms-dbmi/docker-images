@@ -1,3 +1,6 @@
+###########################
+# PIC-SURE Production
+#########################
 FROM jboss/wildfly:10.1.0.Final AS production
 MAINTAINER Jeremy R. Easton-Marks <Jeremy_Easton-Marks@hms.harvard.edu>
 
