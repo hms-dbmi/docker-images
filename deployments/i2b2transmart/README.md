@@ -58,7 +58,8 @@ $ source ../tools/switchenv.sh --service i2b2transmart --version release-18.1-be
 # ####
 # setup envirment for sample_project deployment with file secrets
 # ####
-$ source ../tools/switchenv.sh --environment sample_project --type transmart --secrets file --options "--path=/run/secrets/secret"
+$ source ../tools/switchenv.sh --environment sample_project --type transmart \
+--secrets file --options "--path=/run/secrets/secret"
 
 # Using sample_project.env
 #
@@ -105,7 +106,9 @@ $ source ../tools/switchenv.sh --environment sample_project --type transmart --s
     ```bash
     $ export DOCKER_DB_PORT=1522
     ```
+    
     _OR_ append to `.env`:
+    
     ```bash
     DOCKER_DB_PORT=1522
     ```
@@ -139,12 +142,12 @@ To connect to a remote database through an ssh-tunnel, you will need:
 -   An entry in your ssh config file with the same name as your _your_project_`.env`
     Example `/path/to/ssh/config`:
 
-        ```bash
-        Host sample_project
+    ```bash
+    Host sample_project
             HostName sample_project.ssh.remote.com
             User user
             IdentityFile /path/to/ssh/public/key
-        ```
+    ```
 
 -   Update the Database variables in your _your_project_.`secret`
     ```bash
@@ -224,7 +227,8 @@ $ docker-compose -f devremotedb.yml -f dev.yml up -d
 
 ```bash
 $ cd depolyments/i2b2transmart
-$ source ../tools/switchenv.sh --environment sample_project --type transmart --secrets vault --options "--addr=https://your.vault.addr.com --token=/run/secrets/secret --path=/path/to/vault/secrets/"
+$ source ../tools/switchenv.sh --environment sample_project --type transmart --secrets vault \
+--options "--addr=https://your.vault.addr.com --token=/run/secrets/secret --path=/path/to/vault/secrets/"
 $ docker-compose -f proddb.yml -f prod.yml up -d db
 # wait for database to load
 $ docker-compose -f proddb.yml -f prod.yml up -d
