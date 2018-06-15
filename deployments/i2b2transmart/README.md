@@ -56,23 +56,6 @@ $ source ../tools/switchenv.sh --service i2b2transmart --version release-18.1-be
 # i2b2transmart_version=release-18.1-beta-7
 
 # ####
-# setup ssh forward agent
-# ####
-$ source ../tools/switchenv.sh --remote true -e sample_project --type transmart
-
-# Forward ssh-agent to docker-machine
-#
-# ssh-agent
-# Agent forwarding successfully started.
-# Run "pinata-ssh-mount" to get a command-line fragment that
-# can be added to "docker run" to mount the SSH agent socket.
-#
-# For example:
-# docker run -it $(pinata-ssh-mount) uber/ssh-agent-forward ssh -T git@github.com
-#
-# Test ssh connection
-# SUCCESS
-# ####
 # setup envirment for sample_project deployment with file secrets
 # ####
 $ source ../tools/switchenv.sh --environment sample_project --type transmart --secrets file --options "--path=/run/secrets/secret"
@@ -119,13 +102,13 @@ $ source ../tools/switchenv.sh --environment sample_project --type transmart --s
     ```
 
 -   You can override the published Database by setting meta environment variable `DOCKER_DB_PORT`:
-        ```bash
-        $ export DOCKER_DB_PORT=1522
-        ```
-          _OR_ append to `.env`:
-        ```bash
-        DOCKER_DB_PORT=1522
-        ```
+    ```bash
+    $ export DOCKER_DB_PORT=1522
+    ```
+    _OR_ append to `.env`:
+    ```bash
+    DOCKER_DB_PORT=1522
+    ```
 -   devlocaldb.yml
     -   local database with no volumes
 -   devremotedb.yml
@@ -136,9 +119,76 @@ $ source ../tools/switchenv.sh --environment sample_project --type transmart --s
 ```bash
 $ cd deployments/i2b2transmart
 $ source ../tools/switchenv.sh --environment sample_project --type transmart
-$ docker-compose -f devlocaldb.yml -f devdb.yml up -d db
+$ docker-compose -f devlocaldb.yml -f dev.yml up -d db
 # wait for database to load
-$ docker-compose -f devlocaldb.yml -f devdb.yml up -d
+$ docker-compose -f devlocaldb.yml -f dev.yml up -d
+```
+
+* * *
+
+### Remote SSH-Tunneling
+
+To connect to a remote database through an ssh-tunnel, you will need:
+
+-   Submodule ssh-agent
+    ```bash
+    # if you haven't grabbed the ssh-agent submodule
+    $ cd docker-images/deployments/ssh-agent
+    $ git submodule update --init
+    ```
+-   An entry in your ssh config file with the same name as your _your_project_`.env`
+    Example `/path/to/ssh/config`:
+
+        ```bash
+        Host sample_project
+            HostName sample_project.ssh.remote.com
+            User user
+            IdentityFile /path/to/ssh/public/key
+        ```
+
+-   Update the Database variables in your _your_project_.`secret`
+    ```bash
+    # i2b2transmart database
+    DB_HOST=remote.database.com
+    DB_USER=db_user_at_remote
+    DB_PASSWORD=db_password_at_remote
+    DB_PORT=1521
+    DB_DB=database
+    ```
+-   The default ssh config location is `~/.ssh`. You can override the by setting meta environment variable `SSH_CONFIG_LOCATION`:
+    ```bash
+    $ export SSH_CONFIG_LOCATION=/path/to/ssh
+    ```
+      _OR_ append to `.env`:
+    ```bash
+    SSH_CONFIG_LOCATION=/path/to/ssh
+    ```
+-   You can override the published Database used by the ssh-tunnel by setting meta environment variable `DOCKER_DB_PORT`:
+    ```bash
+    $ export DOCKER_DB_PORT=1522
+    ```
+     _OR_ append to `.env`:
+    ```bash
+    DOCKER_DB_PORT=1522
+    ```
+
+#### Deploy
+
+```bash
+$ cd docker-images/deployments/i2b2transmart
+$ source ../tools/switchenv.sh -e sample_project --type transmart --remote true
+
+# Forward ssh-agent to docker-machine
+#
+# ssh-agent
+# Agent forwarding successfully started.
+# Run "pinata-ssh-mount" to get a command-line fragment that
+# can be added to "docker run" to mount the SSH agent socket.
+#
+# Test ssh connection
+# SUCCESS
+
+$ docker-compose -f devremotedb.yml -f dev.yml up -d
 ```
 
 * * *
@@ -169,6 +219,8 @@ $ docker-compose -f devlocaldb.yml -f devdb.yml up -d
 
 -   If you plan to use Vault, _your_project_`.secret` must have _only_ the Vault token, e.g. `00000000-0000-0000-000-00000000000`
 -   You must use Docker Swarm: `docker swarm init`
+
+#### Deploy
 
 ```bash
 $ cd depolyments/i2b2transmart
