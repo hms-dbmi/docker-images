@@ -1,4 +1,6 @@
-### PIC-SURE Init Production ###
+###########################
+# PIC-SURE init Production
+#########################
 FROM alpine:3.7 AS production
 
 # dockerfile author

@@ -1,6 +1,8 @@
 FROM dbmi/transmart-data:release-16.2 AS transmart-data
 
-### Build Transmart Configurations ###
+###########################
+# Build tranSMART Configuration
+########################
 FROM alpine:3.7 AS install_config
 
 COPY --from=transmart-data /transmart-data/ /transmart-data/
@@ -18,7 +20,9 @@ RUN DEPENDENCIES=" \
     && apk del $DEPENDENCIES && rm -rf /var/cache/apk/
 
 
-### Transmart Production ###
+###########################
+# tranSMART Production
+########################
 FROM tomcat:7.0-alpine
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
