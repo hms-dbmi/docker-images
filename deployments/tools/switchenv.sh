@@ -148,15 +148,21 @@ if [ -z "${env}" ] || [ -z "${type}" ]; then
 fi
 
 
-#### Remote ssh-tunnel ####
+#### Docker Check ####
 # check if we can connect to Docker
-# TODO: docker-machine assumption no longer applicable
-if [ -z "${DOCKER_HOST}" ]; then
-    echo "Connecting to Docker $(docker-machine env default)"
-
-    eval $(docker-machine env default)
+echo "Test Docker connection"
+eval "docker ps" >/dev/null
+ret=$?
+if [ $ret != 0 ]; then
+    echo "ERROR: Could not connect to Docker ($ret)."
+    return 1
+else
+    echo "SUCCESS"
+    echo ""
 fi
+#### /Docker Check ####
 
+#### Remote ssh-tunnel ####
 # check if we need to create an ssh forward agent
 if [ "${remote}" == "true" ]; then
     echo "Forward ssh-agent to docker-machine"

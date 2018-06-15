@@ -12,7 +12,7 @@
 
 ## Setup your Environment
 
-Use `../tools/switchenv.sh` to setup the environment.
+Use [../tools/switchenv.sh](https://github.com/hms-dbmi/docker-images/tools/switchenv.sh) to setup the environment.
 
 -   overrides default service versions found in `.env`
 -   setups ssh-tunneling to a remote database
@@ -103,15 +103,17 @@ $ source ../tools/switchenv.sh --environment sample_project --type transmart \
     ```
 
 -   You can override the published Database by setting meta environment variable `DOCKER_DB_PORT`:
+
     ```bash
     $ export DOCKER_DB_PORT=1522
     ```
-    
+
     _OR_ append to `.env`:
-    
+
     ```bash
     DOCKER_DB_PORT=1522
     ```
+
 -   devlocaldb.yml
     -   local database with no volumes
 -   devremotedb.yml
@@ -198,7 +200,8 @@ $ docker-compose -f devremotedb.yml -f dev.yml up -d
 
 ## Production
 
--   Production is only available in Docker Swarm
+-   Production is only available in **Docker Swarm**
+    -   Run `docker swarm init` to initialize your node as a Docker Swarm node.
 -   Secrets in _your_project_`.secret` are depolyed with [Docker Secrets](https://docs.docker.com/engine/swarm/secrets/)
 -   Vault is available as a Secrets option using [secret-getter](https://github.com/hms-dbmi/secret-getter)
 -   Networks are encrypted
@@ -218,18 +221,31 @@ $ docker-compose -f devremotedb.yml -f dev.yml up -d
 -   prod.yml
     -   production deployment of i2b2transmart services
 
-### Notes
+#### Using File Secrets
 
--   If you plan to use Vault, _your_project_`.secret` must have _only_ the Vault token, e.g. `00000000-0000-0000-000-00000000000`
--   You must use Docker Swarm: `docker swarm init`
+Place all your secrets in _your_project_`.secret` and run [switchenv.sh](https://github.com/hms-dbmi/docker-images/tools/switchenv.sh). File `/run/secrets/secret` maps to _your_project_`.secret` and used by `prod.yml`.
+
+```bash
+$ source ../tools/switchenv.sh --environment your_project --type transmart \
+--secrets file --options "--path=/run/secrets/secret"
+```
+
+#### Using Vault Secrets
+
+Place your Vault token in _your_project_`.secret`. _your_project_`.secret` must have **only** the Vault token, e.g. `00000000-0000-0000-000-00000000000`. Your token is available to the container in the file `/run/secrets/secret`
+
+```bash
+$ source ../tools/switchenv.sh --environment your_project --type transmart --secrets vault \
+--options "--addr=https://your.vault.addr.com --token=/run/secrets/secret --path=/path/to/Vault/secrets/"
+```
 
 #### Deploy
 
 ```bash
-$ cd depolyments/i2b2transmart
-$ source ../tools/switchenv.sh --environment sample_project --type transmart --secrets vault \
---options "--addr=https://your.vault.addr.com --token=/run/secrets/secret --path=/path/to/vault/secrets/"
-$ docker-compose -f proddb.yml -f prod.yml up -d db
-# wait for database to load
-$ docker-compose -f proddb.yml -f prod.yml up -d
+# NOTE: RUN this command if you have not initialized Docker Swarm
+$ docker swarm init
+# NOTE: SKIP if you are connecting to a remote database, such as an RDS
+$ docker-compose -f proddb.yml up -d
+# deploy i2b2transmart stack
+$ docker-compose -f prod.yml up -d
 ```
