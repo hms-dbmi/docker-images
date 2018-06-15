@@ -1,29 +1,27 @@
 FROM nginx:alpine AS production
 LABEL maintainer="andre_rosa@hms.harvard.edu"
 
-RUN apk update \
-    && apk upgrade \
-    && apk add --update openssl ca-certificates \
+RUN apk upgrade \
+    && apk add --update --no-cache bash openssl ca-certificates \
+    && update-ca-certificates \
+    && sed -i 's/worker_processes.*$/worker_processes auto;/g' /etc/nginx/nginx.conf \
+    && mkdir -p /etc/nginx/dhparam/ \
     && rm -rf /var/cache/apk/*
 
 WORKDIR /etc/nginx
 
-ENV APPLICATION_NAME default
 
+### conf and template files
+ENV VIRTUAL_HOST default
+COPY ./templates/ /etc/nginx/conf.d
+
+
+### certificates
+# self-signed default certificates (/app/generate-certs.sh)
 ENV CERT_DIR /etc/nginx/certs
-
-ENV APP_KEY $CERT_DIR/key.pem
-ENV APP_CERT $CERT_DIR/server.crt
-ENV APP_CA $CERT_DIR/ca.pem
-
-# generate self-signed certificate (if they don't exist)
-# default files (will be overwritten by init.sh)
 COPY ./certs/ $CERT_DIR/
-COPY ./scripts/init.sh /docker-entrypoint
-RUN chmod +x /docker-entrypoint
 
-### template files
-COPY ./templates/default.conf /etc/nginx/conf.d/
+COPY ./scripts/ /app/
 
-ENTRYPOINT ["/docker-entrypoint"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

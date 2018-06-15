@@ -22,13 +22,14 @@ services:
     #         - public
 
     db:
-        image: dbmi/${DB_TYPE}:${DB_VERSION}
+        image: dbmi/${db_type:-oracle}:${db_version:-12.2.0.1-ee}
         environment:
             # used to initialize system passwords
+            # to do: allow building database with passwords -Andre
             - DB_PASSWORD=password
         networks:
-            # public network used to access DB from outside (e.g. SQLDeveloper)
-            - public
+            # open network used to access DB from outside (e.g. SQLDeveloper)
+            - open
         volumes:
             - ./startup:/opt/oracle/scripts/startup:ro
         expose:
@@ -39,4 +40,4 @@ services:
 
 
 networks:
-    public:
+    open:

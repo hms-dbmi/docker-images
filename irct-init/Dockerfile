@@ -40,7 +40,6 @@ ENV IRCT_DB_CONNECTION_USER root
 ENV IRCTMYSQLPASS my-secret-pw
 
 
-
 # must use shell form; docker does not parse env variables for ENTRYPOINT[] or CMD[]
 ENTRYPOINT ["./sql/install.sh"]
 CMD ["--help"]

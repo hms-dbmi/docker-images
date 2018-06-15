@@ -1,4 +1,7 @@
-### download tranSMART war ###
+###########################
+# download tranSMART war
+###########################
+
 FROM alpine:3.7 AS transmart-war
 
 ARG version
@@ -19,14 +22,20 @@ RUN apk upgrade --update --no-cache \
     && wget -r -P /transmartWar -nd -nc -v -L --progress=bar:force -A war ${ARTIFACT_URL}/${ARTIFACT_VERSION}/ \
     && apk del $DEPENDENCIES && rm -rf /var/cache/apk/*
 
-### tranSMART Production ###
-FROM tomcat:8.0-jre7-alpine AS production
+
+###########################
+# tranSMART Production
+###########################
+
+FROM tomcat:8.0-jre8-alpine AS production
 
     # use bash instead of sh. easier for container debugging
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
+    #
     # see: https://github.com/docker-library/openjdk/issues/73
     # see: https://hub.docker.com/r/neduekwunife/openjdk8-jre-alpine-with-fontconfig/
     # add font ttf-dejavu
+    #
     && apk add --update ttf-dejavu \
     && rm -rf /var/cache/apk/* \
     #
@@ -48,7 +57,7 @@ ENV LANG en_US.UTF-8
 # i2b2/transmart database variables
 ENV DB_HOST localhost
 ENV DB_USER biomart_user
-ENV BIOMART_USER demouser
+ENV DB_PASSWORD demouser
 ENV DB_PORT 1521
 ENV DB_DB ORCLPDB1
 
@@ -95,7 +104,7 @@ COPY server.xml $CATALINA_HOME/conf/
 
 # temporary hack: disable HTTP request validation -Andre
 # see https://hms-dbmi.atlassian.net/browse/I2B2TM-24
-RUN sed -i 's/#\(tomcat\.util\.http\.parser\.HttpParser\.requestTargetAllow.*$\)/\1/g' conf/catalina.properties
+RUN sed -i 's/#\(tomcat\.util\.http\.parser\.HttpParser\.requestTargetAllow\).*$/\1=|{}/g' conf/catalina.properties
 
 
 ENTRYPOINT ["./bin/catalina.sh", "run"]

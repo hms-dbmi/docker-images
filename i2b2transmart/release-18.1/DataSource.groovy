@@ -6,7 +6,7 @@ dataSource {
 	pooled = true
     url = "jdbc:oracle:thin:@${System.getenv("DB_HOST")}:${System.getenv("DB_PORT")}/${System.getenv("DB_DB")}"
     username = "${System.getenv("DB_USER")}"
-    password = "${System.getenv("BIOMART_USER")}"
+    password = "${System.getenv("DB_PASSWORD")}"
 	properties {
 		defaultTransactionIsolation = java.sql.Connection.TRANSACTION_READ_COMMITTED
 		initialSize = 5
