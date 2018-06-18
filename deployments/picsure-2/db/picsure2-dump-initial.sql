@@ -23,7 +23,7 @@ USE `picsure`;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `query` (
+CREATE TABLE `query` if NOT EXISTS(
   `uuid` binary(16) NOT NULL,
   `query` longtext COLLATE utf8_bin,
   `readyTime` date DEFAULT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE `query` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `resource` (
+CREATE TABLE `resource` if NOT EXISTS(
   `uuid` binary(16) NOT NULL,
   `baseUrl` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   `description` varchar(255) COLLATE utf8_bin DEFAULT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE `resource` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user` (
+CREATE TABLE `user` if NOT EXISTS(
   `uuid` binary(16) NOT NULL,
   `roles` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   `subject` varchar(255) COLLATE utf8_bin DEFAULT NULL,
