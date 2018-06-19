@@ -8,25 +8,33 @@ services:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=dev"
     restart: always
+    env_file:
+      - ${ENV_FILE}
+      - ${SECRET_FILE}
     # application stack exposed ports
     ports:
       - 80:80
       - 443:443
     networks:
       - open
+      - closed
     volumes:
       - nginx:/etc/nginx:rw
+      # nginx conf development
+      - ${LOCAL_NGINX_CONF:-nginx_conf}:/etc/nginx/conf.d:rw
 
   dockergen:
     image: jwilder/docker-gen:latest
     command: -notify-sighup ${COMPOSE_PROJECT_NAME}_nginx_1 -watch /etc/nginx/conf.d/nginx.tmpl /etc/nginx/conf.d/default.conf
     networks:
-      - open
+      - closed
     depends_on:
       - nginx
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - nginx:/etc/nginx:rw
+      # nginx conf development
+      - ${LOCAL_NGINX_CONF:-nginx_conf}:/etc/nginx/conf.d:rw
 
   ## i2b2transmart stack ##
   # transmart
@@ -53,6 +61,7 @@ services:
       - nginx
     networks:
       - open
+      - closed
     expose:
       - 8080
     ports:
@@ -72,7 +81,7 @@ services:
       - "edu.hms.harvard.dbmi.stack.env=dev"
     restart: always
     networks:
-      - open
+      - closed
     expose:
       - 6311
     ports:
@@ -100,7 +109,7 @@ services:
       - JPDA_TRANSPORT=dt_socket
     restart: always
     networks:
-      - open
+      - closed
     ports:
       - 8983:8983
       # debug port
@@ -111,6 +120,7 @@ services:
 volumes:
   # shared volume for nginx templates
   nginx:
+  nginx_conf:
   # shared volume for R jobs
   rserve-jobs:
   # default development transmart volume
@@ -118,3 +128,5 @@ volumes:
 
 networks:
     open:
+    closed:
+        internal: true

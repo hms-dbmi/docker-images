@@ -115,8 +115,6 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubdomains;";
 
 		{{ if .Network.IP }}
     server {{ .Network.IP }} down;
-		{{ else }}
-    server 127.0.0.1 down;
 		{{ end }}
 	{{ end }}
 
@@ -152,9 +150,6 @@ upstream {{ $proxy_stream }} {
 					{{ $address := coalesce $address (dict "Port" $port) }}
 					{{ template "upstream" (dict "Container" $container "Address" $address "Network" $containerNetwork) }}
 				{{ end }}
-			{{ else }}
-    # Cannot connect to network of this container
-    server 127.0.0.1 down;
 			{{ end }}
 		{{ end }}
 		{{/* end foreach container networks */}}
