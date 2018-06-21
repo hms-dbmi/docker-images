@@ -85,6 +85,11 @@ ENV RSCRIPTS_DIR /transmart-data/R/Rscripts
 ## Auth0 (disabled by default)
 ENV AUTH0_ACTIVE false
 ENV AUTH0_DOMAIN domain
+# create admin on first deployment
+ENV AUTH0_ADMIN_CREATE false
+ENV AUTH0_ADMIN_USER admin
+ENV AUTH0_ADMIN_EMAIL example@gmail.com
+ENV AUTH0_ADMIN_PASSWORD admin_pass
 
 ## Fractalis (disabled by default)
 ENV FRACTALIS_ACTIVE false
