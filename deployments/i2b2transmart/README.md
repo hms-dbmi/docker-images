@@ -90,19 +90,21 @@ $ source ../tools/switchenv.sh --environment sample_project --type transmart \
 -   All production and debug ports are published.
 -   Secrets in _your_project_`.secret` are deployed as Environment variables
 -   Networks are unencrypted
--   By default, code, executables, wars, etc. are persisted in a volume. You can link your development deployment with your local directory by setting the meta environment variable `LOCAL_TRANSMART`:
+-   **Development Volumes**: By default, code, executables, wars, etc. are persisted in a volume. You can link your development deployment with your local directory by setting the meta environment variables `LOCAL_TRANSMART`, `LOCAL_NGINX_CONF`:
 
     ```bash
-    $ export LOCAL_TRANSMART=/Local/path/to/transmart-war/target/
+    $ export LOCAL_TRANSMART=/Local/path/to/transmart-war/target
+    $ export LOCAL_NGINX_CONF=/Local/path/to/nginx/conf/templates
     ```
 
     _OR_ append to `.env`:
 
     ```bash
     LOCAL_TRANSMART=/Local/path/to/transmart-war/target
+    LOCAL_NGINX_CONF=/Local/path/to/nginx/conf/templates
     ```
 
--   You can override the published Database by setting meta environment variable `DOCKER_DB_PORT`:
+-   **Development Database Port**: You can override the published Database by setting meta environment variable `DOCKER_DB_PORT`:
 
     ```bash
     $ export DOCKER_DB_PORT=1522
@@ -160,7 +162,7 @@ To connect to a remote database through an ssh-tunnel, you will need:
     DB_PORT=1521
     DB_DB=database
     ```
--   The default ssh config location is `~/.ssh`. You can override the by setting meta environment variable `SSH_CONFIG_LOCATION`:
+-   **Development Volumes**: The default ssh config location is `~/.ssh`. You can override the by setting meta environment variable `SSH_CONFIG_LOCATION`:
     ```bash
     $ export SSH_CONFIG_LOCATION=/path/to/ssh
     ```
@@ -168,7 +170,7 @@ To connect to a remote database through an ssh-tunnel, you will need:
     ```bash
     SSH_CONFIG_LOCATION=/path/to/ssh
     ```
--   You can override the published Database used by the ssh-tunnel by setting meta environment variable `DOCKER_DB_PORT`:
+-   **Development Database Port**: You can override the published Database used by the ssh-tunnel by setting meta environment variable `DOCKER_DB_PORT`:
     ```bash
     $ export DOCKER_DB_PORT=1522
     ```
@@ -248,4 +250,27 @@ $ docker swarm init
 $ docker-compose -f proddb.yml up -d
 # deploy i2b2transmart stack
 $ docker-compose -f prod.yml up -d
+```
+
+## Additional Services
+
+Additional services may be appended to the `dev.yml` and `prod.yml` stacks. Additional services may be found in `addons/` sub-directory.
+
+**NOTE**: All addons assume its configuration variables and passwords are in the _same_ `.env` and `.secret` files as for your project, for example:
+
+```bash
+# sample_project.env
+
+# fractalis
+FRACTALIS_ACTIVE=true
+FRACTALIS_NODE=/fractalis
+FRACTALIS_DATA_SOURCE=https://nginx
+FRACTALIS_RESOURCE_NAME=i2b2-wildfly-default/Demo
+```
+
+#### Deploy Fractalis
+
+```bash
+$ source ../tools/switchenv.sh --environment your_project --type transmart
+$ docker-compose -f addons/fractalis.yml up -d
 ```

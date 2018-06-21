@@ -1,0 +1,132 @@
+version: '3.3'
+services:
+
+  ## Fractalis Stack ##
+  fractalis:
+    image: sherzinger/fractalis:${fractalis_version}
+    volumes:
+        - ./fractalis/config.py:/config.py
+    environment:
+        - FRACTALIS_CONFIG=/config.py
+        - PROXY=fractalis
+        - PROXY_PORT=5000
+    command: gunicorn -w 3 -b :5000 --log-file - --access-logfile - fractalis:app
+    networks:
+        - closed
+    expose:
+        - 5000
+    depends_on:
+        - irct
+        - redis
+        - rabbitmq
+        - worker
+
+  worker:
+    image: sherzinger/fractalis:${fractalis_version}
+    volumes:
+        - ./fractalis/config.py:/config.py
+    environment:
+        - FRACTALIS_CONFIG=/config.py
+    command: celery worker -A fractalis:celery -l info --autoscale 16,4
+    networks:
+        - closed
+    depends_on:
+        - redis
+        - rabbitmq
+
+  redis:
+    image: redis:alpine
+    command: >
+            sh -c "redis-server
+            && redis-cli CONFIG SET maxmemory 4gb
+            && redis-cli CONFIG SET maxmemory-policy allkeys-lru"
+    networks:
+        - closed
+
+  rabbitmq:
+    image: rabbitmq:alpine
+    networks:
+        - closed
+
+  ## PIC-SURE API Stack ##
+  # IRCT
+  irct:
+    image: dbmi/irct:${irct_version}-sg.${secret_getter_version}
+    entrypoint: >-
+      secret_getter
+      -files=/opt/jboss/wildfly/standalone/configuration/standalone.xml
+      -prefix='\$${env\.'
+      -suffix=}
+      -- /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0
+    depends_on:
+        - irctdb
+        - i2b2-wildfly
+    environment:
+        - PROXY=irct
+        - PROXY_RULE=~ ^/rest/v1/(.*)$$
+        - PROXY_PATH=/IRCT-CL/rest
+        - PROXY_PORT=8080
+        - PROXY_COOKIE=true
+    env_file:
+        - ../${ENV_FILE}
+    secrets:
+        - secret
+    restart: always
+    networks:
+        - closed
+    expose:
+        - 8080
+
+  # PIC-SURE i2b2-wildfly resource
+  i2b2-wildfly:
+    image: dbmi/i2b2-wildfly:${i2b2_wildfly_version}-sg.${secret_getter_version}
+    entrypoint: >-
+      secret_getter
+      -files=/opt/jboss/wildfly/standalone/configuration/standalone.xml
+      -prefix='\$${env\.'
+      -suffix=}
+      -- /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0
+    env_file:
+      - ../${ENV_FILE}
+    secrets:
+      - secret
+    restart: always
+    networks:
+      # needs to talk to DB
+      - open
+      - closed
+    expose:
+      - 9090
+
+  # IRCT DB
+  irctdb:
+    image: dbmi/irct-db:${irctdb_version}
+    env_file:
+        - ../${ENV_FILE}
+    restart: always
+    command: --datadir=/mysql/data
+    networks:
+      - closed
+    expose:
+        - 3306
+    volumes:
+        - irct-data:/mysql/data
+
+secrets:
+    # encrypted secrets
+    secret:
+        file: ../${SECRET_FILE}
+
+volumes:
+  # PIC-SURE database
+  irct-data:
+
+networks:
+    # these are expected to have already by created by
+    # either ../dev.yml or ../prod.yml
+   open:
+       external:
+           name: ${COMPOSE_PROJECT_NAME}_open
+   closed:
+       external:
+           name: ${COMPOSE_PROJECT_NAME}_closed
