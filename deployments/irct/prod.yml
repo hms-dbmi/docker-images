@@ -1,37 +1,76 @@
 version: '3.3'
 services:
 
-  # nginx
+# nginx
   nginx:
-    image: dbmi/nginx:${nginx_version}
+    image: dbmi/nginx:${nginx_version}-sg.${secret_getter_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+      - "edu.hms.harvard.dbmi.stack.env=prod"
+    entrypoint: >-
+      secret_getter
+      -files=/etc/nginx/certs/
+      -prefix={{
+      -suffix=}}
+      -- /app/docker-entrypoint.sh
+    command: nginx -g "daemon off;"
     restart: always
+    ## enviornment file
+    env_file:
+      - ${ENV_FILE}
+    ## secrets file
+    secrets:
+      - secret
     # application stack exposed ports
     ports:
-      - 80:80
-      - 443:443
+      - ${HTTP_PORT:-80}:80
+      - ${HTTPS_PORT:-443}:443
     networks:
-      - public
+      - open
+      - closed
+    volumes:
+      - nginx:/etc/nginx:rw
+
+  dockergen:
+    image: jwilder/docker-gen:latest
+    command: -notify-sighup ${COMPOSE_PROJECT_NAME}_nginx_1 -watch /etc/nginx/conf.d/nginx.tmpl /etc/nginx/conf.d/default.conf
+    networks:
+      - closed
+    depends_on:
+      - nginx
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - nginx:/etc/nginx:rw
 
 
   ## PIC-SURE API Stack ##
   # IRCT
   irct:
-    image: dbmi/irct:${irct_version}
-    labels:
-      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    image: dbmi/irct:${irct_version}-sg.${secret_getter_version}
+    entrypoint: >-
+      secret_getter
+      -files=/opt/jboss/wildfly/standalone/configuration/standalone.xml
+      -prefix='\$${env\.'
+      -suffix=}
+      -- /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0
     depends_on:
-       - nginx
+        - irctdb
+        - i2b2-wildfly
+    environment:
+        - PROXY=irct
+        - PROXY_RULE=~ ^/rest/v1/(.*)$$
+        - PROXY_PATH=/IRCT-CL/rest
+        - PROXY_PORT=8080
+        - PROXY_COOKIE=true
     env_file:
-      - ${ENV_FILE}
+        - ../${ENV_FILE}
+    secrets:
+        - secret
     restart: always
     networks:
-      - public
+        - closed
     expose:
-      - 8080
+        - 808
 
   irct-init:
     image: dbmi/irct-init:${irct_init_version}
@@ -40,8 +79,27 @@ services:
     env_file:
       - ${ENV_FILE}
     networks:
-      - public
+      - closed
 
+
+secrets:
+    # encrypted secrets
+    secret:
+        file: ${SECRET_FILE}
 
 networks:
-    public:
+    # encrypted network
+    open:
+        driver: overlay
+        driver_opts:
+            encrypted: "true"
+        attachable: true
+    # no outbound access available on closed network
+    # only inter-container communication available
+    # encrypted network
+    closed:
+        driver: overlay
+        internal: true
+        driver_opts:
+            encrypted: "true"
+        attachable: true
