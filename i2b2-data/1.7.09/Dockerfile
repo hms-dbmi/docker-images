@@ -1,5 +1,8 @@
 FROM groovy:2.4-jre7-alpine AS groovy
 
+###########################
+# Build i2b2-data
+#########################
 FROM openjdk:8-jdk-alpine
 
 ENV I2B2_DATA_HOME /i2b2-data
