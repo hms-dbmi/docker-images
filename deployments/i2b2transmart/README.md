@@ -251,3 +251,26 @@ $ docker-compose -f proddb.yml up -d
 # deploy i2b2transmart stack
 $ docker-compose -f prod.yml up -d
 ```
+
+## Additional Services
+
+Additional services may be appended to the `dev.yml` and `prod.yml` stacks. Additional services may be found in `addons/` sub-directory.
+
+**NOTE**: All addons assume its configuration variables and passwords are in the _same_ `.env` and `.secret` files as for your project, for example:
+
+```bash
+# sample_project.env
+
+# fractalis
+FRACTALIS_ACTIVE=true
+FRACTALIS_NODE=/fractalis
+FRACTALIS_DATA_SOURCE=https://nginx
+FRACTALIS_RESOURCE_NAME=i2b2-wildfly-default/Demo
+```
+
+#### Deploy Fractalis
+
+```bash
+$ source ../tools/switchenv.sh --environment your_project --type transmart
+$ docker-compose -f addons/fractalis.yml up -d
+```

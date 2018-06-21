@@ -38,6 +38,13 @@ grails {
 			/* {{{ Auth0 configuration */
 			auth0 {
 				active = "${System.getenv("AUTH0_ACTIVE")}".toBoolean()
+                admin {
+                    autoCreate = "${System.getenv("AUTH0_ADMIN_CREATE")}".toBoolean()
+                    autoCreateUsername = "${System.getenv("AUTH0_ADMIN_USER")}"
+                    autoCreatePassword = "${System.getenv("AUTH0_ADMIN_PASSWORD")}"
+                    // optional
+                    autoCreateEmail = "${System.getenv("AUTH0_ADMIN_EMAIL")}"
+                }
 				clientId = "${System.getenv("CLIENT_ID")}"
 				clientSecret = "${System.getenv("CLIENT_SECRET")}"
 				domain = "${System.getenv("AUTH0_DOMAIN")}"
@@ -48,28 +55,28 @@ grails {
 
 			apf.storeLastUsername = true
 			authority.className = Role.name
-			controllerAnnotations.staticRules = [
-				'/**':                          'IS_AUTHENTICATED_REMEMBERED',
-				'/accessLog/**':                'ROLE_ADMIN',
-				'/analysis/getGenePatternFile': 'permitAll',
-				'/analysis/getTestFile':        'permitAll',
-				'/authUser/**':                 'ROLE_ADMIN',
-				'/authUserSecureAccess/**':     'ROLE_ADMIN',
-				'/css/**':                      'permitAll',
-				'/images/**':                   'permitAll',
-				'/js/**':                       'permitAll',
-				'/login/**':                    'permitAll',
-				'/requestmap/**':               'ROLE_ADMIN',
-				'/role/**':                     'ROLE_ADMIN',
-				'/search/loadAJAX**':           'permitAll',
-				'/secureObject/**':             'ROLE_ADMIN',
-				'/secureObjectAccess/**':       'ROLE_ADMIN',
-				'/secureObjectPath/**':         'ROLE_ADMIN',
-				'/userGroup/**':                'ROLE_ADMIN',
-				'/auth0/**':                    'permitAll',
-				'/registration/**':             'permitAll',
-				'/console/**': 'permitAll'
-			]
+            controllerAnnotations.staticRules = [
+                '/**':                          'IS_AUTHENTICATED_REMEMBERED',
+                '/accessLog/**':                'ROLE_ADMIN',
+                '/analysis/getGenePatternFile': 'permitAll',
+                '/analysis/getTestFile':        'permitAll',
+                '/assets/**':                   'permitAll',
+                '/authUser/**':                 'ROLE_ADMIN',
+                '/authUserSecureAccess/**':     'ROLE_ADMIN',
+                '/css/**':                      'permitAll',
+                '/images/**':                   'permitAll',
+                '/js/**':                       'permitAll',
+                '/login/**':                    'permitAll',
+                '/requestmap/**':               'ROLE_ADMIN',
+                '/role/**':                     'ROLE_ADMIN',
+                '/search/loadAJAX**':           'permitAll',
+                '/secureObject/**':             'ROLE_ADMIN',
+                '/secureObjectAccess/**':       'ROLE_ADMIN',
+                '/secureObjectPath/**':         'ROLE_ADMIN',
+                '/userGroup/**':                'ROLE_ADMIN',
+                '/auth0/**':                    'permitAll',
+                '/registration/**':             'permitAll'
+            ]
 			rejectIfNoRule = false // revert to old behavior
 			fii.rejectPublicInvocations = false // revert to old behavior
 			logout.afterLogoutUrl = '/'
