@@ -39,6 +39,7 @@ grails {
 			auth0 {
 				active = "${System.getenv("AUTH0_ACTIVE")}".toBoolean()
                 admin {
+                    // creates admin user if none exists
                     autoCreate = "${System.getenv("AUTH0_ADMIN_CREATE")}".toBoolean()
                     autoCreateUsername = "${System.getenv("AUTH0_ADMIN_USER")}"
                     autoCreatePassword = "${System.getenv("AUTH0_ADMIN_PASSWORD")}"
@@ -50,6 +51,10 @@ grails {
 				domain = "${System.getenv("AUTH0_DOMAIN")}"
 				useRecaptcha = false
 				webtaskBaseUrl = "${System.getenv("AUTH0_WEBTASK_URL")}"
+
+                preRegistrationProviderPrefixes = ['oauth2|ORCiD']
+                // enable/disable Auth0 user registration
+                registrationEnabled = "${System.getenv("AUTH0_REGISTRATION")}".toBoolean()
 			}
 			/* }}} */
 
@@ -138,6 +143,10 @@ com {
 
 
 /* {{{ Personalization */
+
+// default landing page
+com.recomdata.defaults.landing = '/datasetExplorer'
+
 com.recomdata.searchtool.largeLogo = 'transmartlogoHMS.jpg'
 
 com.recomdata.searchtool.appTitle = 'Department of Biomedical Informatics – tranSMART'
