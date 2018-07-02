@@ -12,6 +12,8 @@ services:
 
     transmart:
         image: dbmi/transmart:${transmart_version}
+        env_file:
+            - ${ENV_FILE}
         restart: always
         networks:
             - private
@@ -53,6 +55,4 @@ services:
 
 networks:
     private:
-        # encrypted network
-        internal: true
     public:
