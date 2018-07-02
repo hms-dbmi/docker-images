@@ -11,6 +11,8 @@ services:
             - closed
         expose:
             - 1521
+        volumes:
+            - i2b2transmart-data:/opt/oracle/oradata:rw
 
 volumes:
     # i2b2/tranSMART database
