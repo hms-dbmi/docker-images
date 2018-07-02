@@ -8,7 +8,6 @@ services:
             - 443:443
         networks:
             - public
-            - private
 
     transmart:
         image: dbmi/transmart:${transmart_version}
@@ -16,15 +15,17 @@ services:
         depends_on:
             - db
         networks:
-            - private
+            - public
         expose:
             - 8080
+        volumes:
+         - rserve-jobs:/var/tmp:rw
 
     gwava:
         image: dbmi/gwava:${gwava_version}
         restart: always
         networks:
-            - private
+            - public
         expose:
             - 8080
 
@@ -32,29 +33,33 @@ services:
         image: dbmi/rserve:${rserve_version}
         restart: always
         networks:
-            - private
+            - public
         expose:
             - 6311
+        volumes:
+            - rserve-jobs:/var/tmp:rw
 
     solr:
         image: dbmi/solr:${solr_version}
         restart: always
         networks:
-            - private
+            - public
         expose:
             - 8983
 
     db:
         image: dbmi/transmart-db:${db_version}
         networks:
-            - private
+            - public
         expose:
             - 1521
+        ports:
+            - 1521:1521
 
 
+volumes:
+  # shared volume for R jobs
+  rserve-jobs:
 
 networks:
-    private:
-        # encrypted network
-        internal: true
     public:
