@@ -12,8 +12,6 @@ services:
     transmart:
         image: dbmi/transmart:${transmart_version}
         restart: always
-        depends_on:
-            - db
         networks:
             - public
         expose:
