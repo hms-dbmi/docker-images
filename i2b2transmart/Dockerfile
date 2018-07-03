@@ -85,6 +85,8 @@ ENV RSCRIPTS_DIR /transmart-data/R/Rscripts
 ## Auth0 (disabled by default)
 ENV AUTH0_ACTIVE false
 ENV AUTH0_DOMAIN domain
+ENV AUTH0_REGISTRATION true
+
 # create admin on first deployment
 ENV AUTH0_ADMIN_CREATE false
 ENV AUTH0_ADMIN_USER admin
