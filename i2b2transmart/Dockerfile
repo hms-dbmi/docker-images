@@ -70,6 +70,25 @@ ENV NOTIFICATION_EMAILS example@gmail.com
 ENV GUEST_AUTO_LOGIN false
 ENV GUEST_USER guest
 
+## tabs
+ENV HIDE_BROWSE false
+ENV HIDE_SAMPLE false
+ENV HIDE_GENE_SIG false
+ENV HIDE_GWAS false
+ENV HIDE_UPLOAD false
+ENV HIDE_GRID false
+ENV HIDE_EXPORT false
+ENV HIDE_EXPORT_JOBS false
+ENV HIDE_ANALYSIS false
+ENV HIDE_WORKSPACE false
+
+## personalization
+ENV USER_GUIDE_URL http://s3.amazon.com/dbmi-public-docs/i2b2_transmart_userguide.pdf
+ENV ADMIN_EMAIL example@gmail.com
+ENV CONTACT_US example@gmail.com
+ENV BUG_REPORT_URL https://jira.transmartfoundation.org/projects/I2B2TM
+
+
 ### Available Plugins ###
 
 ## JWT Token authentication
@@ -90,7 +109,6 @@ ENV AUTH0_REGISTRATION true
 # create admin on first deployment
 ENV AUTH0_ADMIN_CREATE false
 ENV AUTH0_ADMIN_USER admin
-ENV AUTH0_ADMIN_EMAIL example@gmail.com
 ENV AUTH0_ADMIN_PASSWORD admin_pass
 
 ## Fractalis (disabled by default)
