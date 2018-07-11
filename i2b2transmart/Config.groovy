@@ -6,7 +6,7 @@ import org.transmart.searchapp.Role
 ui {
     tabs {
         //Search was not part of 1.2. It's not working properly. You need to set `show` to `true` to see it on UI
-        search.show = false
+        search.show = !("${System.getenv("HIDE_SEARCH")}".toBoolean())
         browse.hide = "${System.getenv("HIDE_BROWSE")}".toBoolean()
         //Note: analyze tab is always shown
         sampleExplorer.hide = "${System.getenv("HIDE_SAMPLE")}".toBoolean()
@@ -19,7 +19,7 @@ ui {
             dataExportJobs.hide = "${System.getenv("HIDE_EXPORT_JOBS")}".toBoolean()
             // Note: by default the analysisJobs panel is NOT shown
             // Currently, it is only used in special cases
-            analysisJobs.show = "${System.getenv("HIDE_ANALYSIS")}".toBoolean()
+            analysisJobs.show = !("${System.getenv("HIDE_ANALYSIS")}".toBoolean())
             workspace.hide = "${System.getenv("HIDE_WORKSPACE")}".toBoolean()
         }
     }

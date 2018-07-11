@@ -61,16 +61,28 @@ ENV DB_PASSWORD demouser
 ENV DB_PORT 1521
 ENV DB_DB ORCLPDB1
 
-# email variables
+## personalization
+# admin
+ENV ADMIN_EMAIL example@gmail.com
+
+# send emails from this account:
 ENV EMAIL_USER example@gmail.com
 ENV EMAIL_PASS email_pass
+
+# notification
 ENV NOTIFICATION_EMAILS example@gmail.com
+
+# support
+ENV CONTACT_US avillach_lab_developers@googlegroups.com
+ENV BUG_REPORT_URL https://jira.transmartfoundation.org/projects/I2B2TM
+ENV USER_GUIDE_URL http://s3.amazon.com/dbmi-public-docs/i2b2_transmart_userguide.pdf
 
 # guest login
 ENV GUEST_AUTO_LOGIN false
 ENV GUEST_USER guest
 
 ## tabs
+ENV HIDE_SEARCH false
 ENV HIDE_BROWSE false
 ENV HIDE_SAMPLE false
 ENV HIDE_GENE_SIG false
@@ -81,12 +93,6 @@ ENV HIDE_EXPORT false
 ENV HIDE_EXPORT_JOBS false
 ENV HIDE_ANALYSIS false
 ENV HIDE_WORKSPACE false
-
-## personalization
-ENV USER_GUIDE_URL http://s3.amazon.com/dbmi-public-docs/i2b2_transmart_userguide.pdf
-ENV ADMIN_EMAIL example@gmail.com
-ENV CONTACT_US example@gmail.com
-ENV BUG_REPORT_URL https://jira.transmartfoundation.org/projects/I2B2TM
 
 
 ### Available Plugins ###
@@ -116,7 +122,6 @@ ENV FRACTALIS_ACTIVE false
 ENV FRACTALIS_NODE /fractalis
 ENV FRACTALIS_DATA_SOURCE localhost
 ENV FRACTALIS_RESOURCE_NAME resource/Demo
-
 
 # transmart.war
 COPY --from=transmart-war /transmartWar/*.war $CATALINA_HOME/webapps/transmart.war
