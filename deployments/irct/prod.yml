@@ -70,7 +70,7 @@ services:
     networks:
         - closed
     expose:
-        - 808
+        - 8080
 
   irct-init:
     image: dbmi/irct-init:${irct_init_version}
