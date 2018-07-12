@@ -54,6 +54,10 @@ ENV CATALINA_OPTS "$CATALINA_OPTS -Xms512m -Xmx2g -Djava.awt.headless=true -XX:+
 # required for ttf-dejavu install
 ENV LANG en_US.UTF-8
 
+# version
+ENV I2B2TRANSMART_TITLE default
+ENV I2B2TRANSMART_VERSION latest
+
 # i2b2/transmart database variables
 ENV DB_HOST localhost
 ENV DB_USER biomart_user

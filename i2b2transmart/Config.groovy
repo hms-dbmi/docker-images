@@ -164,12 +164,12 @@ com.recomdata.contactUs = "${System.getenv("CONTACT_US")}"
 com.recomdata.adminEmail = "${System.getenv("ADMIN_EMAIL")}"
 
 // application title
-com.recomdata.appTitle = "i2b2/tranSMART " + "${System.getenv("STACK_NAME")} v" + "${System.getenv("STACK_VERSION")}"
+com.recomdata.appTitle = "i2b2/tranSMART " + "${System.getenv("I2B2TRANSMART_TITLE")} v" + "${System.getenv("I2B2TRANSMART_VERSION")}"
 
 // Location of the help pages. Should be an absolute URL.
 // Currently, these are distribution with transmart,
 // so it can also point to that location copy.
-com.recomdata.adminHelpURL = "$transmartURL/help/adminHelp/default.htm"
+com.recomdata.adminHelpURL = "help/adminHelp/default.htm"
 
 environments { development {
     com.recomdata.bugreportURL = "${System.getenv("BUG_REPORT_URL")}"
@@ -355,15 +355,14 @@ edu.harvard.transmart.email.logo = '/images/info_security_logo_rgb.png'
 grails {
 	mail {
 		host = 'smtp.gmail.com'
-		// was 587. temporary - Andre
-		port = 465
+		port = 587
 		username = "${System.getenv("EMAIL_USER")}"
 		password = "${System.getenv("EMAIL_PASS")}"
 		props = ['mail.smtp.auth': 'true',
-				// was 587. temproary - Andre
-		         'mail.smtp.socketFactory.port': '465',
-		         'mail.smtp.socketFactory.class': 'javax.net.ssl.SSLSocketFactory',
-		         'mail.smtp.socketFactory.fallback': 'false']
+                'mail.smtp.starttls.enable': 'true',
+                'mail.smtp.ssl.enable': 'false',
+		        'mail.smtp.socketFactory.port': '587',
+		        'mail.smtp.socketFactory.fallback': 'false']
 	}
 }
 /* }}} */
