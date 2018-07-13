@@ -25,7 +25,7 @@ COPY oracle/module.xml /opt/jboss/wildfly/modules/system/layers/base/com/oracle/
 USER root
 
 # COPY WAR FIle
-COPY target/pic-sure-api*.war /opt/jboss/wildfly/standalone/deployments/
+COPY target/pic-sure*.war /opt/jboss/wildfly/standalone/deployments/
 
 ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
 

@@ -24,7 +24,7 @@ services:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     depends_on:
-       - nginx
+#       - nginx
        - irctdb
     env_file:
       - ${ENV_FILE}

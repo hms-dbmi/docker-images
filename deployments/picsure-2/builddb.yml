@@ -14,7 +14,7 @@ services:
       - MYSQL_ROOT_PASSWORD=${PICSURE2_MYSQL_ROOT_PASSWORD:-password}
       - MYSQL_DATABASE=picsure
     volumes:
-      - ./db/picsure2-dump-initial.sql:/docker-entrypoint-initdb.d/dump_00.sql
+      - ./db:/docker-entrypoint-initdb.d
     command: --datadir=/mysql/data
     restart: always
     expose:
@@ -22,7 +22,7 @@ services:
     #ports:
     #  - ${DOCKER_PICSURE2_DB_PORT:-3306}:3306
     networks:
-      - public
+      - dbbuilding
 
 networks:
-    public:
+    dbbuilding:
