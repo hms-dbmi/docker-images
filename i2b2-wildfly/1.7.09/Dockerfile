@@ -1,6 +1,8 @@
 FROM i2b2/i2b2-wildfly:release-v1.7.09c.0001 AS production
 MAINTAINER Andre Rosa <andre_rosa@hms.harvard.edu>
 
+ARG db_type
+
 # database connection
 ENV DB_HOST localhost
 ENV DB_PORT 1521
@@ -25,7 +27,7 @@ RUN rm /opt/jboss/wildfly/standalone/deployments/crc-ds.xml \
 
 COPY crc.properties /opt/jboss/wildfly/standalone/configuration/crcapp/
 COPY ontology.properties /opt/jboss/wildfly/standalone/configuration/ontologyapp/
-COPY standalone.xml /opt/jboss/wildfly/standalone/configuration/
+COPY standalone-${db_type:-oracle}.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
 
 # do not use bin/prescript.sh
 # uses default passwords only. not usable in production environments - Andre
