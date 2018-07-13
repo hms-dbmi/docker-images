@@ -15,7 +15,7 @@ ENV I2B2PM demouser
 ENV I2B2WORKDATA demouser
 
 ## picsure-36, i2b2tm-34 (resolve OOM errors) - Andre
-JAVA_OPTS "$JAVA_OPTS Xms512m -Xmx1024m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true
+ENV JAVA_OPTS="-Xms512m -Xmx1024m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true"
 
 # moved datasource usernames & passwords to standalone.xml.
 # standalone.xml allows for env variable interpolation.
