@@ -44,7 +44,12 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
     && rm -rf /usr/local/tomcat/webapps/docs \
     #
     # create configuration directory
-    && mkdir -p /root/.grails/transmartConfig
+    && mkdir -p /root/.grails/transmartConfig \
+    #
+    # symbolic link for logs to stdout/stderr
+    && ln -sf /dev/stdout app.log \
+    && ln -sf /dev/stdout sql.log \
+    && ln -sf /dev/stderr logs/stacktrace.log
 
 # dockerfile author
 LABEL maintainer="andre_rosa@hms.harvard.edu"
@@ -139,6 +144,5 @@ COPY server.xml $CATALINA_HOME/conf/
 # temporary hack: disable HTTP request validation -Andre
 # see https://hms-dbmi.atlassian.net/browse/I2B2TM-24
 RUN sed -i 's/#\(tomcat\.util\.http\.parser\.HttpParser\.requestTargetAllow\).*$/\1=|{}/g' conf/catalina.properties
-
 
 ENTRYPOINT ["./bin/catalina.sh", "run"]

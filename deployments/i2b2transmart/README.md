@@ -274,3 +274,22 @@ FRACTALIS_RESOURCE_NAME=i2b2-wildfly-default/Demo
 $ source ../tools/switchenv.sh --environment your_project --type transmart
 $ docker-compose -f addons/fractalis.yml up -d
 ```
+
+#### Deploy Splunk Forwarder
+
+Populate _your_project_`.secret` with the following values:
+
+```bash
+# sample_project.secret
+SPLUNK_USER=
+SPLUNK_FORWARD_SERVER=
+SPLUNK_FORWARD_SERVER_ARGS=
+SPLUNK_DEPLOYMENT_SERVER=
+```
+
+Then deploy:
+
+```bash
+$ source ../tools/switchenv.sh --environment your_project --type transmart
+$ docker-compose -f addons/splunk.yml up -d
+```
