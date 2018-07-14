@@ -1,0 +1,47 @@
+version: "3.3"
+
+services:
+
+  # splunk forwarder
+  splunk:
+    image: splunk/universalforwarder:${splunk_forwarder_version}
+    hostname: ${STACK_NAME}_splunkforwarder
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=prod"
+    env_file:
+        - ../${ENV_FILE}
+        - ../${SECRET_FILE}
+    environment:
+        - SPLUNK_START_ARGS=--accept-license --no-prompt --answer-yes
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - /var/log:/docker/log:ro
+        - /var/lib/docker/containers:/host/containers:ro
+        - ./splunk/certs:/opt/splunk/certs:rw
+        - splunk_var:/opt/splunk/var
+        - splunk_etc:/opt/splunk/etc
+    networks:
+        - open
+        - closed
+
+# TODO: use secrets
+# requires updating splunk with secret_getter
+secrets:
+    # encrypted secrets
+    secret:
+        file: ../${SECRET_FILE}
+
+volumes:
+     splunk_var:
+     splunk_etc:
+
+networks:
+    # these are expected to have already by created by
+    # either ../dev.yml or ../prod.yml
+   open:
+       external:
+           name: ${COMPOSE_PROJECT_NAME}_open
+   closed:
+       external:
+           name: ${COMPOSE_PROJECT_NAME}_closed

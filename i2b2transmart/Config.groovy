@@ -6,21 +6,21 @@ import org.transmart.searchapp.Role
 ui {
     tabs {
         //Search was not part of 1.2. It's not working properly. You need to set `show` to `true` to see it on UI
-        search.show = false
-        browse.hide = false
+        search.show = !("${System.getenv("HIDE_SEARCH")}".toBoolean())
+        browse.hide = "${System.getenv("HIDE_BROWSE")}".toBoolean()
         //Note: analyze tab is always shown
-        sampleExplorer.hide = false
-        geneSignature.hide = false
-        gwas.hide = false
-        uploadData.hide = false
+        sampleExplorer.hide = "${System.getenv("HIDE_SAMPLE")}".toBoolean()
+        geneSignature.hide = "${System.getenv("HIDE_GENE_SIG")}".toBoolean()
+        gwas.hide = "${System.getenv("HIDE_GWAS")}".toBoolean()
+        uploadData.hide = "${System.getenv("HIDE_UPLOAD")}".toBoolean()
         datasetExplorer {
-            gridView.hide = false
-            dataExport.hide = false
-            dataExportJobs.hide = false
+            gridView.hide = "${System.getenv("HIDE_GRID")}".toBoolean()
+            dataExport.hide = "${System.getenv("HIDE_EXPORT")}".toBoolean()
+            dataExportJobs.hide = "${System.getenv("HIDE_EXPORT_JOBS")}".toBoolean()
             // Note: by default the analysisJobs panel is NOT shown
             // Currently, it is only used in special cases
-            analysisJobs.show = false
-            workspace.hide = false
+            analysisJobs.show = !("${System.getenv("HIDE_ANALYSIS")}".toBoolean())
+            workspace.hide = "${System.getenv("HIDE_WORKSPACE")}".toBoolean()
         }
     }
     /*
@@ -44,7 +44,7 @@ grails {
                     autoCreateUsername = "${System.getenv("AUTH0_ADMIN_USER")}"
                     autoCreatePassword = "${System.getenv("AUTH0_ADMIN_PASSWORD")}"
                     // optional
-                    autoCreateEmail = "${System.getenv("AUTH0_ADMIN_EMAIL")}"
+                    autoCreateEmail = "${System.getenv("ADMIN_EMAIL")}"
                 }
 				clientId = "${System.getenv("CLIENT_ID")}"
 				clientSecret = "${System.getenv("CLIENT_SECRET")}"
@@ -158,23 +158,25 @@ com.recomdata.largeLogo = "transmartlogo.jpg"
 com.recomdata.smallLogo="transmartlogosmall.jpg"
 
 // contact email address
-com.recomdata.contactUs = "transmart-discuss@googlegroups.com"
+com.recomdata.contactUs = "${System.getenv("CONTACT_US")}"
 
 // site administrator contact email address
-com.recomdata.adminEmail = "transmart-discuss@googlegroups.com"
+com.recomdata.adminEmail = "${System.getenv("ADMIN_EMAIL")}"
 
 // application title
-com.recomdata.appTitle = "tranSMART v" + org.transmart.originalConfigBinding.appVersion
+com.recomdata.appTitle = "i2b2/tranSMART " + "${System.getenv("I2B2TRANSMART_TITLE")} v" + "${System.getenv("I2B2TRANSMART_VERSION")}"
 
 // Location of the help pages. Should be an absolute URL.
 // Currently, these are distribution with transmart,
 // so it can also point to that location copy.
-com.recomdata.adminHelpURL = "$transmartURL/help/adminHelp/default.htm"
+com.recomdata.adminHelpURL = "help/adminHelp/default.htm"
 
 environments { development {
-    com.recomdata.bugreportURL = 'https://jira.transmartfoundation.org'
+    com.recomdata.bugreportURL = "${System.getenv("BUG_REPORT_URL")}"
 } }
 
+// User Guide URL
+edu.harvard.transmart.instance.userguideurl="${System.getenv("USER_GUIDE_URL")}"
 // Keys without defaults (see Config-extra.php.sample):
 // name and URL of the supporter entity shown on the welcome page
 // com.recomdata.providerName = "tranSMART Foundation"
@@ -353,15 +355,14 @@ edu.harvard.transmart.email.logo = '/images/info_security_logo_rgb.png'
 grails {
 	mail {
 		host = 'smtp.gmail.com'
-		// was 587. temporary - Andre
-		port = 465
+		port = 587
 		username = "${System.getenv("EMAIL_USER")}"
 		password = "${System.getenv("EMAIL_PASS")}"
 		props = ['mail.smtp.auth': 'true',
-				// was 587. temproary - Andre
-		         'mail.smtp.socketFactory.port': '465',
-		         'mail.smtp.socketFactory.class': 'javax.net.ssl.SSLSocketFactory',
-		         'mail.smtp.socketFactory.fallback': 'false']
+                'mail.smtp.starttls.enable': 'true',
+                'mail.smtp.ssl.enable': 'false',
+		        'mail.smtp.socketFactory.port': '587',
+		        'mail.smtp.socketFactory.fallback': 'false']
 	}
 }
 /* }}} */

@@ -44,7 +44,12 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
     && rm -rf /usr/local/tomcat/webapps/docs \
     #
     # create configuration directory
-    && mkdir -p /root/.grails/transmartConfig
+    && mkdir -p /root/.grails/transmartConfig \
+    #
+    # symbolic link for logs to stdout/stderr
+    && ln -sf /dev/stdout app.log \
+    && ln -sf /dev/stdout sql.log \
+    && ln -sf /dev/stderr logs/stacktrace.log
 
 # dockerfile author
 LABEL maintainer="andre_rosa@hms.harvard.edu"
@@ -54,6 +59,10 @@ ENV CATALINA_OPTS "$CATALINA_OPTS -Xms512m -Xmx2g -Djava.awt.headless=true -XX:+
 # required for ttf-dejavu install
 ENV LANG en_US.UTF-8
 
+# version
+ENV I2B2TRANSMART_TITLE default
+ENV I2B2TRANSMART_VERSION latest
+
 # i2b2/transmart database variables
 ENV DB_HOST localhost
 ENV DB_USER biomart_user
@@ -61,14 +70,39 @@ ENV DB_PASSWORD demouser
 ENV DB_PORT 1521
 ENV DB_DB ORCLPDB1
 
-# email variables
+## personalization
+# admin
+ENV ADMIN_EMAIL example@gmail.com
+
+# send emails from this account:
 ENV EMAIL_USER example@gmail.com
 ENV EMAIL_PASS email_pass
+
+# notification
 ENV NOTIFICATION_EMAILS example@gmail.com
+
+# support
+ENV CONTACT_US avillach_lab_developers@googlegroups.com
+ENV BUG_REPORT_URL https://jira.transmartfoundation.org/projects/I2B2TM
+ENV USER_GUIDE_URL http://s3.amazon.com/dbmi-public-docs/i2b2_transmart_userguide.pdf
 
 # guest login
 ENV GUEST_AUTO_LOGIN false
 ENV GUEST_USER guest
+
+## tabs
+ENV HIDE_SEARCH false
+ENV HIDE_BROWSE false
+ENV HIDE_SAMPLE false
+ENV HIDE_GENE_SIG false
+ENV HIDE_GWAS false
+ENV HIDE_UPLOAD false
+ENV HIDE_GRID false
+ENV HIDE_EXPORT false
+ENV HIDE_EXPORT_JOBS false
+ENV HIDE_ANALYSIS false
+ENV HIDE_WORKSPACE false
+
 
 ### Available Plugins ###
 
@@ -90,7 +124,6 @@ ENV AUTH0_REGISTRATION true
 # create admin on first deployment
 ENV AUTH0_ADMIN_CREATE false
 ENV AUTH0_ADMIN_USER admin
-ENV AUTH0_ADMIN_EMAIL example@gmail.com
 ENV AUTH0_ADMIN_PASSWORD admin_pass
 
 ## Fractalis (disabled by default)
@@ -98,7 +131,6 @@ ENV FRACTALIS_ACTIVE false
 ENV FRACTALIS_NODE /fractalis
 ENV FRACTALIS_DATA_SOURCE localhost
 ENV FRACTALIS_RESOURCE_NAME resource/Demo
-
 
 # transmart.war
 COPY --from=transmart-war /transmartWar/*.war $CATALINA_HOME/webapps/transmart.war
@@ -112,6 +144,5 @@ COPY server.xml $CATALINA_HOME/conf/
 # temporary hack: disable HTTP request validation -Andre
 # see https://hms-dbmi.atlassian.net/browse/I2B2TM-24
 RUN sed -i 's/#\(tomcat\.util\.http\.parser\.HttpParser\.requestTargetAllow\).*$/\1=|{}/g' conf/catalina.properties
-
 
 ENTRYPOINT ["./bin/catalina.sh", "run"]
