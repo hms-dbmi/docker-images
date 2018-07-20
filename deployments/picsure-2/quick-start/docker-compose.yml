@@ -23,16 +23,20 @@ services:
     depends_on:
       - nginx
       - picsuredb
+    command: --debug *:8787
     env_file:
       - ${ENV_FILE}
     networks:
       - public
     expose:
       - 8080
+      - 8787
+    ports:
+      - 8787:8787
 
 # PICSURE2 DB directly build from mysql for now
   picsuredb:
-    image: mysql:${mysql_version}
+    image: dbmi/picsure-db:${db_version}
     container_name: ${PICSURE2_MYSQLADDRESS}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
@@ -42,13 +46,13 @@ services:
       - MYSQL_DATABASE=picsure
     volumes:
       - picsure-data:/var/lib/mysql
-      - ./../db/picsure2-dump-initial.sql:/docker-entrypoint-initdb.d/dump_00.sql
+#      - ./../db/picsure2-dump-initial.sql:/docker-entrypoint-initdb.d/dump_00.sql
     command: --datadir=/mysql/data
     restart: always
     expose:
       - 3306
-    #ports:
-    #  - ${DOCKER_PICSURE2_DB_PORT:-3306}:3306
+    ports:
+      - ${DOCKER_PICSURE2_DB_PORT:-3306}:3306
     networks:
       - public
 

@@ -142,7 +142,7 @@
                 <datasource jta="false" jndi-name="java:/CRCBootStrapDS" pool-name="CRCBootStrapDS" enabled="true" use-ccm="false">
                     <connection-url>jdbc:postgresql://${env.DB_HOST}:${env.DB_PORT}/${env.DB_DB}</connection-url>
                     <driver-class>org.postgresql.Driver</driver-class>
-                    <driver>postgresql-9.2-1002.jdbc4.jar</driver>
+                    <driver>postgresql-42.1.4.jar</driver>
                     <security>
                         <user-name>i2b2hive</user-name>
                         <password>${env.I2B2HIVE}</password>
@@ -158,7 +158,7 @@
                 <datasource jta="false" jndi-name="java:/QueryToolDemoDS" pool-name="QueryToolDemoDS" enabled="true" use-ccm="false">
                   <connection-url>jdbc:postgresql://${env.DB_HOST}:${env.DB_PORT}/${env.DB_DB}</connection-url>
                   <driver-class>org.postgresql.Driver</driver-class>
-                  <driver>postgresql-9.2-1002.jdbc4.jar</driver>
+                  <driver>postgresql-42.1.4.jar</driver>
                     <security>
                         <user-name>i2b2demodata</user-name>
                         <password>${env.I2B2DEMODATA}</password>
@@ -174,7 +174,7 @@
                 <datasource jta="false" jndi-name="java:/OntologyDemoDS" pool-name="OntologyDemoDS" enabled="true" use-ccm="false">
                   <connection-url>jdbc:postgresql://${env.DB_HOST}:${env.DB_PORT}/${env.DB_DB}</connection-url>
                   <driver-class>org.postgresql.Driver</driver-class>
-                  <driver>postgresql-9.2-1002.jdbc4.jar</driver>
+                  <driver>postgresql-42.1.4.jar</driver>
                     <security>
                         <user-name>i2b2metadata</user-name>
                         <password>${env.I2B2METADATA}</password>
@@ -190,7 +190,7 @@
                 <datasource jta="false" jndi-name="java:/OntologyBootStrapDS" pool-name="OntologyBootStrapDS" enabled="true" use-ccm="false">
                   <connection-url>jdbc:postgresql://${env.DB_HOST}:${env.DB_PORT}/${env.DB_DB}</connection-url>
                   <driver-class>org.postgresql.Driver</driver-class>
-                  <driver>postgresql-9.2-1002.jdbc4.jar</driver>
+                  <driver>postgresql-42.1.4.jar</driver>
                     <security>
                         <user-name>i2b2hive</user-name>
                         <password>${env.I2B2HIVE}</password>
@@ -206,7 +206,7 @@
                 <datasource jta="false" jndi-name="java:/PMBootStrapDS" pool-name="PMBootStrapDS" enabled="true" use-ccm="false">
                   <connection-url>jdbc:postgresql://${env.DB_HOST}:${env.DB_PORT}/${env.DB_DB}</connection-url>
                   <driver-class>org.postgresql.Driver</driver-class>
-                  <driver>postgresql-9.2-1002.jdbc4.jar</driver>
+                  <driver>postgresql-42.1.4.jar</driver>
                     <security>
                         <user-name>i2b2pm</user-name>
                         <password>${env.I2B2PM}</password>
@@ -222,7 +222,7 @@
                 <datasource jta="false" jndi-name="java:/WorkplaceBootStrapDS" pool-name="WorkplaceBootStrapDS" enabled="true" use-ccm="false">
                   <connection-url>jdbc:postgresql://${env.DB_HOST}:${env.DB_PORT}/${env.DB_DB}</connection-url>
                   <driver-class>org.postgresql.Driver</driver-class>
-                  <driver>postgresql-9.2-1002.jdbc4.jar</driver>
+                  <driver>postgresql-42.1.4.jar</driver>
                     <security>
                         <user-name>i2b2hive</user-name>
                         <password>${env.I2B2HIVE}</password>
@@ -238,7 +238,7 @@
                 <datasource jta="false" jndi-name="java:/WorkplaceDemoDS" pool-name="WorkplaceDemoDS" enabled="true" use-ccm="false">
                   <connection-url>jdbc:postgresql://${env.DB_HOST}:${env.DB_PORT}/${env.DB_DB}</connection-url>
                   <driver-class>org.postgresql.Driver</driver-class>
-                  <driver>postgresql-9.2-1002.jdbc4.jar</driver>
+                  <driver>postgresql-42.1.4.jar</driver>
                     <security>
                         <user-name>i2b2workdata</user-name>
                         <password>${env.I2B2WORKDATA}</password>
