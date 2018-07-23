@@ -81,6 +81,12 @@ ENV EMAIL_PASS email_pass
 # notification
 ENV NOTIFICATION_EMAILS example@gmail.com
 
+# email content
+ENV EMAIL_MESSAGE_LEVEL_1 <b>Level 1</b> access allows you to obtain aggregate data by running statistical analysis through the web interface.<br /><br />Should you wish to access patient-level data for your research after viewing the aggregate data, you will need to apply for <i>Level 2</i> access, requiring an approved IRB protocol.
+ENV EMAIL_MESSAGE_LEVEL_2 <b>Level 2</b> access will allow you, in addition to viewing aggregate data and running statistical analysis, to get access to patient level data via an API token.
+ENV EMAIL_MESSAGE_ADMIN <b>Admin</b> access will allow you, in addition to viewing aggregate data and running statistical analysis, to get access to patient level data via an API token and perform user administration.
+ENV QUICKSTART_URL https://github.com/i2b2-tranSMART/i2b2transmart-quick-start
+
 # support
 ENV CONTACT_US avillach_lab_developers@googlegroups.com
 ENV BUG_REPORT_URL https://jira.transmartfoundation.org/projects/I2B2TM

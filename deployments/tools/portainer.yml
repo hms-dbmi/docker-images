@@ -1,0 +1,17 @@
+version: "3.3"
+
+services:
+  # Docker UI Management tool
+  # NOTE: Do not use in a production environment
+  portainer:
+    image: portainer/portainer:${portainer_version}
+    command: -H unix:///var/run/docker.sock --no-auth
+    restart: always
+    volumes:
+        - portainer-data:/data
+        - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+        - 9000:9000
+
+volumes:
+     portainer-data:

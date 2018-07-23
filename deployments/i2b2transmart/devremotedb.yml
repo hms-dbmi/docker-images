@@ -6,13 +6,14 @@ services:
   db:
     image: kroniak/ssh-client:${ssh_client_version}
     container_name: ${DB_HOST}
+    restart: always
     env_file:
       - ${ENV_FILE}
     environment:
       - SSH_AUTH_SOCK=/ssh-agent/ssh-agent.sock
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=dev"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     volumes:
       # ssh config file throws bad owner/permissions error if we don't map it to /etc/ssh - Andre
       - ${SSH_CONFIG_LOCATION:-~/.ssh}/config:/etc/ssh/ssh_config:ro

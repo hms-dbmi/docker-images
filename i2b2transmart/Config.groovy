@@ -163,8 +163,18 @@ com.recomdata.contactUs = "${System.getenv("CONTACT_US")}"
 // site administrator contact email address
 com.recomdata.adminEmail = "${System.getenv("ADMIN_EMAIL")}"
 
+// email content
+edu.harvard.transmart.auth0.emailMessage.level1="${System.getenv("EMAIL_MESSAGE_LEVEL_1")}"
+edu.harvard.transmart.auth0.emailMessage.level2="${System.getenv("EMAIL_MESSAGE_LEVEL_2")}"
+edu.harvard.transmart.auth0.emailMessage.admin="${System.getenv("EMAIL_MESSAGE_ADMIN")}"
+edu.harvard.transmart.instance.quickstarturl="${System.getenv("QUICKSTART_URL")}"
+
+// instance name
+edu.harvard.transmart.instance.name = "${System.getenv("I2B2TRANSMART_TITLE")}"
+
 // application title
 com.recomdata.appTitle = "i2b2/tranSMART " + "${System.getenv("I2B2TRANSMART_TITLE")} v" + "${System.getenv("I2B2TRANSMART_VERSION")}"
+
 
 // Location of the help pages. Should be an absolute URL.
 // Currently, these are distribution with transmart,

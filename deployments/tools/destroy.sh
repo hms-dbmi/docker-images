@@ -10,7 +10,7 @@ usage() {
     echo "  -i, --images true|false     Remove dangling images [default: false]"
     echo ""
     echo "Environment Arguments:"
-    echo "  -e, --environment ENV       [required] Project ENV containers to destroy."
+    echo "  -e, --environment ENV       Project ENV containers to destroy."
     echo "  -v, --volumes true|false    Remove all volumes for ENV [default: false]"
     echo ""
     echo ""
@@ -122,15 +122,16 @@ destroy_dangling_images() {
     ret=$?
     if [ $ret != 0 ]; then
         echo "ERROR: Could not remove dangling images"
-        ret $ret
+        return $ret
     fi
 
-    ret 0
+    return 0
 }
 
 ##### Dangling Images ####
 if [ "${destroy_images}" == "true" ] || [ "${destroy_all}" == "true" ]; then
-    ret=destroy_dangling_images
+    destroy_dangling_images
+    ret=$?
     exit $ret
 fi
 ##### /Dangling Images ####

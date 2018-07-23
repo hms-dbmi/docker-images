@@ -5,7 +5,8 @@ services:
         image: dbmi/i2b2transmart-db:${db_version:-oracle.12.2.0.1-ee-i2b2.1.7.09-tm.release-18.1-v.1.0}
         labels:
           - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-          - "edu.hms.harvard.dbmi.stack.env=dev"
+          - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+        restart: always
         networks:
             - open
         expose:

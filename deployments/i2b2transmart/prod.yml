@@ -8,7 +8,7 @@ services:
     image: dbmi/nginx:${nginx_version}-sg.${secret_getter_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=prod"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     entrypoint: >-
       secret_getter
       -files=/etc/nginx/certs/
@@ -35,7 +35,11 @@ services:
 
   dockergen:
     image: jwilder/docker-gen:latest
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     command: -notify-sighup ${COMPOSE_PROJECT_NAME}_nginx_1 -watch /etc/nginx/conf.d/nginx.tmpl /etc/nginx/conf.d/default.conf
+    restart: always
     networks:
       - closed
     depends_on:
@@ -50,7 +54,7 @@ services:
     image: dbmi/i2b2transmart:${i2b2transmart_version}-sg.${secret_getter_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=prod"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     restart: always
     depends_on:
       - nginx
@@ -85,7 +89,7 @@ services:
     image: dbmi/rserve:${rserve_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=prod"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     restart: always
     networks:
       - closed
@@ -99,7 +103,7 @@ services:
     image: dbmi/solr:${solr_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=prod"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     environment:
       - PROXY=solr
       - PROXY_PORT=8983

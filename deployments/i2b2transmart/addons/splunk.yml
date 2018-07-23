@@ -8,7 +8,8 @@ services:
     hostname: ${STACK_NAME}_splunkforwarder
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=prod"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    restart: always
     env_file:
         - ../${ENV_FILE}
         - ../${SECRET_FILE}
@@ -19,8 +20,8 @@ services:
         - /var/log:/docker/log:ro
         - /var/lib/docker/containers:/host/containers:ro
         - ./splunk/certs:/opt/splunk/certs:rw
-        - splunk_var:/opt/splunk/var
-        - splunk_etc:/opt/splunk/etc
+        - splunk-var:/opt/splunk/var
+        - splunk-etc:/opt/splunk/etc
     networks:
         - open
         - closed
@@ -33,8 +34,8 @@ secrets:
         file: ../${SECRET_FILE}
 
 volumes:
-     splunk_var:
-     splunk_etc:
+     splunk-var:
+     splunk-etc:
 
 networks:
     # these are expected to have already by created by

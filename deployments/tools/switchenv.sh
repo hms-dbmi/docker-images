@@ -12,6 +12,7 @@ usage() {
     echo "  -r, --remote true|false     Enables ssh-tunneling for remote database use [default: false]."
     echo "                              [prerequisite] ssh-agent."
     echo "                              [prerequisite] Matching ssh config option <ENV> in /.ssh/config."
+    echo "  -w, --write true|false      Overwrites meta values (versioning, secrets, env settings) in .env [default: true]"
     echo ""
     echo "Secrets Arguments:"
     echo "  -s, --secrets vault|file|none   Secrets Vault to use [default: none]"
@@ -24,7 +25,6 @@ usage() {
     echo ""
     echo "Other Arguments:"
     echo "  --dry-run true|false        Dry run deployment settings [default: false]."
-    echo ""
     echo ""
 
     if [ "$1" ]; then
@@ -68,6 +68,8 @@ service=
 version=
 # dry run
 confirm="false"
+# write to file
+write="true"
 
 while :; do
     case $1 in
@@ -99,6 +101,9 @@ while :; do
         --dry-run)
             confirm=$(param $1 $2 "--dry-run" "--dry-run")
             ;;
+        -w|--write)
+            type=$(param $1 $2 "-w" "--write")
+            ;;
         --)              # End of all options.
             shift
             break
@@ -124,6 +129,9 @@ if { [ "x${service}" != "x" ] && [ "x${version}" != "x" ]; }; then
     echo ""
     if [ "${confirm}" != "true" ]; then
         export ${service}_version=${version}
+        if [ "${write}" == "true" ]; then
+            sed -ie "s/${service}_version=.*$/${service}_version=$version/" .env
+        fi
     fi
     # we only care about changing service versions. Forget the rest of the script
     # if env and type values are not set, exit out - Andre
@@ -283,6 +291,13 @@ if [ "${confirm}" != "true" ]; then
     export SECRET_FILE=$env.secret
     export SSH_CONFIG_CONFIG=$env
     export STACK_NAME=$env
+    if [ "${write}" == "true" ]; then
+        sed -ie "s/COMPOSE_PROJECT_NAME=.*$/COMPOSE_PROJECT_NAME=$env/" .env
+        sed -ie "s/ENV_FILE=.*$/ENV_FILE=$env.env/" .env
+        sed -ie "s/SECRET_FILE=.*$/SECRET_FILE=$env.secret/" .env
+        sed -ie "s/SSH_CONFIG_CONFIG=.*$/SSH_CONFIG_CONFIG=$env/" .env
+        sed -ie "s/STACK_NAME=.*$/STACK_NAME=$env/" .env
+    fi
 fi
 ### /Environment ####
 
@@ -291,12 +306,19 @@ echo "# database"
 echo "${db_var}=${db_host}"
 echo ""
 export $db_var=$db_host
+if [ "${write}" == "true" ]; then
+    sed -ie "s/$db_var=.*$/$db_var=$db_host/" .env
+fi
 #### /Database ####
 
 #### Secrets ####
 if [ "${secrets}" == "none" ]; then
     unset SG_COMMAND
     unset SG_OPTIONS
+    if [ "${write}" == "true" ]; then
+        sed -ie "s/SG_COMMAND=.*$/SG_COMMAND=/" .env
+        sed -ie "s/SG_OPTIONS=.*$/SG_OPTIONS=" .env
+    fi
     return 0
 fi
 
@@ -318,6 +340,10 @@ if [ "x${secrets}" != "x" ] && [ "x${options}" != "x" ]; then
     if [ "${confirm}" != "true" ]; then
         export SG_COMMAND=${secrets}
         export SG_OPTIONS=${options}
+        if [ "${write}" == "true" ]; then
+            sed -ie "s/SG_COMMAND=.*$/SG_COMMAND=$secrets/" .env
+            sed -ie "s/SG_OPTIONS=.*$/SG_OPTIONS=$options" .env
+        fi
     fi
 # if only one is set
 elif { [ "x${secrets}" == "x" ] && [ "x${options}" != "x" ]; } || \
