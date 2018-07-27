@@ -8,6 +8,7 @@ usage() {
     echo "Arguments:"
     echo "  -a, --all true|false        Stop and remove all containers, volumes, and dangling images [default: false]"
     echo "  -i, --images true|false     Remove dangling images [default: false]"
+    echo "  -n, --networks true|false   Remove danlging networks [default: false]"
     echo ""
     echo "Environment Arguments:"
     echo "  -e, --environment ENV       Project ENV containers to destroy."
@@ -56,6 +57,9 @@ destroy_volumes="false"
 # destroy images
 destroy_images="false"
 
+# destroy networks
+destroy_networks="false"
+
 
 while :; do
     case $1 in
@@ -68,6 +72,9 @@ while :; do
             ;;
         -v|--volumes)
             destroy_volumes=$(param $1 $2 "-v" "--volumes")
+            ;;
+        -n|--networks)
+            destroy_networks=$(param $1 $2 "-n" "--networks")
             ;;
         -i|--images)
             destroy_images=$(param $1 $2 "-i" "--images")
@@ -128,14 +135,37 @@ destroy_dangling_images() {
     return 0
 }
 
+destroy_dangling_networks() {
+    echo "Remove dangling networks"
+    eval "docker network prune -f"
+    ret=$?
+    if [ $ret != 0 ]; then
+        echo "ERROR: Could not remove dangling networks"
+        return $ret
+    fi
+
+    return 0
+}
+
+ret=0
+
 ##### Dangling Images ####
 if [ "${destroy_images}" == "true" ] || [ "${destroy_all}" == "true" ]; then
     destroy_dangling_images
     ret=$?
-    exit $ret
 fi
 ##### /Dangling Images ####
 
+##### Dangling Networks ####
+if [ "${destroy_networks}" == "true" ] || [ "${destroy_all}" == "true" ]; then
+    destroy_dangling_networks
+    ret=$?
+fi
+##### /Dangling Networks ####
+
+if [ "${destroy_all}" == "true" ]; then
+    exit $ret
+fi
 
 #### Only for a Specific Environment ###
 if [ -z "${env}" ]; then

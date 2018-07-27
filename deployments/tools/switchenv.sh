@@ -2,8 +2,8 @@
 #POSIX
 usage() {
     echo "Usage:"
-    echo "  source switchenv.sh [ARGS]"
-    echo "  source switchenv.sh -h|--help"
+    echo "  switchenv.sh [ARGS]"
+    echo "  switchenv.sh -h|--help"
     echo ""
     echo "Enviornment Arguments:"
     echo "  -e, --environment ENV       [required] Project to deploy."
@@ -12,7 +12,6 @@ usage() {
     echo "  -r, --remote true|false     Enables ssh-tunneling for remote database use [default: false]."
     echo "                              [prerequisite] ssh-agent."
     echo "                              [prerequisite] Matching ssh config option <ENV> in /.ssh/config."
-    echo "  -w, --write true|false      Overwrites meta values (versioning, secrets, env settings) in .env [default: true]"
     echo ""
     echo "Secrets Arguments:"
     echo "  -s, --secrets vault|file|none   Secrets Vault to use [default: none]"
@@ -68,14 +67,12 @@ service=
 version=
 # dry run
 confirm="false"
-# write to file
-write="true"
 
 while :; do
     case $1 in
         -h|-\?|--help)
             usage    # Display a usage synopsis.
-            return $?
+            exit $?
             ;;
         -e|--environment)
             env=$(param $1 $2 "-e" "--environment")
@@ -101,9 +98,6 @@ while :; do
         --dry-run)
             confirm=$(param $1 $2 "--dry-run" "--dry-run")
             ;;
-        -w|--write)
-            type=$(param $1 $2 "-w" "--write")
-            ;;
         --)              # End of all options.
             shift
             break
@@ -128,31 +122,28 @@ if { [ "x${service}" != "x" ] && [ "x${version}" != "x" ]; }; then
     echo "${service}_version=${version}"
     echo ""
     if [ "${confirm}" != "true" ]; then
-        export ${service}_version=${version}
-        if [ "${write}" == "true" ]; then
-            sed -ie "s/${service}_version=.*$/${service}_version=$version/" .env
-        fi
+        sed -ie "s/^${service}_version=.*$/${service}_version=$version/" .env
     fi
     # we only care about changing service versions. Forget the rest of the script
     # if env and type values are not set, exit out - Andre
     if [ -z "${env}" ] || [ -z "${type}" ]; then
-        return 0
+        exit 0
     else
         usage "ERROR: required: --environment, --type"
-        return 1
+        exit 1
     fi
 # if only one is set
 elif { [ "x${service}" != "x" ] && [ "x${version}" == "x" ]; } || \
     { [ "x${service}" == "x" ] &&  [ "x${version}" != "x" ]; }; then
     usage "ERROR: Both --service and --version must be provided"
-    return 1
+    exit 1
 fi
 #### /Service Versioning ####
 
 
 if [ -z "${env}" ] || [ -z "${type}" ]; then
     usage "ERROR: required: --environment, --type"
-    return 1
+    exit 1
 fi
 
 
@@ -163,7 +154,7 @@ eval "docker ps" >/dev/null
 ret=$?
 if [ $ret != 0 ]; then
     echo "ERROR: Could not connect to Docker ($ret)."
-    return 1
+    exit $ret
 else
     echo "SUCCESS"
     echo ""
@@ -185,16 +176,16 @@ if [ "${remote}" == "true" ]; then
     ret=$?
     if [ $ret != 0 ]; then
         echo "ERROR: Could not ssh into ${env} ($ret). Check ssh configuration file."
-        return 1
+        exit $ret
     else
         echo "SUCCESS"
         echo ""
     fi
 
     # we only care about setting up remote. Forget the rest of the script
-    # if other parameters are not, return - Andre
+    # if other parameters are not, exit - Andre
     if [ -z "${secrets}" ] && [ -z "${service}" ]; then
-        return 0
+        exit 0
     fi
 fi
 ##### /Remote ssh-tunnel ####
@@ -208,7 +199,7 @@ echo ""
 if [ ! -f "${env}.env" ]; then
     echo "ERROR: ${env}.env does not exist"
     usage
-    return 1
+    exit 1
 fi
 
 # does secrets file exist?
@@ -217,27 +208,26 @@ echo ""
 if [ ! -f "${env}.secret" ]; then
     echo "ERROR: ${env}.secret does not exist"
     usage
-    return 1
+    exit 1
 fi
 #### /Environment Validation ####
 
 ### Database Setup (for development)
-# We export the DB variable. Should only export with development
-# Who cares maybe?
+# TODO: Deprecate this
+# This is only used for ssh remote tunnels to databases. Otherwise not needed.
 echo "Setting up ${type}"
 echo ""
 regex=""
 if [ "${type}" == "transmart" ]; then
     regex="(ORACLEHOST|DB_HOST)=(.*)"
 elif [ "${type}" == "irct" ]; then
-    regex="(IRCTMYSQLADDRESS)=(.*)"
+    regex="(IRCTMYSQLADDRESS|IRCT_DB_HOST)=(.*)"
 else
     echo "ERROR: Deployment type ${type} not available. [Available: transmart|irct]"
     usage
-    return 1
+    exit 1
 fi
 
-# TODO: requires testing -Andre
 # find database first in secrets
 while read line; do
     if [[ $line =~ $regex ]]; then
@@ -259,8 +249,9 @@ done < "${env}.env"
 if [ -z "${db_host}" ]; then
     echo "ERROR: Could not find database host (${regex}) in ${env}.secret or ${env}.env"
     usage
-    return 1
+    exit 1
 fi
+### /TODO: Deprecate DB Stuff here
 
 # exposed ports warning
 if [[ $(docker ps --format "{{.Names}} {{.Ports}}" | grep -s "\->") ]]; then
@@ -286,18 +277,11 @@ echo "SSH_CONFIG_CONFIG=${env}"
 echo "STACK_NAME=${env}"
 echo ""
 if [ "${confirm}" != "true" ]; then
-    export COMPOSE_PROJECT_NAME=$env
-    export ENV_FILE=$env.env
-    export SECRET_FILE=$env.secret
-    export SSH_CONFIG_CONFIG=$env
-    export STACK_NAME=$env
-    if [ "${write}" == "true" ]; then
-        sed -ie "s/COMPOSE_PROJECT_NAME=.*$/COMPOSE_PROJECT_NAME=$env/" .env
-        sed -ie "s/ENV_FILE=.*$/ENV_FILE=$env.env/" .env
-        sed -ie "s/SECRET_FILE=.*$/SECRET_FILE=$env.secret/" .env
-        sed -ie "s/SSH_CONFIG_CONFIG=.*$/SSH_CONFIG_CONFIG=$env/" .env
-        sed -ie "s/STACK_NAME=.*$/STACK_NAME=$env/" .env
-    fi
+    sed -ie "s/^COMPOSE_PROJECT_NAME=.*$/COMPOSE_PROJECT_NAME=$env/" .env
+    sed -ie "s/^ENV_FILE=.*$/ENV_FILE=$env.env/" .env
+    sed -ie "s/^SECRET_FILE=.*$/SECRET_FILE=$env.secret/" .env
+    sed -ie "s/^SSH_CONFIG_CONFIG=.*$/SSH_CONFIG_CONFIG=$env/" .env
+    sed -ie "s/^STACK_NAME=.*$/STACK_NAME=$env/" .env
 fi
 ### /Environment ####
 
@@ -305,21 +289,14 @@ fi
 echo "# database"
 echo "${db_var}=${db_host}"
 echo ""
-export $db_var=$db_host
-if [ "${write}" == "true" ]; then
-    sed -ie "s/$db_var=.*$/$db_var=$db_host/" .env
-fi
+sed -ie "s/$db_var=.*$/$db_var=$db_host/" .env
 #### /Database ####
 
 #### Secrets ####
 if [ "${secrets}" == "none" ]; then
-    unset SG_COMMAND
-    unset SG_OPTIONS
-    if [ "${write}" == "true" ]; then
-        sed -ie "s/SG_COMMAND=.*$/SG_COMMAND=/" .env
-        sed -ie "s/SG_OPTIONS=.*$/SG_OPTIONS=" .env
-    fi
-    return 0
+    sed -ie "s/^SG_COMMAND=.*$/SG_COMMAND=/" ${env}.env
+    sed -ie "s/^SG_OPTIONS=.*$/SG_OPTIONS=/" ${env}.env
+    exit 0
 fi
 
 # both are set
@@ -338,20 +315,16 @@ if [ "x${secrets}" != "x" ] && [ "x${options}" != "x" ]; then
     echo "SG_OPTIONS=${options}"
     echo ""
     if [ "${confirm}" != "true" ]; then
-        export SG_COMMAND=${secrets}
-        export SG_OPTIONS=${options}
-        if [ "${write}" == "true" ]; then
-            sed -ie "s/SG_COMMAND=.*$/SG_COMMAND=$secrets/" .env
-            sed -ie "s/SG_OPTIONS=.*$/SG_OPTIONS=$options" .env
-        fi
+        sed -ie "s/^SG_COMMAND=.*$/SG_COMMAND=$secrets/" ${env}.env
+        sed -ie "s/^SG_OPTIONS=.*$/SG_OPTIONS=${options//\//\\/}/" ${env}.env
     fi
 # if only one is set
 elif { [ "x${secrets}" == "x" ] && [ "x${options}" != "x" ]; } || \
     { [ "x${secrets}" != "x" ] && [ "x${options}" == "x" ]; }; then
     usage "ERROR: Both --secrets and --options must be provided"
-    return 1
+    exit 1
 fi
 ### /Secrets ####
 
 
-return 0
+exit 0

@@ -1,127 +1,104 @@
 # PIC-SURE
 
-## Versioning
+* * *
 
-Latest available Docker image versions:
+## Configuration
 
--   dbmi/nginx:irct.1.4.2
--   dbmi/irct: 1.4.2
--   dbmi/irct-init: 1.4.2
--   dbmi/irct-db: mysql.5.7.22-irct.1.4.2
--   mysql: 5.7.22
+1.  Create a project env file. These are for non-secret environment configurations There is an example `sample_project.env`
+2.  Create a secrets env file.  These are for secrets, including database passwords. There is an example `sample_secrets.env`
+3.  Update `.env` with the desired service versions. By default `.env` is setup to deploy the `sample_project` stack
 
-# How To Deploy
+* * *
 
-## Quick-Start sample
+## Setup your Development/Production Environment
 
-[PIC-SURE with i2b2.org Resource](quick-start/)
+Use [../tools/switchenv.sh](https://github.com/hms-dbmi/docker-images/tools/switchenv.sh) to setup the environment.
 
-## Available Stacks
-
--   _builddb.yml_ deploys a local MySQL database to be configured and populated with available PIC-SURE resources
-
--   _localdb.yml_ deploys a local MySQL database container with a corresponding named volume for data persistence
-
--   _dev.yml_ deploys the PIC-SURE stack with all ports exposed, including debug ports
-
--   _prod.yml_ deploys the production PIC-SURE stack
-
--   (TODO) _secure.yml_ deploys the production PIC-SURE stack with secrets management and encrypted internal networks
-
-## Populate .env File
-
--   _Required_: `*_version=`, `IRCTMYSQLADDRESS=`, `ENV_FILE=`.
-
--   Optional: `STACK_ENV=`, `STACK_NAME`, `WHITELIST_PATH`
+-   overrides default service versions found in `.env`
+-   setups ssh-tunneling to a remote database
+-   setups secrets
 
 ```bash
-# versions
-nginx_version=irct.1.4.2
-irct_version=1.4.2
-irct_init_version=1.4.2b
-mysql_version=5.7.22
-db_version=mysql.5.7.22-irct.1.4.2
+Usage:
+  switchenv.sh [ARGS]
+  switchenv.sh -h|--help
 
-## database host (required by container_name yaml tag)
-# this sets a DNS entry for the container
-IRCTMYSQLADDRESS=
+Enviornment Arguments:
+  -e, --environment ENV       [required] Project to deploy.
+                              [prerequisite] Matching <ENV>.env, <ENV>.secret files in current directory.
+  -t, --type transmart|irct   [required] Deployment types. Determines Database type.
+  -r, --remote true|false     Enables ssh-tunneling for remote database use [default: false].
+                              [prerequisite] ssh-agent.
+                              [prerequisite] Matching ssh config option <ENV> in /.ssh/config.
 
-## container environment variables file
-# loads these values into the container
-ENV_FILE=sample_project.env
+Secrets Arguments:
+  -s, --secrets vault|file|none   Secrets Vault to use [default: none]
+  --options OPTIONS...            OPTIONS available for secret_getter
+  --options help                  Usage for secret_getter
 
-## labeling
-STACK_ENV=
-STACK_NAME=
+Service Versioning Arguments:
+  --service SERVICE           Modify SERVICE to deploy.
+  -v, --version VERSION       Set SERVICE VERSION to deploy. Overrides default VERSION in .env
 
-#To designate a whistlist file.  Should be named whitelist.json
-WHITELIST_PATH=
+Other Arguments:
+  --dry-run true|false        Dry run deployment settings [default: false].
 ```
 
-### For Local Database Purposes (localdb.yml)
-
-If you plan to use `localdb.yml` for your database, instead of a remote database, add the following to your `.env` file. Set the port to an open available port on your docker host. By default, `localdb.yml` will expose 3306.
+### Examples
 
 ```bash
-# local port (port must be available on docker host, check for conflicts -Andre)
-DOCKER_IRCT_DB_PORT=
+# ####
+# update service version
+# ####
+$ ../tools/switchenv.sh --service irct --version 1.4.2c
+
+# service version
+# i2b2transmart_version=release-18.1-beta-7
+
+# ####
+# setup environment for sample_project deployment with file secrets
+# ####
+$ ../tools/switchenv.sh --environment sample_project --type irct \
+--secrets file --options "--path=/run/secrets/secret"
+
+# Using sample_project.env
+#
+# Using sample_project.secret
+#
+# Setting up irct
+#
+# # Environment Variables
+#
+# COMPOSE_PROJECT_NAME=sample_project
+# ENV_FILE=sample_project.env
+# SECRET_FILE=sample_project.secret
+# SSH_CONFIG_CONFIG=sample_project
+# STACK_NAME=sample_project
+#
+# # database
+# IRCT_DB_HOST=db
+#
+# # secrets
+# SG_COMMAND=file
+# SG_OPTIONS=--path=/run/secrets/secret
 ```
 
-### For Development Purposes Only (dev.yml)
+* * *
 
-If you plan to use `dev.yml` and deploy a development stack, add the following to the `.env` file. Set the value to the path to your localhost's directory containing the _IRCT-CL.war_ file, e.g. /home/user/irct/IRCT-CL/target
+## Build IRCT Database
 
-```bash
-### for development purposes only (dev.yml) ###
+To build a IRCT MySQL Database with available resources, run `builddb.yml`.
 
-## local volumes
-LOCAL_IRCT=
-```
+-   **NOTE**: `builddb.yml` uses secrets as environment variables, however building the IRCT database occurs on a closed, encrypted network. The containers cannot communicate outside the network.
+-   There are sample databases with resources available at [Docker Hub](https://hub.docker.com/r/dbmi/irct-db/).
 
-## Project Configuration
-
-### Create Project Env File
-
-Either use the existing `sample_project.env` or create your own project environment variable file. Set values for keys with empty values.
-
-If you use your own project env file, update your `.env` file, and set the value for key `ENV_FILE=` to the name of your project environment file.
-
-```bash
-# nginx (server name)
-APPLICATION_NAME=
-
-# pic-sure
-IRCTMYSQLADDRESS=
-IRCT_DB_PORT=3306
-IRCT_DB_CONNECTION_USER=root
-
-# Note: IRCTMYSQLPASS *must* equal MYSQL_ROOT_PASSWORD
-# former required by pic-sure service,
-# latter required by localdb service only -Andre
-IRCTMYSQLPASS=
-MYSQL_ROOT_PASSWORD=
-
-IRCT_USER_FIELD=email
-#Make sure the name of this file matches your file, if used
-WHITELIST_PATH=/whitelist-data/whitelist.json
-
-# required for any JWT tokens generation,
-CLIENT_ID=
-CLIENT_SECRET=
-
-### Resources ####
-
-# i2b2/tranSMART 1.0-GA
-AUTH0_DOMAIN=avillachlab.auth0.com
-```
-
-## Install Resources into PIC-SURE database, Create Snapshot
+Run the following commands to populate your database with available resources:
 
 ```bash
 $ cd deployments/irct
 $ docker-compose -f builddb.yml up -d
 
-# wait for irct to populate the database
+# wait for IRCT to populate the database
 $ docker-compose -f builddb.yml logs -f irct
 # HHH000228: Running hbm2ddl schema update
 # ....
@@ -131,71 +108,127 @@ $ docker-compose -f builddb.yml logs -f irct
 # Starting IRCT Application
 
 
-# install data converters resource
+# REQUIRED: install data converters resource
 $ docker-compose -f builddb.yml run --rm irct-init -r dataconverters
 
+# OPTIONAL: install local i2b2-wildfly resource
+# This resource makes i2b2 requests through a local wildfly to your i2b2 database
+# Use this resource along with addons/i2b2-wildfly.yml and addons/i2b2-db.yml
+$ docker-compose -f builddb.yml run --rm irct-init -r i2b2-wildfly-default
 
-# install i2b2.org resource
-$ docker-compose -f builddb.yml run --rm irct-inint -r i2b2.org
+# OPTIONAL: install i2b2.org PCI-SURE resource
+# This resource makes i2b2 requests to i2b2.org through PIC-SURE
+$ docker-compose -f builddb.yml run --rm irct-init -r i2b2-wildfly-i2b2-org --resource-url http://services.i2b2.org:9090/i2b2/services/
 
+# OPTIONAL: install i2b2.org passthrough resource
+# This resource makes i2b2 XML requests to i2b2.org
+$ docker-compose -f builddb.yml run --rm irct-init -r i2b2.org
 
-# install additional resources (optional)
-$ docker-compose -f builddb.yml run --rm irct-init -r [availableResource]
-# options:
-# -e external URL       required: for i2b2transmart Resource
-# -b bucket name        optional: for i2b2transmart Resource. add AWS S3 bucket
-# -s true|false         optional: for i2b2-wildfly Resource. Simple install only
-# -c true|false         optional: confirms Resource is installed
-
-# Available resources:
-# i2b2transmart-[name of resource]
-# scidb
-# i2b2.org
-# dataconverters
-# i2b2-wildfly-[name of resource]
-# monitor
+# OPTIONAL: install additional resources
+$ docker-compose -f builddb.yml run --rm irct-init --help
+# Usage:
+#   ./install.sh [DATABASE ARGS] [RESOURCE] [options] [RESOURCE ARGS...]
+#   ./install.sh -h|--help
 #
-# ex: docker-compose -f builddb.yml run --rm irct-init -r i2b2-wildfly-demo -s true
+# Database Args:
+#   -h, --host HOST             database host [default: $IRCT_DB_HOST]
+#   -u, --user USER             database user [default: $IRCT_DB_CONNECTION_USER]
+#   -p, --password PASSWORD     database password [default: $IRCT_DB_PASSWORD]
+#
+# Resources:
+#   -r, --resource TYPE         resource to install
+#
+# Available Resource TYPE:
+#   i2b2transmart-NAME
+#   i2b2-wildfly-NAME
+#   scidb-NAME
+#   i2b2.org
+#   dataconverters
+#   monitor
+#   capitalization
+#
+# Options:
+#   --delete  true|false        delete resource
+#   --confirm true|false        confirm resource is installed [default: false]
+#
+# Resource Args:
+#   i2b2transmart-NAME:
+#   --resource-url URL          [required] i2b2transmart URL
+#   --auth0-id CLIENT_ID        [required] Auth0 Client Id
+#   --auth0-domain DOMAIN       [required] Auth0 Domain
+#   --bucket NAME               AWS S3 bucket
+#
+#   i2b2-wildfly-NAME:
+#   --simple true|false         count only install [default: false]
+#   --resource-url URL          i2b2-wildfly URL [default: http://i2b2-wildfly:9090/i2b2/services/]
+#   --resource-user USER        i2b2 user [default: demo]
+#   --resource-pass PASSWORD    i2b2 password [default: demouser]
+#   --resource-domain DOMAIN    i2b2 domain [default: i2b2demo]
+#
+#   scidb-NAME:
+#   --resource-url URL          [required] SciDB host
+#   --resource-user USER        [required] SciDB user
+#   --resource-pass PASSWORD    [required] SciDB password
+#   --afl-enabled true|false    use SciDB's Array Functional Language [default: false]
+#
+# Unavailable Resources:
+#   hail
+#   gnome
+#   exac
+#   umls
 
 # save state of the database
-$ docker commit db dbmi/irct-db:mysql.5.7.22-irct.1.4.2-i2b2-org
+$ docker ps
+# CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+# 600d66204ea1        dbmi/irct:1.4.2c      "/opt/jboss/wildfl..."   5 minutes ago       Up 5 minutes                            sample_project_irct_1
+# baf3fbcaad27        mysql:5.7.22        "docker-entrypoint..."   5 minutes ago       Up 5 minutes                            sample_project_db_1
+$ docker commit sample_project_db_1 dbmi/irct-db:mysql.5.7.22-irct.1.4.2c-with-resources
 
-$ docker-compose -f builddb.yml restart irct
+# update the version in your .env
+$ ../tools/switchenv.sh --service db --version mysql.5.7.22-irct.1.4.2c-with-resources
+
+$ docker-compose -f builddb.yml down
 ```
 
-Update the `db_version=` in .env to the saved database snapshot. There are sample databases available at [Docker Hub](https://hub.docker.com/r/dbmi/irct-db/)
+* * *
 
-## Startup Database
+## Development
 
-### a. local database
+-   All production and debug ports are published.
+-   Secrets in _your_project_`.secret` are deployed as Environment variables
+-   Networks are unencrypted
+-   **Development Volumes**: By default, code, executables, wars, etc. are persisted in a volume. You can link your development deployment with your local directory by setting the meta environment variables `LOCAL_IRCT`, `LOCAL_IRCT_CONFIG`, `LOCAL_WHITELIST_CONFIG`, `LOCAL_IRCT_SCRIPTS`, `LOCAL_NGINX_CONF` by updating `.env`:
 
-    $ cd deployments/irct
-    $ docker-compose -f localdb.yml up -d db
+    ```bash
+    LOCAL_IRCT=/Local/path/to/irct/target
+    LOCAL_NGINX_CONF=/Local/path/to/nginx/conf/templates
+    LOCAL_IRCT_CONFIG=/Local/path/to/i2b2-wildfly/standalone/configuration/directory
+    ```
 
-### b. remote database
+-   **Development Database Port**: You can override the published Database by setting meta environment variable `DOCKER_DB_PORT` by updating `.env`:
 
-Make sure your docker host has access to your database host and port. Set `IRCTMYSQLADDRESS=` in your project env file to the database URL. Updating the value in .env is _not required_ since you are _not_ using the database as a container (local db container)
+    ```bash
+    DOCKER_DB_PORT=3306
+    ```
 
-## Deploy
-
-Once your database is up, use `dev.yml`, `prod.yml` to deploy the stack
+-   devlocaldb.yml
+    -   local database with no volumes
+-   dev.yml
+    -   development deployment of irct services
 
 ```bash
- $ cd deployments/irct
- $ docker-compose -f dev.yml up -d irct
+$ cd deployments/irct
+# setup your environment
+$ ../tools/switchenv.sh --environment sample_project --type irct
+
+$ docker-compose -f devlocaldb.yml -f dev.yml up -d
 ```
 
-You may continue to add resources to the database by `docker-compose -f prod.yml run --rm irct-init`, but those resources will not be saved to the Docker image. You will need to follow steps in [Create Database Snapshot](#create-database-snapshot)
+### Test query
 
-## Generate JWT token
+JWT Token can be generated [here](https://github.com/hms-dbmi/jwt-creator.git)
 
-Generate a JWT token with the `CLIENT_SECRET` in your project's environment file with [JWT Creator](https://github.com/hms-dbmi/jwt-creator.git)
-
-## Test PIC-SURE Access
-
-Show logs:
-
-`$ docker-compose -f prod.yml logs -f irct`
+Use `CLIENT_SECRET` value found in _your_project_`.secret` to generate your token.
 
 Test query:
 
@@ -206,14 +239,133 @@ $ curl -k -i -L -H "Accept: application/json" \
 -X GET https://<docker host>/rest/v1/systemService/about
 ```
 
-## Shutdown PIC-SURE
+### To stop and remove the stack
 
-Any docker-compose yaml will shutdown the services in their stack. If you would like to remove _all_ services, add option `--remove-orphans`
+```bash
+$ cd deployments/irct
+$ docker-compose -f dev.yml down -v --remove-orphans
+```
 
-    $ cd deployments/irct
+* * *
 
-    # e.g., removes services in prod.yml
-    $ docker-compose -f prod.yml down
+## Production
 
-    # e.g., removes all services sharing same project name, include database found in localdb.yml and remotedb.yml
-    $ docker-compose -f prod.yml --remove-orphans
+-   Production is only available in **Docker Swarm**
+    -   Run `docker swarm init` to initialize your node as a Docker Swarm node.\\
+-   Secrets in _your_project_`.secret` are depolyed with [Docker Secrets](https://docs.docker.com/engine/swarm/secrets/)
+-   Vault is available as a Secrets option using [secret-getter](https://github.com/hms-dbmi/secret-getter)
+-   Networks are encrypted
+-   Uses both open (access to outside world) and closed networks (no access to outside world)
+-   Only published ports are 80, 443. You can override the published ports by setting meta environment variables `HTTP_PORT` and `HTTPS_PORT` by updating `.env`:
+
+    ```bash
+    HTTP_PORT=81
+    HTTPS_PORT=444
+    ```
+
+-   proddb.yml
+    -   Local database persisted in a volume connected to the rest of the stack in the closed network.
+-   prod.yml
+    -   production deployment of IRCT services
+
+#### Using File Secrets
+
+Place all your secrets in _your_project_`.secret` and run [switchenv.sh](https://github.com/hms-dbmi/docker-images/tools/switchenv.sh). File `/run/secrets/secret` maps to _your_project_`.secret` and used by `prod.yml`.
+
+```bash
+$ ../tools/switchenv.sh --environment your_project --type irct \
+--secrets file --options "--path=/run/secrets/secret"
+```
+
+#### Using Vault Secrets
+
+Place your Vault token in _your_project_`.secret`. _your_project_`.secret` must have **only** the Vault token, e.g. `00000000-0000-0000-000-00000000000`. Your token is available to the container in the file `/run/secrets/secret`
+
+```bash
+$ ../tools/switchenv.sh --environment your_project --type irct --secrets vault \
+--options "--addr=https://your.vault.addr.com --token=/run/secrets/secret --path=/path/to/Vault/secrets/"
+```
+
+#### Deploy
+
+```bash
+$ cd docker-images/deployments/irct
+# NOTE: RUN this command if you have not initialized Docker Swarm
+$ docker swarm init
+
+# setup your environment
+$ ../tools/switchenv.sh --environment your_project --type irct
+
+# deploy irct stack
+$ docker-compose -f proddb.yml -f prod.yml up -d
+```
+
+### To stop and remove the stack
+
+```bash
+$ cd deployments/irct
+# -v will remove any associated volumes with the stack
+$ docker-compose -f prod.yml down -v --remove-orphans
+```
+
+* * *
+
+## Additional Services
+
+Additional services may be appended to the `dev.yml` and `prod.yml` stacks. Additional services may be found in `addons/` sub-directory.
+
+**NOTE**: All addons assume its configuration variables and passwords are in the _same_ `.env` and `.secret` files as for your project, for example:
+
+```bash
+# sample_project.secret
+
+# i2b2-wildfly database
+DB_HOST=i2b2-db
+DB_PORT=1521
+DB_DB=ORCLPDB1
+
+# i2b2-wildfly database user passwords
+I2B2HIVE=demouser
+I2B2DEMODATA=demouser
+I2B2METADATA=demouser
+I2B2PM=demouser
+I2B2WORKDATA=demouser
+```
+
+#### Deploy i2b2-wildfly
+
+-   If you are using a local i2b2 database, deploy the `addons/i2b2-db.yml` first
+
+    ```bash
+    $ docker-compose -f addons/i2b2-db.yml up -d
+
+    # wait for database to start up
+    $ docker-compose -f addons/i2b2-db.yml logs -f
+    # i2b2-db_1            |#########################
+    # i2b2-db_1            | DATABASE IS READY TO USE!
+    # i2b2-db_1            | #########################
+    ```
+
+-   If you are using a _remote_ i2b2 database, update the `DB_HOST`, and any other relevant variables in _your_project_`.secret`, and then deploy only the `addons/i2b2-wildfly.yml`
+
+    ```bash
+    $ docker-compose -f addons/i2b2-wildfly.yml up -d
+    ```
+
+#### Deploy Splunk Forwarder
+
+Populate _your_project_`.secret` with the following values:
+
+```bash
+# sample_project.secret
+SPLUNK_USER=
+SPLUNK_FORWARD_SERVER=
+SPLUNK_FORWARD_SERVER_ARGS=--accept-license --no-prompt --answer-yes
+SPLUNK_DEPLOYMENT_SERVER=
+```
+
+Then deploy:
+
+```bash
+$ docker-compose -f addons/splunk.yml up -d
+```

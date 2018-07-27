@@ -8,12 +8,12 @@ FROM golang:1.10-rc-alpine AS builder
 
 ARG version
 
-ENV SECRET_GETTER_REPO https://github.com/hms-dbmi/secret-getter.git
-ENV SECRET_GETTER_VERSION ${version:-master}
+ENV GIT_REPO https://github.com/hms-dbmi/secret-getter.git
+ENV VERSION ${version:-master}
 
 RUN apk update && DEPENDENCIES="make git" \
     && apk --no-cache add $DEPENDENCIES \
-    && git clone $SECRET_GETTER_REPO -b ${SECRET_GETTER_VERSION} \
+    && git clone $GIT_REPO -b ${VERSION} secret-getter \
     && cd secret-getter \
     # disable crosscompiling
     # compile linux only

@@ -1,0 +1,44 @@
+version: '3.3'
+services:
+
+
+  # PIC-SURE i2b2-wildfly resource
+  i2b2-wildfly:
+    image: dbmi/i2b2-wildfly:${i2b2_wildfly_version}-sg.${secret_getter_version}
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    entrypoint: >-
+      secret_getter
+      -files=/opt/jboss/wildfly/standalone/configuration/standalone.xml
+      -prefix='\$${env\.'
+      -suffix=}
+      -- /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0
+    env_file:
+      - ../${ENV_FILE}
+    secrets:
+      - secret
+    restart: always
+    networks:
+      # may need to talk to remote DB
+      # add it to open network
+      - open
+      - closed
+    expose:
+      - 9090
+
+
+secrets:
+    # encrypted secrets
+    secret:
+        file: ../${SECRET_FILE}
+
+networks:
+    # these are expected to have already by created by
+    # either ../dev.yml or ../prod.yml
+   open:
+       external:
+           name: ${COMPOSE_PROJECT_NAME}_open
+   closed:
+       external:
+           name: ${COMPOSE_PROJECT_NAME}_closed
