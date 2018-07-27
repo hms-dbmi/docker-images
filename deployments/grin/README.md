@@ -10,7 +10,7 @@ Latest available Docker image versions:
 -   dbmi/i2b2-db: oracle.12.2.0.1-ee-i2b2.1.7.09
 -   dbmi/i2b2-wildfly: 1.7.09c
 -   dbmi/picsure2: 0.0.0.irct_included
--   dbmi/picsure-db: *****mysql.5.7.22-irct-and-user******
+-   dbmi/picsure-db: mysql.5.7.22-irct-and-user
 
 # How To Deploy
 
@@ -78,6 +78,23 @@ $ curl -k -i -L -H "Accept: application/json" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer <JWT Token>" \
 -X GET https://<docker host>/picsure2/pic-sure-api-2/PICSURE/info/resources
+```
+
+You can access the swagger.json for information about what endpoints are available:
+```bash
+$ curl -k -i -L -H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <JWT Token>" \
+-X GET https://<docker host>/picsure2/pic-sure-api-2/PICSURE/swagger.json
+```
+
+Additional users can be added:
+```bash
+$ curl -k -i -L -H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <JWT Token>" \
+-X POST --data '{"userId" : "<userId>", "subject" : "<userId>", "roles" : "ROLE_INTROSPECTION_USER" }' \
+https://<docker host>/picsure2/pic-sure-api-2/PICSURE/user
 ```
 
 
