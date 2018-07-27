@@ -81,21 +81,13 @@ services:
       - PROXY=picsure2
       - PROXY_RULE=~ ^/picsure2/(.*)$$
       - PROXY_PORT=8080
-    ## To develop with PICSURE 2.0, uncomment these lines and set the variable LOCAL_PICSURE2 in the .env file
-#    volumes:
-#      - ${LOCAL_PICSURE2}/pic-sure-api-war/target/pic-sure-api-war-2.0.0-SNAPSHOT.war:/opt/jboss/wildfly/standalone/deployments/pic-sure-api-2.war:cached
     restart: always
     networks:
       - closed
     expose:
       - 8080
-#      - 8787
     ports:
       - 8080:8080
-      # debug port
-#      - 8787:8787
-      # debug command
-#    command: --debug *:8787 --server-config=standalone.xml
     command: --server-config=standalone.xml
 
   picsuredb:
@@ -166,53 +158,53 @@ services:
     volumes:
       - irct-data-1:/mysql/data
 
-  irct2:
-    image: dbmi/irct:${irct_version}
-    labels:
-      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    depends_on:
-      - nginx
-      - irct-db-2
-    env_file:
-      - ${IRCT_2_ENV_FILE}
-    restart: always
-    networks:
-      - closed
-    expose:
-       - 8080
-    ports:
-      - 8082:8080
-    environment:
-      - PROXY=irct2
-      - PROXY_RULE=~ ^/rest/v1/(.*)$$
-      - PROXY_PATH=/IRCT-CL/rest
-      - PROXY_PORT=8080
-      - PROXY_COOKIE=true
-    hostname: irct2
-  ##Uncomment this to use a whitelist
-  #  volumes:
-  #    - ${WHITELIST_PATH}:/whitelist-data:ro
-
-  irct-db-2:
-    image: dbmi/irct-db:${irct_db_version}
-    labels:
-      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
-      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
-    env_file:
-      - ${IRCT_2_ENV_FILE}
-    command: --datadir=/mysql/data
-    restart: always
-    environment:
-      - MYSQL_DATABASE=irct
-    expose:
-      - 3308
-    ports:
-      - ${DOCKER_IRCT_DB_PORT_2:-3308}:3308
-    networks:
-      - closed
-    volumes:
-      - irct-data-2:/mysql/data
+  # irct2:
+  #   image: dbmi/irct:${irct_version}
+  #   labels:
+  #     - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+  #     - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+  #   depends_on:
+  #     - nginx
+  #     - irct-db-2
+  #   env_file:
+  #     - ${IRCT_2_ENV_FILE}
+  #   restart: always
+  #   networks:
+  #     - closed
+  #   expose:
+  #      - 8080
+  #   ports:
+  #     - 8082:8080
+  #   environment:
+  #     - PROXY=irct2
+  #     - PROXY_RULE=~ ^/rest/v1/(.*)$$
+  #     - PROXY_PATH=/IRCT-CL/rest
+  #     - PROXY_PORT=8080
+  #     - PROXY_COOKIE=true
+  #   hostname: irct2
+  # ##Uncomment this to use a whitelist
+  # #  volumes:
+  # #    - ${WHITELIST_PATH}:/whitelist-data:ro
+  #
+  # irct-db-2:
+  #   image: dbmi/irct-db:${irct_db_version}
+  #   labels:
+  #     - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+  #     - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+  #   env_file:
+  #     - ${IRCT_2_ENV_FILE}
+  #   command: --datadir=/mysql/data
+  #   restart: always
+  #   environment:
+  #     - MYSQL_DATABASE=irct
+  #   expose:
+  #     - 3308
+  #   ports:
+  #     - ${DOCKER_IRCT_DB_PORT_2:-3308}:3308
+  #   networks:
+  #     - closed
+  #   volumes:
+  #     - irct-data-2:/mysql/data
 
 networks:
   open:
@@ -221,7 +213,7 @@ networks:
 
 volumes:
   irct-data-1:
-  irct-data-2:
+#  irct-data-2:
   i2b2-data:
   nginx:
   nginx_conf:
