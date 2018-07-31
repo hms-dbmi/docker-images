@@ -44,6 +44,8 @@ ENV VERIFY_USER_METHOD sessionFilter
 ENV TOKEN_INTROSPECTION_URL http://localhost
 ENV TOKEN_INTROSPECTION_TOKEN dummytoken
 
+# result data folder
+ENV RESULT_DATA_FOLDER /scratch/irct
 ENV IRCT_KEY_TIMEOUT_IN_MINUTES 720
 ENV WHITELIST_ENABLED false
 ENV WHITELIST_CONFIG_FILE /whitelist/whitelist.json
@@ -75,8 +77,8 @@ RUN wildfly/bin/jboss-cli.sh --command="module add --name=com.sql.mysql \
     --resources=/modules/ojdbc6-11.2.0.3.jar --dependencies=javax.api,javax.transaction.api" \
     #
     # IRCT scratch directory
-    && mkdir -p /scratch/irct \
-    && chmod a+rw /scratch/irct \
+    && mkdir -p $RESULT_DATA_FOLDER \
+    && chmod a+rw $RESULT_DATA_FOLDER \
     # make whitelist accessible to jboss
     && chmod a+rw $WHITELIST_CONFIG_FILE
 

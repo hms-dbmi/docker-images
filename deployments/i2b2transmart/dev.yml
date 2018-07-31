@@ -13,15 +13,15 @@ services:
       - ${SECRET_FILE}
     # application stack exposed ports
     ports:
-      - 80:80
-      - 443:443
+      - ${HTTP_PORT:-80}:80
+      - ${HTTPS_PORT:-443}:443
     networks:
       - open
       - closed
     volumes:
       - nginx:/etc/nginx:rw
       # nginx conf development
-      - ${LOCAL_NGINX_CONF:-nginx_conf}:/etc/nginx/conf.d:rw
+      - ${LOCAL_NGINX_CONF:-nginx-conf}:/etc/nginx/conf.d:rw
 
   dockergen:
     image: jwilder/docker-gen:latest
@@ -38,7 +38,7 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - nginx:/etc/nginx:rw
       # nginx conf development
-      - ${LOCAL_NGINX_CONF:-nginx_conf}:/etc/nginx/conf.d:rw
+      - ${LOCAL_NGINX_CONF:-nginx-conf}:/etc/nginx/conf.d:rw
 
   ## i2b2transmart stack ##
   # transmart
@@ -75,7 +75,7 @@ services:
     volumes:
       - rserve-jobs:/tmp:rw
       # local transmart.war directory (for simple development)
-      - ${LOCAL_TRANSMART:-transmart}:/usr/local/tomcat/webapps/
+      - ${LOCAL_TRANSMART:-transmart}:/usr/local/tomcat/webapps
 
   # Rserve
   rserve:
@@ -124,7 +124,7 @@ services:
 volumes:
   # shared volume for nginx templates
   nginx:
-  nginx_conf:
+  nginx-conf:
   # shared volume for R jobs
   rserve-jobs:
   # default development transmart volume

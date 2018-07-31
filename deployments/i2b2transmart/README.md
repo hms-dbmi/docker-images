@@ -10,7 +10,7 @@
 
 * * *
 
-## Setup your Environment
+## Setup your Development/Production Environment
 
 Use [../tools/switchenv.sh](https://github.com/hms-dbmi/docker-images/tools/switchenv.sh) to setup the environment.
 
@@ -20,8 +20,8 @@ Use [../tools/switchenv.sh](https://github.com/hms-dbmi/docker-images/tools/swit
 
 ```bash
 Usage:
-  source switchenv.sh [ARGS]
-  source switchenv.sh -h|--help
+  switchenv.sh [ARGS]
+  switchenv.sh -h|--help
 
 Enviornment Arguments:
   -e, --environment ENV       [required] Project to deploy.
@@ -50,15 +50,15 @@ Other Arguments:
 # ####
 # update service version
 # ####
-$ source ../tools/switchenv.sh --service i2b2transmart --version release-18.1-beta-7
+$ ../tools/switchenv.sh --service i2b2transmart --version release-18.1-beta-7
 
 # service version
 # i2b2transmart_version=release-18.1-beta-7
 
 # ####
-# setup envirment for sample_project deployment with file secrets
+# setup environment for sample_project deployment with file secrets
 # ####
-$ source ../tools/switchenv.sh --environment sample_project --type transmart \
+$ ../tools/switchenv.sh --environment sample_project --type transmart \
 --secrets file --options "--path=/run/secrets/secret"
 
 # Using sample_project.env
@@ -90,30 +90,24 @@ $ source ../tools/switchenv.sh --environment sample_project --type transmart \
 -   All production and debug ports are published.
 -   Secrets in _your_project_`.secret` are deployed as Environment variables
 -   Networks are unencrypted
--   **Development Volumes**: By default, code, executables, wars, etc. are persisted in a volume. You can link your development deployment with your local directory by setting the meta environment variables `LOCAL_TRANSMART`, `LOCAL_NGINX_CONF`:
-
-    ```bash
-    $ export LOCAL_TRANSMART=/Local/path/to/transmart-war/target
-    $ export LOCAL_NGINX_CONF=/Local/path/to/nginx/conf/templates
-    ```
-
-    _OR_ append to `.env`:
+-   **Development Volumes**: By default, code, executables, wars, etc. are persisted in a volume. You can link your development deployment with your local directory by setting the meta environment variables `LOCAL_TRANSMART`, `LOCAL_NGINX_CONF` by updating `.env`:
 
     ```bash
     LOCAL_TRANSMART=/Local/path/to/transmart-war/target
     LOCAL_NGINX_CONF=/Local/path/to/nginx/conf/templates
     ```
 
--   **Development Database Port**: You can override the published Database by setting meta environment variable `DOCKER_DB_PORT`:
-
-    ```bash
-    $ export DOCKER_DB_PORT=1522
-    ```
-
-    _OR_ append to `.env`:
+-   **Development Database Port**: You can override the published Database by setting meta environment variable `DOCKER_DB_PORT` by updating `.env`:
 
     ```bash
     DOCKER_DB_PORT=1522
+    ```
+
+-   Only published ports are 80, 443. You can override the published ports by setting meta environment variables `HTTP_PORT` and `HTTPS_PORT` by updating `.env`  
+
+    ```bash
+    HTTP_PORT=81
+    HTTPS_PORT=444
     ```
 
 -   devlocaldb.yml
@@ -125,7 +119,9 @@ $ source ../tools/switchenv.sh --environment sample_project --type transmart \
 
 ```bash
 $ cd deployments/i2b2transmart
-$ source ../tools/switchenv.sh --environment sample_project --type transmart
+# setup your environment
+$ ../tools/switchenv.sh --environment sample_project --type transmart
+
 $ docker-compose -f devlocaldb.yml -f dev.yml up -d db
 # wait for database to load
 $ docker-compose -f devlocaldb.yml -f dev.yml up -d
@@ -154,6 +150,7 @@ To connect to a remote database through an ssh-tunnel, you will need:
     ```
 
 -   Update the Database variables in your _your_project_.`secret`
+
     ```bash
     # i2b2transmart database
     DB_HOST=remote.database.com
@@ -162,19 +159,15 @@ To connect to a remote database through an ssh-tunnel, you will need:
     DB_PORT=1521
     DB_DB=database
     ```
--   **Development Volumes**: The default ssh config location is `~/.ssh`. You can override the by setting meta environment variable `SSH_CONFIG_LOCATION`:
-    ```bash
-    $ export SSH_CONFIG_LOCATION=/path/to/ssh
-    ```
-      _OR_ append to `.env`:
+
+-   **Development Volumes**: The default ssh config location is `~/.ssh`. You can override the by setting meta environment variable `SSH_CONFIG_LOCATION` by updating `.env`:
+
     ```bash
     SSH_CONFIG_LOCATION=/path/to/ssh
     ```
--   **Development Database Port**: You can override the published Database used by the ssh-tunnel by setting meta environment variable `DOCKER_DB_PORT`:
-    ```bash
-    $ export DOCKER_DB_PORT=1522
-    ```
-     _OR_ append to `.env`:
+
+-   **Development Database Port**: You can override the published Database used by the ssh-tunnel by setting meta environment variable `DOCKER_DB_PORT` by updating `.env`
+
     ```bash
     DOCKER_DB_PORT=1522
     ```
@@ -183,7 +176,9 @@ To connect to a remote database through an ssh-tunnel, you will need:
 
 ```bash
 $ cd docker-images/deployments/i2b2transmart
-$ source ../tools/switchenv.sh -e sample_project --type transmart --remote true
+
+# setup your environment
+$ ../tools/switchenv.sh -e sample_project --type transmart --remote true
 
 # Forward ssh-agent to docker-machine
 #
@@ -198,6 +193,16 @@ $ source ../tools/switchenv.sh -e sample_project --type transmart --remote true
 $ docker-compose -f devremotedb.yml -f dev.yml up -d
 ```
 
+### Test
+
+### To stop and remove the stack
+
+```bash
+$ cd deployments/irct
+# -v will remove any associated volumes with the stack
+$ docker-compose -f dev.yml down -v --remove-orphans
+```
+
 * * *
 
 ## Production
@@ -208,16 +213,13 @@ $ docker-compose -f devremotedb.yml -f dev.yml up -d
 -   Vault is available as a Secrets option using [secret-getter](https://github.com/hms-dbmi/secret-getter)
 -   Networks are encrypted
 -   Uses both open (access to outside world) and closed networks (no access to outside world)
--   Only published ports are 80, 443. You can override the published ports by setting meta environment variables `HTTP_PORT` and `HTTPS_PORT`:
-    ```bash
-    $ export HTTP_PORT=81
-    $ export HTTPS_PORT=443
-    ```
-      _OR_ append to `.env`:
+-   Only published ports are 80, 443. You can override the published ports by setting meta environment variables `HTTP_PORT` and `HTTPS_PORT` by updating `.env`:
+
     ```bash
     HTTP_PORT=81
     HTTPS_PORT=444
     ```
+
 -   proddb.yml
     -   Local database persisted in a volume connected to the rest of the stack in the closed network.
 -   prod.yml
@@ -228,7 +230,7 @@ $ docker-compose -f devremotedb.yml -f dev.yml up -d
 Place all your secrets in _your_project_`.secret` and run [switchenv.sh](https://github.com/hms-dbmi/docker-images/tools/switchenv.sh). File `/run/secrets/secret` maps to _your_project_`.secret` and used by `prod.yml`.
 
 ```bash
-$ source ../tools/switchenv.sh --environment your_project --type transmart \
+$ ../tools/switchenv.sh --environment your_project --type transmart \
 --secrets file --options "--path=/run/secrets/secret"
 ```
 
@@ -237,19 +239,33 @@ $ source ../tools/switchenv.sh --environment your_project --type transmart \
 Place your Vault token in _your_project_`.secret`. _your_project_`.secret` must have **only** the Vault token, e.g. `00000000-0000-0000-000-00000000000`. Your token is available to the container in the file `/run/secrets/secret`
 
 ```bash
-$ source ../tools/switchenv.sh --environment your_project --type transmart --secrets vault \
+$ ../tools/switchenv.sh --environment your_project --type transmart --secrets vault \
 --options "--addr=https://your.vault.addr.com --token=/run/secrets/secret --path=/path/to/Vault/secrets/"
 ```
 
 #### Deploy
 
 ```bash
+$ cd docker-images/deployments/i2b2transmart
 # NOTE: RUN this command if you have not initialized Docker Swarm
 $ docker swarm init
+
+# setup your environment
+$ ../tools/switchenv.sh --environment your_project --type transmart
+
 # NOTE: SKIP if you are connecting to a remote database, such as an RDS
 $ docker-compose -f proddb.yml up -d
+
 # deploy i2b2transmart stack
 $ docker-compose -f prod.yml up -d
+```
+
+### To stop and remove the stack
+
+```bash
+$ cd deployments/irct
+# -v will remove any associated volumes with the stack
+$ docker-compose -f prod.yml down -v --remove-orphans
 ```
 
 ## Additional Services
@@ -271,7 +287,6 @@ FRACTALIS_RESOURCE_NAME=i2b2-wildfly-default/Demo
 #### Deploy Fractalis
 
 ```bash
-$ source ../tools/switchenv.sh --environment your_project --type transmart
 $ docker-compose -f addons/fractalis.yml up -d
 ```
 
@@ -283,13 +298,12 @@ Populate _your_project_`.secret` with the following values:
 # sample_project.secret
 SPLUNK_USER=
 SPLUNK_FORWARD_SERVER=
-SPLUNK_FORWARD_SERVER_ARGS=
+SPLUNK_FORWARD_SERVER_ARGS=--accept-license --no-prompt --answer-yes
 SPLUNK_DEPLOYMENT_SERVER=
 ```
 
 Then deploy:
 
 ```bash
-$ source ../tools/switchenv.sh --environment your_project --type transmart
 $ docker-compose -f addons/splunk.yml up -d
 ```
