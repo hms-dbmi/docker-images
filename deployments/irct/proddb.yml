@@ -1,0 +1,33 @@
+version: '3.3'
+services:
+
+  # IRCT DB
+  db:
+    image: dbmi/irct-db:${db_version}
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    env_file:
+      - ${ENV_FILE}
+    restart: always
+    command: --datadir=/mysql/data
+    expose:
+      - 3306
+    networks:
+      - closed
+    volumes:
+      - irct-data:/mysql/data
+
+networks:
+    # no outbound access available on closed network
+    # only inter-container communication available
+    # encrypted network
+    closed:
+        driver: overlay
+        internal: true
+        driver_opts:
+            encrypted: "true"
+        attachable: true
+
+volumes:
+    irct-data:

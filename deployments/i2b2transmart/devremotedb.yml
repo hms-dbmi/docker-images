@@ -1,0 +1,37 @@
+version: '3.3'
+services:
+
+  # i2b2transmart DB
+  # remote database ssh tunnel
+  db:
+    image: kroniak/ssh-client:${ssh_client_version}
+    container_name: ${DB_HOST}
+    restart: always
+    env_file:
+      - ${ENV_FILE}
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent/ssh-agent.sock
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    volumes:
+      # ssh config file throws bad owner/permissions error if we don't map it to /etc/ssh - Andre
+      - ${SSH_CONFIG_LOCATION:-~/.ssh}/config:/etc/ssh/ssh_config:ro
+      - ssh-agent:/ssh-agent
+    entrypoint: ssh -Ngv -L ${DOCKER_DB_PORT:-1521}:${DB_HOST}:1521 -o StrictHostKeyChecking=no -F /etc/ssh/ssh_config
+    command: ${SSH_CONFIG_CONFIG}
+    networks:
+      - open
+    ports:
+      - ${DOCKER_DB_PORT:-1521}:${DOCKER_DB_PORT:-1521}
+
+
+networks:
+    open:
+
+volumes:
+    # ssh-agent used to skip tty response for ssh key passphrase
+    # allows for local machine to forward its ssh-agent
+    # see docker-images/deployments/ssh-agent - Andre
+    ssh-agent:
+        external: true

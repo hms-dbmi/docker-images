@@ -1,6 +1,8 @@
 FROM groovy:2.4-jre7-alpine AS groovy
 
-
+###########################
+# Build transmart-data
+########################
 FROM openjdk:7-jre-alpine
 
 COPY --from=groovy $GROOVY_HOME $GROOVY_HOME

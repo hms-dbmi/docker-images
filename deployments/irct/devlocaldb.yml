@@ -1,0 +1,23 @@
+version: '3.3'
+services:
+
+  # IRCT DB
+  db:
+    image: dbmi/irct-db:${db_version}
+    labels:
+      - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+      - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+    env_file:
+      - ${ENV_FILE}
+      - ${SECRET_FILE}
+    restart: always
+    command: --datadir=/mysql/data
+    expose:
+      - 3306
+    networks:
+      - open
+    ports:
+      - ${DOCKER_DB_PORT:-3306}:3306
+
+networks:
+    open:

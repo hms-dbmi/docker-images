@@ -1,0 +1,31 @@
+### production can only be deployed on Swarm ###
+version: '3.3'
+services:
+
+    db:
+        image: dbmi/i2b2transmart-db:${db_version:-oracle.12.2.0.1-ee-i2b2.1.7.09-tm.release-18.1-v.1.0}
+        labels:
+          - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
+          - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
+        restart: always
+        networks:
+            - closed
+        expose:
+            - 1521
+        volumes:
+            - i2b2transmart-data:/opt/oracle/oradata:rw
+
+volumes:
+    # i2b2/tranSMART database
+    i2b2transmart-data:
+
+networks:
+    # no outbound access available on closed network
+    # only inter-container communication available
+    # encrypted network
+    closed:
+        driver: overlay
+        internal: true
+        driver_opts:
+            encrypted: "true"
+        attachable: true

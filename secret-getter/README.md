@@ -19,15 +19,14 @@ $ docker build -t dbmi/secret-getter:<github tag or branch> \
 
 # e.g. docker build -t dbmi/i2b2transmart:release-18.1-sg.0.9-alpha \
 #   --build-arg version=0.9-alpha \
-#   --build-arg base_image=dbmi/i2b2transmart \
-#   --build-arg image_tag=release-18.1 \
+#   --build-arg image=dbmi/i2b2transmart \
+#   --build-arg tag=release-18.1 \
 #   --target=runtime ./
 
 $ docker build -t <base_image>:<image_tag> \
     --build-arg version=<github tag or branch> \
-    --build-arg base_image=<base_image> \
-    --build-arg image_tag=<image_tag> \
-    --target=runtime ./
+    --build-arg image=<base_image> \
+    --build-arg tag=<image_tag>
 ```
 
 ## Use secret-getter with Vault
