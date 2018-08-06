@@ -1,34 +1,67 @@
+###########################
+# build PIC-SURE war
+###########################
+
+FROM maven:3.5.4-jdk-9-slim AS builder
+
+ARG version
+ARG username
+ARG psw
+
+ENV GIT_REPO github.com/hms-dbmi/pic-sure.git
+ENV VERSION ${version:-master}
+ENV USERNAME ${username}
+ENV PASSWORD ${psw}
+
+RUN  apt-get update && DEPENDENCIES="git" \
+    && apt-get install -y $DEPENDENCIES \
+    && export HISTCONTROL=ignorespace \
+    && git clone https://$USERNAME:$PASSWORD@$GIT_REPO -b ${VERSION} picsure \
+    && cd picsure \
+    && mvn package -Dmaven.test.skip=true \
+    && apt-get remove -y $DEPENDENCIES && rm -rf /var/cache/apk/
+
+
+###########################
+# PIC-SURE Production
+#########################
+
 FROM dbmi/wildfly:13 AS production
 
-# SET DEFAULT ENV VARIABLES
+ARG projects
+ENV PROJECTS ${projects:-pic-sure-api-war}
+
+# TODO: It'd be nice if wildfly used alpine -Andre
+
+LABEL maintainer="avillach_lab_developers@googlegroups.com"
+
+# mysql database
 ENV PICSURE2_DB_CONNECTION_USER root
 ENV PICSURE2_MYSQLADDRESS localhost
 ENV PICSURE2_DB_PORT 3306
 ENV PICSURE2_MYSQLPASS password
-ENV AUTH0_DOMAIN domain
-ENV PICSURE2_CLIENT_ID cliend_id
-ENV PICSURE2_CLIENT_SECRET secret
-ENV PICSURE2_USER_ID_CLAIM email
+
+# JWT Token
+ENV CLIENT_ID dummyid
+ENV CLIENT_SECRET dummysecret
+ENV picsure_USER_FIELD sub
+
+# copy modules
+COPY --from=builder picsure/pic-sure-api-war/target/modules/system/layers/base/com/sql/mysql/main/* /modules/
 
 # Copy standalone.xml
-COPY standalone.xml /opt/jboss/wildfly/standalone/configuration/
+COPY --from=builder picsure/pic-sure-api-war/src/main/resources/wildfly-configuration/standalone.xml wildfly/standalone/configuration/
 
-# Copy MySQL Module
-COPY mySQL/module.xml /opt/jboss/wildfly/modules/system/layers/base/com/sql/mysql/main/
-COPY mySQL/mysql-connector-java-5.1.22.jar /opt/jboss/wildfly/modules/system/layers/base/com/sql/mysql/main/
+# Copy war file
+COPY --from=builder picsure/${PROJECTS}/target/*.war wildfly/standalone/deployments/
 
-# Copy Oracle Module
-COPY oracle/module.xml /opt/jboss/wildfly/modules/system/layers/base/com/oracle/main/
-# LICENSE!!!!! (Used for UMLS synonyms)
-#COPY oracle/ojdbc6.jar /opt/jboss/wildfly/modules/system/layers/base/com/oracle/main/
-
+# root required to create default scratch directory - Andre
 USER root
 
-# COPY WAR FIle
-COPY target/pic-sure*.war /opt/jboss/wildfly/standalone/deployments/
+# install modules
+RUN wildfly/bin/jboss-cli.sh --command="module add --name=com.sql.mysql \
+    --resources=/modules/mysql-connector-java-5.1.38.jar --dependencies=javax.api"
+
+USER jboss
 
 ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
-
-### PIC-SURE Production with Secrets Management
-FROM dbmi/secret-getter:0.9-alpha AS executable
-FROM dbmi/secret-getter:0.9-runtime AS secure
