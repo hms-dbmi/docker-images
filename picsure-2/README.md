@@ -1,3 +1,3 @@
 # IRCT
 
-IRCT / PIC-SURE api Dockerfiles
+PIC-SURE-api Dockerfiles
