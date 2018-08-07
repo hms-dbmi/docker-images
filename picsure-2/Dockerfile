@@ -13,7 +13,8 @@ ENV VERSION ${version:-master}
 ENV USERNAME ${username}
 ENV PASSWORD :${psw}@
 
-RUN  apt-get update && DEPENDENCIES="git" \
+RUN if [ ! -z "$username"] && [ ! -z "$psw"]; then export USERNAME=$username PASSWORD=:${psw}@; fi \
+    && apt-get update && DEPENDENCIES="git" \
     && apt-get install -y $DEPENDENCIES \
     && export HISTCONTROL=ignorespace \
     && git clone https://$USERNAME$PASSWORD$GIT_REPO -b ${VERSION} picsure \
