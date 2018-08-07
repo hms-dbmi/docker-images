@@ -11,12 +11,12 @@ ARG psw
 ENV GIT_REPO github.com/hms-dbmi/pic-sure.git
 ENV VERSION ${version:-master}
 ENV USERNAME ${username}
-ENV PASSWORD ${psw}
+ENV PASSWORD :${psw}@
 
 RUN  apt-get update && DEPENDENCIES="git" \
     && apt-get install -y $DEPENDENCIES \
     && export HISTCONTROL=ignorespace \
-    && git clone https://$USERNAME:$PASSWORD@$GIT_REPO -b ${VERSION} picsure \
+    && git clone https://$USERNAME$PASSWORD$GIT_REPO -b ${VERSION} picsure \
     && cd picsure \
     && mvn package -Dmaven.test.skip=true \
     && apt-get remove -y $DEPENDENCIES && rm -rf /var/cache/apk/
@@ -53,7 +53,7 @@ COPY --from=builder picsure/pic-sure-api-war/target/modules/system/layers/base/c
 COPY --from=builder picsure/pic-sure-api-war/src/main/resources/wildfly-configuration/standalone.xml wildfly/standalone/configuration/
 
 # Copy war file
-COPY --from=builder picsure/${PROJECTS}/target/*.war wildfly/standalone/deployments/
+COPY --from=builder ${projects} wildfly/standalone/deployments/
 
 # root required to create default scratch directory - Andre
 USER root
