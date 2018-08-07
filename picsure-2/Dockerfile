@@ -30,7 +30,7 @@ RUN if [ ! -z "$username"] && [ ! -z "$psw"]; then export USERNAME=$username PAS
 FROM dbmi/wildfly:13 AS production
 
 ARG projects
-ENV PROJECTS ${projects:-pic-sure-api-war}
+ENV PROJECTS ${projects:-picsure/pic-sure-api-war/target/*.war}
 
 # TODO: It'd be nice if wildfly used alpine -Andre
 
