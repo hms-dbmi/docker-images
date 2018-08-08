@@ -3,22 +3,21 @@ services:
 
     etl:
         image: dbmi/transmart-etl:${etl_version}
-        env_file:
-            - ${ENV_FILE}
         environment:
             # Kettle ETL bug
             - DB_ORASID=${DB_ORASVC}
-        depends_on:
-            - db
         networks:
             - public
 
     schema:
-        image: dbmi/transmart-data:${schema_version}
-        env_file:
-            - ${ENV_FILE}
-        depends_on:
-            - db
+        image: dbmi/transmart-data:release-16.2
+        environment:
+            - DB_TYPE=${DB_TYPE}
+            - DB_HOST=db
+            - DB_PORT=1521
+            - DB_ORASVC=ORCLPDB1
+            - DB_USER=pdbadmin
+            - DB_PASSWORD=password        
         networks:
             - public
 

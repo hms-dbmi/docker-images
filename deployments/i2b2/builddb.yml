@@ -9,8 +9,6 @@ services:
             - DB_ORASVC=ORCLPDB1
             - DB_USER=pdbadmin
             - DB_PASSWORD=password
-        depends_on:
-            - db
         networks:
             - public
 
