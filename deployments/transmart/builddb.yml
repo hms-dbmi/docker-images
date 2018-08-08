@@ -1,13 +1,13 @@
 version: '3.3'
 services:
 
-    etl:
-        image: dbmi/transmart-etl:${etl_version}
-        environment:
+    #etl:
+        #image: dbmi/transmart-etl:${etl_version}
+        #environment:
             # Kettle ETL bug
-            - DB_ORASID=${DB_ORASVC}
-        networks:
-            - public
+            #- DB_ORASID=${DB_ORASVC}
+        #networks:
+            #- public
 
     schema:
         image: dbmi/transmart-data:release-16.2
@@ -18,26 +18,28 @@ services:
             - DB_ORASVC=ORCLPDB1
             - DB_USER=pdbadmin
             - DB_PASSWORD=password        
-        networks:
-            - public
+        #networks:
+            #- public
+            
+            
 
-    db:
-        image: dbmi/${db_type:-oracle}:${db_version}
-        env_file:
-            - ${ENV_FILE}
-        networks:
+    #db:
+        #image: dbmi/${db_type:-oracle}:${db_version}
+        #env_file:
+            #- ${ENV_FILE}
+        #networks:
             # public network used to access DB from outside (e.g. SQLDeveloper)
-            - public
-        volumes:
+            #- public
+        #volumes:
             # TODO: eventually remove this as a volume and add it
             # to the dbmi/oracle base image -Andre
             - ./startup:/opt/oracle/scripts/startup:ro
-        expose:
-            - 1521
-        ports:
-            - 1521:1521
+        #expose:
+            #- 1521
+        #ports:
+            #- 1521:1521
 
 
 
-networks:
-    public:
+#networks:
+    #public:

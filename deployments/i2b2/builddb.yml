@@ -9,27 +9,27 @@ services:
             - DB_ORASVC=ORCLPDB1
             - DB_USER=pdbadmin
             - DB_PASSWORD=password
-        networks:
-            - public
+        #networks:
+            #- public
 
-    db:
-        image: dbmi/${DB_TYPE}:${DB_VERSION}
-        environment:
+    #db:
+        #image: dbmi/${DB_TYPE}:${DB_VERSION}
+        #environment:
             # used to initialize system passwords
-            - DB_PASSWORD=password
-        networks:
-            # public network used to access DB from outside (e.g. SQLDeveloper)
-            - public
-        volumes:
-            # TODO: eventually remove this as a volume and add it
-            # to the dbmi/oracle base image -Andr
-            - ./startup:/opt/oracle/scripts/startup:ro
-        expose:
-            - 1521
-        ports:
-            - 1521:1521
+            #- DB_PASSWORD=password
+        #networks:
+            ## public network used to access DB from outside (e.g. SQLDeveloper)
+            #- public
+        #volumes:
+            ## TODO: eventually remove this as a volume and add it
+            ## to the dbmi/oracle base image -Andr
+            #- ./startup:/opt/oracle/scripts/startup:ro
+        #expose:
+            #- 1521
+        #ports:
+            #- 1521:1521
 
 
 
-networks:
-    public:
+#networks:
+    #public:
