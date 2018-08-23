@@ -1,0 +1,47 @@
+This image attempts to pull all things that you may want to configure one day
+for a Jupyterhub installation from Vault. This will allow us to manage all
+configuration in Vault instead of spread across several files in addition
+to Vault.
+
+There are two places that may be configured directly in this repository:
+
+.env - This file sets environment variables for the Makefile. It only contains
+    # Name of Docker network
+	DOCKER_NETWORK_NAME=jupyterhub-network
+
+	# Single-user Jupyter Notebook server container images to pull, separate by spaces
+	# All of these images will be pulled to the host on make so that we can switch the
+	# different notebook installations to use different notebooks by updating Vault
+	# and restarting the container.
+	DOCKER_NOTEBOOK_IMAGES="aguidetti/r-datascience-notebook"
+
+	# Name of JupyterHub container data volume
+	DATA_VOLUME_HOST=jupyterhub-data
+
+	# Data volume container mount point
+	DATA_VOLUME_CONTAINER=/data
+
+	# API key for datadog monitoring
+	DATADOG_API_KEY= [ A datadog api key ]
+
+docker-compose.yml - In addition to all the normal things you can do here, please set
+    the following environment variables:
+
+    AUTH0_SUBDOMAIN: avillachlab
+    VAULT_BASE: secret/avl/testjason/jupyter_
+    VAULT_TOKEN: [ A limited scope vault token, soon to be ROLE_ID and SECRET_ID ]  
+
+
+Vault Config - The following variables must be set in the Vault path VAULT_BASE.
+    
+    AUTH0_CALLBACK_URL
+	AUTH0_CLIENT_ID
+	AUTH0_CLIENT_SECRET
+	DATA_VOLUME_CONTAINER
+	DOCKER_NETWORK_NAME
+	DOCKER_NOTEBOOK_DIR
+	DOCKER_NOTEBOOK_IMAGE
+	DOCKER_SPAWN_CMD
+	SSL_CERT - use @filename when setting value
+	SSL_KEY - use @filename when setting value
+	USERLIST - use @filename when setting value

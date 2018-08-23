@@ -1,0 +1,39 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+FROM aguidetti/rcupcake-notebook
+
+ARG GITHUB_USERNAME
+ARG GITHUB_PASSWORD
+
+USER root
+RUN echo "deb http://cdn-fastly.deb.debian.org/debian testing main" >> /etc/apt/sources.list
+RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 04EE7237B7D453EC
+RUN apt-get update
+RUN apt-get remove -y binutils
+RUN apt-get install -y python3.6 python3-pip openjdk-8-jdk
+
+RUN conda install -y python=3.6
+RUN pip install --upgrade pip
+RUN pip install numpy pandas parsimonious bokeh
+
+# Add `hadoop` configuration files
+RUN mkdir -p /etc/hadoop/conf
+ADD core-site.xml /etc/hadoop/conf/
+ADD yarn-site.xml /etc/hadoop/conf/
+
+# Add Spark software/configuration
+ADD install_spark.sh /tmp/install_spark.sh
+RUN chmod +x /tmp/install_spark.sh && /tmp/install_spark.sh
+
+# Add Hail compiled version from host
+ADD hail-python.zip /home/hadoop/
+ADD hail-all-spark.jar /home/hadoop/
+ADD emrfs-hadoop-assembly-2.20.0.jar /tmp/
+
+# cd $SPARK_HOME/jars
+# wget http://central.maven.org/maven2/com/sun/jersey/jersey-bundle/1.19.4/jersey-bundle-1.19.4.jar
+
+# export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
+# export HADOOP_CONF=/etc/hadoop/conf
+# export SPARK_HOME=/usr/lib/spark
+# export PATH=$PATH:$SPARK_HOME/bin

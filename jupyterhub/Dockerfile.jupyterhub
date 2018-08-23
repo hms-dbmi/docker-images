@@ -1,0 +1,34 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+FROM jupyterhub/jupyterhub:0.6.1
+
+# Install dockerspawner and its dependencies
+RUN /opt/conda/bin/pip install \
+     hvac==0.2.16
+#  for now these are built manually until the next release due to custom changes
+#    jupyterhub==0.6.* 
+#    oauthenticator==0.4.* 
+#    dockerspawner==0.5.0
+
+# install docker on the jupyterhub container
+RUN wget https://get.docker.com -q -O /tmp/getdocker && \
+    chmod +x /tmp/getdocker && \
+    sh /tmp/getdocker
+
+#Hackify custom oauthenticator into image
+ADD oauthenticator oauthenticator
+WORKDIR oauthenticator
+RUN pip install -r requirements.txt -e .
+RUN python setup.py install
+WORKDIR /
+
+#Hackify custom dockerspawner into image
+ADD dockerspawner dockerspawner
+WORKDIR dockerspawner
+RUN python setup.py install
+RUN pip install -r dev-requirements.txt -e .
+WORKDIR /
+
+RUN pip install jupyterhub-dummyauthenticator
+
+ADD jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
