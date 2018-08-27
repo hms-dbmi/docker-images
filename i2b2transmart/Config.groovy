@@ -172,6 +172,9 @@ edu.harvard.transmart.instance.quickstarturl="${System.getenv("QUICKSTART_URL")}
 // instance name
 edu.harvard.transmart.instance.name = "${System.getenv("I2B2TRANSMART_TITLE")}"
 
+// instance type
+edu.harvard.transmart.instance.type = "${System.getenv("I2B2TRANSMART_INSTANCE_TYPE")}"
+
 // application title
 com.recomdata.appTitle = "i2b2/tranSMART " + "${System.getenv("I2B2TRANSMART_TITLE")} v" + "${System.getenv("I2B2TRANSMART_VERSION")}"
 
