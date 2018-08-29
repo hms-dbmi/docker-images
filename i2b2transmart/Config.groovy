@@ -53,7 +53,8 @@ grails {
 				clientSecret = "${System.getenv("CLIENT_SECRET")}"
 				domain = "${System.getenv("AUTH0_DOMAIN")}"
 				useRecaptcha = false
-				webtaskBaseUrl = "${System.getenv("AUTH0_WEBTASK_URL")}"
+				String envUrl = "${System.getenv("AUTH0_WEBTASK_URL")}"
+				webtaskBaseUrl = envUrl == 'null' ? null : envUrl
 
 				preRegistrationProviderPrefixes = ['oauth2|ORCiD']
 				// enable/disable Auth0 user registration
@@ -381,6 +382,21 @@ grails {
 }
 /* }}} */
 
+// gNOME integration
+String envProjects = "${System.getenv("GNOME_PROJECTS")}"
+edu.harvard.transmart.gnome.projects = (!envProjects || envProjects == 'null') ? [] : Eval.me(envProjects)
+edu.harvard.transmart.gnome.enabled = "${System.getenv("GNOME_ENABLED")}".toBoolean()
+edu.harvard.transmart.gnome.baseUrl = "${System.getenv("GNOME_BASE_URL")}"
+edu.harvard.transmart.gnome.password = "${System.getenv("GNOME_PASSWORD")}"
+edu.harvard.transmart.gnome.username = "${System.getenv("GNOME_USERNAME")}"
+
+// if true, expand a folder dropped onto grid view into individual columns,
+// otherwise retain old behavior of aggregating everything in one column
+edu.harvard.transmart.gridview.expandFolderIntoColumns = true
+
+// list of paths to exclude from grid view display and export
+String envBlacklist = "${System.getenv("GRIDVIEW_BLACKLIST_PATHS")}"
+edu.harvard.transmart.gnome.projects = (!envBlacklist || envBlacklist == 'null') ? [] : Eval.me(envBlacklist)
 
 /* {{{ Fractalis configuration */
 fractalis {
