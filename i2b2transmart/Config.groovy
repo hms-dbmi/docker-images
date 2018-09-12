@@ -12,102 +12,78 @@ def getOrCreateDir = { String parent, String path ->
 def homeDir = { String path -> getOrCreateDir(System.getProperty('user.home'), path) }
 def tempDir = { String path -> getOrCreateDir(System.getProperty('java.io.tmpdir'), path) }
 
-//Disabling/Enabling UI tabs
-ui {
-	tabs {
-		//Search was not part of 1.2. It's not working properly. You need to set `show` to `true` to see it on UI
-		search.show = !("${System.getenv("HIDE_SEARCH")}".toBoolean())
-		browse.hide = "${System.getenv("HIDE_BROWSE")}".toBoolean()
-		//Note: analyze tab is always shown
-		sampleExplorer.hide = "${System.getenv("HIDE_SAMPLE")}".toBoolean()
-		geneSignature.hide = "${System.getenv("HIDE_GENE_SIG")}".toBoolean()
-		gwas.hide = "${System.getenv("HIDE_GWAS")}".toBoolean()
-		uploadData.hide = "${System.getenv("HIDE_UPLOAD")}".toBoolean()
-		datasetExplorer {
-			gridView.hide = "${System.getenv("HIDE_GRID")}".toBoolean()
-			dataExport.hide = "${System.getenv("HIDE_EXPORT")}".toBoolean()
-			dataExportJobs.hide = "${System.getenv("HIDE_EXPORT_JOBS")}".toBoolean()
-			// Note: by default the analysisJobs panel is NOT shown
-			// Currently, it is only used in special cases
-			analysisJobs.show = !("${System.getenv("HIDE_ANALYSIS")}".toBoolean())
-			workspace.hide = "${System.getenv("HIDE_WORKSPACE")}".toBoolean()
-		}
-	}
-	/*
-	//The below disclaimer appears on the login screen, just below the login button.
-	loginScreen {
-		disclaimer = "Please be aware that tranSMART is a data-integration tool that allows for exploration of available study data. The information shown in tranSMART, and derived from performed analyses, are for research purposes only. NOT for decision making in e.g. clinical trial studies."
-	}
-	*/
-}
+// Disabling/Enabling UI tabs
+// Search was not part of 1.2. It's not working properly. You need to set `show` to `true` to see it on UI
+// Note: analyze tab is always shown
+// Note: by default the analysisJobs panel is NOT shown
+// Currently, it is only used in special cases
+ui.tabs.search.show = !("${System.getenv("HIDE_SEARCH")}".toBoolean())
+ui.tabs.browse.hide = "${System.getenv("HIDE_BROWSE")}".toBoolean()
+ui.tabs.sampleExplorer.hide = "${System.getenv("HIDE_SAMPLE")}".toBoolean()
+ui.tabs.geneSignature.hide = "${System.getenv("HIDE_GENE_SIG")}".toBoolean()
+ui.tabs.gwas.hide = "${System.getenv("HIDE_GWAS")}".toBoolean()
+ui.tabs.uploadData.hide = "${System.getenv("HIDE_UPLOAD")}".toBoolean()
+ui.tabs.datasetExplorer.gridView.hide = "${System.getenv("HIDE_GRID")}".toBoolean()
+ui.tabs.datasetExplorer.dataExport.hide = "${System.getenv("HIDE_EXPORT")}".toBoolean()
+ui.tabs.datasetExplorer.dataExportJobs.hide = "${System.getenv("HIDE_EXPORT_JOBS")}".toBoolean()
+ui.tabs.datasetExplorer.analysisJobs.show = !("${System.getenv("HIDE_ANALYSIS")}".toBoolean())
+ui.tabs.datasetExplorer.workspace.hide = "${System.getenv("HIDE_WORKSPACE")}".toBoolean()
+/*
+//The below disclaimer appears on the login screen, just below the login button.
+ui.loginScreen.disclaimer = "Please be aware that tranSMART is a data-integration tool that allows for exploration of available study data. The information shown in tranSMART, and derived from performed analyses, are for research purposes only. NOT for decision making in e.g. clinical trial studies."
+*/
 
-grails {
-	plugin {
-		springsecurity {
+/* {{{ Auth0 configuration */
+grails.plugin.springsecurity.auth0.active = "${System.getenv("AUTH0_ACTIVE")}".toBoolean()
+grails.plugin.springsecurity.auth0.admin.autoCreate = "${System.getenv("AUTH0_ADMIN_CREATE")}".toBoolean() // creates admin user if none exists
+grails.plugin.springsecurity.auth0.admin.autoCreateUsername = "${System.getenv("AUTH0_ADMIN_USER")}"
+grails.plugin.springsecurity.auth0.admin.autoCreatePassword = "${System.getenv("AUTH0_ADMIN_PASSWORD")}"
+grails.plugin.springsecurity.auth0.admin.autoCreateEmail = "${System.getenv("ADMIN_EMAIL")}" // optional
+grails.plugin.springsecurity.auth0.clientId = "${System.getenv("CLIENT_ID")}"
+grails.plugin.springsecurity.auth0.clientSecret = "${System.getenv("CLIENT_SECRET")}"
+grails.plugin.springsecurity.auth0.domain = "${System.getenv("AUTH0_DOMAIN")}"
+grails.plugin.springsecurity.auth0.useRecaptcha = false
+String envUrl = "${System.getenv("AUTH0_WEBTASK_URL")}"
+grails.plugin.springsecurity.auth0.webtaskBaseUrl = envUrl == 'null' ? null : envUrl
 
-			/* {{{ Auth0 configuration */
-			auth0 {
-				active = "${System.getenv("AUTH0_ACTIVE")}".toBoolean()
-				admin {
-					// creates admin user if none exists
-					autoCreate = "${System.getenv("AUTH0_ADMIN_CREATE")}".toBoolean()
-					autoCreateUsername = "${System.getenv("AUTH0_ADMIN_USER")}"
-					autoCreatePassword = "${System.getenv("AUTH0_ADMIN_PASSWORD")}"
-					// optional
-					autoCreateEmail = "${System.getenv("ADMIN_EMAIL")}"
-				}
-				clientId = "${System.getenv("CLIENT_ID")}"
-				clientSecret = "${System.getenv("CLIENT_SECRET")}"
-				domain = "${System.getenv("AUTH0_DOMAIN")}"
-				useRecaptcha = false
-				String envUrl = "${System.getenv("AUTH0_WEBTASK_URL")}"
-				webtaskBaseUrl = envUrl == 'null' ? null : envUrl
+grails.plugin.springsecurity.auth0.preRegistrationProviderPrefixes = ['oauth2|ORCiD']
+grails.plugin.springsecurity.auth0.registrationEnabled = "${System.getenv("AUTH0_REGISTRATION")}".toBoolean() // enable/disable Auth0 user registration
 
-				preRegistrationProviderPrefixes = ['oauth2|ORCiD']
-				// enable/disable Auth0 user registration
-				registrationEnabled = "${System.getenv("AUTH0_REGISTRATION")}".toBoolean()
-			}
-			/* }}} */
+/* }}} */
 
-			apf.storeLastUsername = true
-			authority.className = Role.name
-			controllerAnnotations.staticRules = [
-				'/**':                          'IS_AUTHENTICATED_REMEMBERED',
-				'/accessLog/**':                'ROLE_ADMIN',
-				'/analysis/getGenePatternFile': 'permitAll',
-				'/analysis/getTestFile':        'permitAll',
-				'/assets/**':                   'permitAll',
-				'/authUser/**':                 'ROLE_ADMIN',
-				'/authUserSecureAccess/**':     'ROLE_ADMIN',
-				'/css/**':                      'permitAll',
-				'/images/**':                   'permitAll',
-				'/js/**':                       'permitAll',
-				'/login/**':                    'permitAll',
-				'/requestmap/**':               'ROLE_ADMIN',
-				'/role/**':                     'ROLE_ADMIN',
-				'/search/loadAJAX**':           'permitAll',
-				'/secureObject/**':             'ROLE_ADMIN',
-				'/secureObjectAccess/**':       'ROLE_ADMIN',
-				'/secureObjectPath/**':         'ROLE_ADMIN',
-				'/userGroup/**':                'ROLE_ADMIN',
-				'/auth0/**':                    'permitAll',
-				'/registration/**':             'permitAll'
-			]
-			rejectIfNoRule = false // revert to old behavior
-			fii.rejectPublicInvocations = false // revert to old behavior
-			logout.afterLogoutUrl = '/'
-			requestMap.className = Requestmap.name
-			// securityConfigType = 'Requestmap'
-			successHandler.defaultTargetUrl = '/userLanding'
-			userLookup {
-				authorityJoinClassName = AuthUser.name
-				passwordPropertyName = 'passwd'
-				userDomainClassName = AuthUser.name
-			}
-		}
-	}
-}
-
+grails.plugin.springsecurity.apf.storeLastUsername = true
+grails.plugin.springsecurity.authority.className = Role.name
+grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+	'/**':                          'IS_AUTHENTICATED_REMEMBERED',
+	'/accessLog/**':                'ROLE_ADMIN',
+	'/analysis/getGenePatternFile': 'permitAll',
+	'/analysis/getTestFile':        'permitAll',
+	'/assets/**':                   'permitAll',
+	'/authUser/**':                 'ROLE_ADMIN',
+	'/authUserSecureAccess/**':     'ROLE_ADMIN',
+	'/css/**':                      'permitAll',
+	'/images/**':                   'permitAll',
+	'/js/**':                       'permitAll',
+	'/login/**':                    'permitAll',
+	'/requestmap/**':               'ROLE_ADMIN',
+	'/role/**':                     'ROLE_ADMIN',
+	'/search/loadAJAX**':           'permitAll',
+	'/secureObject/**':             'ROLE_ADMIN',
+	'/secureObjectAccess/**':       'ROLE_ADMIN',
+	'/secureObjectPath/**':         'ROLE_ADMIN',
+	'/userGroup/**':                'ROLE_ADMIN',
+	'/auth0/**':                    'permitAll',
+	'/registration/**':             'permitAll'
+]
+grails.plugin.springsecurity.rejectIfNoRule = false // revert to old behavior
+grails.plugin.springsecurity.fii.rejectPublicInvocations = false // revert to old behavior
+grails.plugin.springsecurity.logout.afterLogoutUrl = '/'
+grails.plugin.springsecurity.requestMap.className = Requestmap.name
+// grails.plugin.springsecurity.securityConfigType = 'Requestmap'
+grails.plugin.springsecurity.successHandler.defaultTargetUrl = '/userLanding'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = AuthUser.name
+grails.plugin.springsecurity.userLookup.passwordPropertyName = 'passwd'
+grails.plugin.springsecurity.userLookup.userDomainClassName = AuthUser.name
 
 /* {{{ Logging Configuration */
 grails.logging.jul.usebridge = true
@@ -142,14 +118,9 @@ com.rwg.solr.update.path = '/solr/browse/dataimport/'
 com.recomdata.solr.baseURL = "${com.rwg.solr.scheme}://${com.rwg.solr.host}" +
                              new File(com.rwg.solr.browse.path).parent
 
-com {
-	recomdata {
-		solr {
-			maxNewsStories = 10
-			maxRows = 10000
-		}
-	}
-}
+com.recomdata.solr.maxNewsStories = 10
+com.recomdata.solr.maxRows = 10000
+
 /* }}} */
 
 
@@ -195,7 +166,7 @@ com.recomdata.appTitle = "i2b2/tranSMART " + "${System.getenv("I2B2TRANSMART_TIT
 com.recomdata.adminHelpURL = 'help/adminHelp/default.htm'
 
 environments { development {
-	com.recomdata.bugreportURL = "${System.getenv("BUG_REPORT_URL")}"
+		com.recomdata.bugreportURL = "${System.getenv("BUG_REPORT_URL")}"
 } }
 
 // User Guide URL
@@ -222,8 +193,8 @@ com.recomdata.sessionTimeout = 300
 com.recomdata.heartbeatLaps = 30
 
 environments { development {
-	com.recomdata.sessionTimeout = Integer.MAX_VALUE / 1000 as int /* ~24 days */
-	com.recomdata.heartbeatLaps = 900
+		com.recomdata.sessionTimeout = Integer.MAX_VALUE / 1000 as int /* ~24 days */
+		com.recomdata.heartbeatLaps = 900
 } }
 
 // Not enabled by default (see Config-extra.php.sample)
@@ -250,33 +221,31 @@ com.recomdata.guestUserName = "${System.getenv("GUEST_USER")}"
 // Optionally you can set the width of each of the columns when rendered
 
 // TODO: this is configured twice in transmart-data:release-16.2. Is it a bug? -Andre
-sampleExplorer {
-	fieldMapping = [
-		columns:[
-			[header:'ID', dataIndex:'id', mainTerm: true, showInGrid: true, width:20],
-			[header:'trial name', dataIndex:'trial_name', mainTerm: true, showInGrid: true, width:20],
-			[header:'barcode', dataIndex:'barcode', mainTerm: true, showInGrid: true, width:20],
-			[header:'plate id', dataIndex:'plate_id', mainTerm: true, showInGrid: true, width:20],
-			[header:'patient id', dataIndex:'patient_id', mainTerm: true, showInGrid: true, width:20],
-			[header:'external id', dataIndex:'external_id', mainTerm: true, showInGrid: true, width:20],
-			[header:'aliquot id', dataIndex:'aliquot_id', mainTerm: true, showInGrid: true, width:20],
-			[header:'visit', dataIndex:'visit', mainTerm: true, showInGrid: true, width:20],
-			[header:'sample type', dataIndex:'sample_type', mainTerm: true, showInGrid: true, width:20],
-			[header:'description', dataIndex:'description', mainTerm: true, showInGrid: true, width:20],
-			[header:'comment', dataIndex:'comment', mainTerm: true, showInGrid: true, width:20],
-			[header:'location', dataIndex:'location', mainTerm: true, showInGrid: true, width:20],
-			[header:'organism', dataIndex:'source_organism', mainTerm: true, showInGrid: true, width:20],
-			// consolidated the sampleExplorer field mapping. is this a bug? -Andre
-			[header:'Sample ID',dataIndex:'id', mainTerm: false, showInGrid: false],
-			[header:'BioBank', dataIndex:'BioBank', mainTerm: true, showInGrid: true, width:10],
-			[header:'Source Organism', dataIndex:'Source_Organism', mainTerm: true, showInGrid: true, width:10]
-			// Continue as you have fields
-		]
+sampleExplorer.fieldMapping = [
+	columns:[
+		[header:'ID', dataIndex:'id', mainTerm: true, showInGrid: true, width:20],
+		[header:'trial name', dataIndex:'trial_name', mainTerm: true, showInGrid: true, width:20],
+		[header:'barcode', dataIndex:'barcode', mainTerm: true, showInGrid: true, width:20],
+		[header:'plate id', dataIndex:'plate_id', mainTerm: true, showInGrid: true, width:20],
+		[header:'patient id', dataIndex:'patient_id', mainTerm: true, showInGrid: true, width:20],
+		[header:'external id', dataIndex:'external_id', mainTerm: true, showInGrid: true, width:20],
+		[header:'aliquot id', dataIndex:'aliquot_id', mainTerm: true, showInGrid: true, width:20],
+		[header:'visit', dataIndex:'visit', mainTerm: true, showInGrid: true, width:20],
+		[header:'sample type', dataIndex:'sample_type', mainTerm: true, showInGrid: true, width:20],
+		[header:'description', dataIndex:'description', mainTerm: true, showInGrid: true, width:20],
+		[header:'comment', dataIndex:'comment', mainTerm: true, showInGrid: true, width:20],
+		[header:'location', dataIndex:'location', mainTerm: true, showInGrid: true, width:20],
+		[header:'organism', dataIndex:'source_organism', mainTerm: true, showInGrid: true, width:20],
+		// consolidated the sampleExplorer field mapping. is this a bug? -Andre
+		[header:'Sample ID',dataIndex:'id', mainTerm: false, showInGrid: false],
+		[header:'BioBank', dataIndex:'BioBank', mainTerm: true, showInGrid: true, width:10],
+		[header:'Source Organism', dataIndex:'Source_Organism', mainTerm: true, showInGrid: true, width:10]
+		// Continue as you have fields
 	]
-	resultsGridHeight = 100
-	resultsGridWidth = 100
-	idfield = 'id'
-}
+]
+sampleExplorer.resultsGridHeight = 100
+sampleExplorer.resultsGridWidth = 100
+sampleExplorer.idfield = 'id'
 
 // TODO: this is configured twice in transmart-data:release-16.2. Is it a bug? -Andre
 edu.harvard.transmart.sampleBreakdownMap = [
@@ -351,19 +320,16 @@ com.recomdata.FmFolderService.importDirectory = tempDir('transmart-fileimport')
 edu.harvard.transmart.email.notify = "${System.getenv("NOTIFICATION_EMAILS")}"
 edu.harvard.transmart.email.logo = '/images/info_security_logo_rgb.png'
 
-grails {
-	mail {
-		host = 'smtp.gmail.com'
-		port = 587
-		username = "${System.getenv("EMAIL_USER")}"
-		password = "${System.getenv("EMAIL_PASS")}"
-		props = ['mail.smtp.auth': 'true',
-		         'mail.smtp.starttls.enable': 'true',
-		         'mail.smtp.ssl.enable': 'false',
-		         'mail.smtp.socketFactory.port': '587',
-		         'mail.smtp.socketFactory.fallback': 'false']
-	}
-}
+grails.mail.host = 'smtp.gmail.com'
+grails.mail.port = 587
+grails.mail.username = "${System.getenv("EMAIL_USER")}"
+grails.mail.password = "${System.getenv("EMAIL_PASS")}"
+grails.mail.props = [
+	'mail.smtp.auth': 'true',
+	'mail.smtp.starttls.enable': 'true',
+	'mail.smtp.ssl.enable': 'false',
+	'mail.smtp.socketFactory.port': '587',
+	'mail.smtp.socketFactory.fallback': 'false']
 /* }}} */
 
 // gNOME integration
@@ -383,15 +349,10 @@ String envBlacklist = "${System.getenv("GRIDVIEW_BLACKLIST_PATHS")}"
 edu.harvard.transmart.gnome.projects = (!envBlacklist || envBlacklist == 'null') ? [] : Eval.me(envBlacklist)
 
 /* {{{ Fractalis configuration */
-fractalis {
-	active = "${System.getenv("FRACTALIS_ACTIVE")}".toBoolean()
-	// Must be a PIC-SURE endpoint unless i2b2-tranSMART supports additional data APIs.
-	dataSource = "${System.getenv("FRACTALIS_DATA_SOURCE")}"
-	// Must be a resource name that 'fractalis.dataSource' has access to. E.g. '/nhanes/Demo'
-	resourceName = "${System.getenv("FRACTALIS_RESOURCE_NAME")}"
-	// Must be a Fractalis endpoint. See https://git-r3lab.uni.lu/Fractalis for further information.
-	node = "${System.getenv("FRACTALIS_NODE")}"
-}
+fractalis.active = "${System.getenv("FRACTALIS_ACTIVE")}".toBoolean()
+fractalis.dataSource = "${System.getenv("FRACTALIS_DATA_SOURCE")}" // Must be a PIC-SURE endpoint unless i2b2-tranSMART supports additional data APIs.
+fractalis.resourceName = "${System.getenv("FRACTALIS_RESOURCE_NAME")}" // Must be a resource name that 'fractalis.dataSource' has access to. E.g. '/nhanes/Demo'
+fractalis.node = "${System.getenv("FRACTALIS_NODE")}" // Must be a Fractalis endpoint. See https://git-r3lab.uni.lu/Fractalis for further information.
 /* }}} */
 
 org.transmart.configFine = true
