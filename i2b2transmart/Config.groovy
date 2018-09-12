@@ -66,8 +66,10 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/secureObjectAccess/**':       'ROLE_ADMIN',
 	'/secureObjectPath/**':         'ROLE_ADMIN',
 	'/userGroup/**':                'ROLE_ADMIN',
+	'/auth0/admin*':                'ROLE_ADMIN',
 	'/auth0/**':                    'permitAll',
-	'/registration/**':             'permitAll'
+	'/registration/**':             'permitAll',
+	'/cms/**':                      'permitAll'
 ]
 grails.plugin.springsecurity.fii.rejectPublicInvocations = false // revert to old behavior
 grails.plugin.springsecurity.logout.afterLogoutUrl = '/'
@@ -81,7 +83,7 @@ grails.plugin.springsecurity.userLookup.userDomainClassName = AuthUser.name
 
 // Logging Configuration
 grails.logging.jul.usebridge = true
-log4j = {
+log4j.main = {
 	appenders {
 		rollingFile name: 'file', maxFileSize: 1024 * 1024, file: 'app.log'
 		rollingFile name: 'sql',  maxFileSize: 1024 * 1024, file: 'sql.log'
@@ -218,8 +220,8 @@ com.recomdata.dataUpload.templates.dir = homeDir('.grails/transmart-templates') 
 com.recomdata.dataUpload.uploads.dir = homeDir('.grails/transmart-datauploads') // Directory to hold GWAS file uploads
 
 // Quartz jobs configuration
-com.recomdata.export.jobs.sweep.startDelay = 60000 // d*h*m*s*1000
-com.recomdata.export.jobs.sweep.repeatInterval = 86400000 // d*h*m*s*1000
+com.recomdata.export.jobs.sweep.startDelay = 60 * 1000
+com.recomdata.export.jobs.sweep.repeatInterval = 24 * 60 * 60 * 1000
 com.recomdata.export.jobs.sweep.fileAge = 3 // the age of files to be deleted (in days)
 
 // File store and indexing configuration
@@ -253,7 +255,7 @@ edu.harvard.transmart.gridview.expandFolderIntoColumns = true // if true, expand
 
 // list of paths to exclude from grid view display and export
 String envBlacklist = "${System.getenv("GRIDVIEW_BLACKLIST_PATHS")}"
-edu.harvard.transmart.gnome.projects = (!envBlacklist || envBlacklist == 'null') ? [] : Eval.me(envBlacklist)
+edu.harvard.transmart.gridview.blacklist.paths = (!envBlacklist || envBlacklist == 'null') ? [] : Eval.me(envBlacklist)
 
 // Fractalis configuration
 fractalis.active = "${System.getenv("FRACTALIS_ACTIVE")}".toBoolean()
