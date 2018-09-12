@@ -2,8 +2,15 @@ import org.transmart.searchapp.AuthUser
 import org.transmart.searchapp.Requestmap
 import org.transmart.searchapp.Role
 
-def homeFile = { String path -> new File(System.getProperty('user.home'), path) }
-def tempFile = { String path -> new File(System.getProperty('java.io.tmpdir'), path) }
+def getOrCreateDir = { String parent, String path ->
+	File dir = new File(parent, path)
+	if (!dir.exists()) {
+		dir.mkdir()
+	}
+	dir.absolutePath
+}
+def homeDir = { String path -> getOrCreateDir(System.getProperty('user.home'), path) }
+def tempDir = { String path -> getOrCreateDir(System.getProperty('java.io.tmpdir'), path) }
 
 //Disabling/Enabling UI tabs
 ui {
@@ -317,24 +324,9 @@ com.recomdata.plugins.tempFolderDirectory = RModules.tempFolderDirectory
 com.recomdata.dataUpload.appTitle = 'Upload data to tranSMART'
 com.recomdata.dataUpload.stageScript = 'run_analysis_stage'
 
-// Directory path of com.recomdata.dataUpload.stageScript
-File gwasEtlDirectory = homeFile('.grails/transmart-gwasetl')
-
-// Directory to hold GWAS file uploads
-File gwasUploadsDirectory = homeFile('.grails/transmart-datauploads')
-
-// Directory to preload with template files with names <type>-template.txt
-File gwasTemplatesDirectory = homeFile('.grails/transmart-templates')
-
-com.recomdata.dataUpload.templates.dir = gwasTemplatesDirectory.absolutePath
-com.recomdata.dataUpload.uploads.dir = gwasUploadsDirectory.absolutePath
-com.recomdata.dataUpload.etl.dir = gwasEtlDirectory.absolutePath
-
-for (dir in [gwasTemplatesDirectory, gwasUploadsDirectory, gwasEtlDirectory]) {
-	if (!dir.exists()) {
-		dir.mkdir()
-	}
-}
+com.recomdata.dataUpload.templates.dir = homeDir('.grails/transmart-templates') // Directory to preload with template files with names <type>-template.txt
+com.recomdata.dataUpload.uploads.dir = homeDir('.grails/transmart-datauploads') // Directory to hold GWAS file uploads
+com.recomdata.dataUpload.etl.dir = homeDir('.grails/transmart-gwasetl') // Directory path of com.recomdata.dataUpload.stageScript
 /* }}} */
 
 
@@ -351,16 +343,8 @@ com.recomdata.export.jobs.sweep.fileAge = 3
 
 
 /* {{{ File store and indexing configuration */
-File fileStoreDirectory = homeFile('.grails/transmart-filestore')
-File fileImportDirectory = tempFile('transmart-fileimport')
-com.recomdata.FmFolderService.filestoreDirectory = fileStoreDirectory.absolutePath
-com.recomdata.FmFolderService.importDirectory = fileImportDirectory.absolutePath
-
-for (dir in [fileStoreDirectory, fileImportDirectory]) {
-	if (!dir.exists()) {
-		dir.mkdir()
-	}
-}
+com.recomdata.FmFolderService.filestoreDirectory = homeDir('.grails/transmart-filestore')
+com.recomdata.FmFolderService.importDirectory = tempDir('transmart-fileimport')
 /* }}} */
 
 /* {{{ Email notification configuration */
