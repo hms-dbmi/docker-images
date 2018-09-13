@@ -99,7 +99,7 @@ services:
       - MYSQL_ROOT_PASSWORD=${PICSURE2_MYSQL_ROOT_PASSWORD:-password}
       - MYSQL_DATABASE=picsure
     volumes:
-      - picsure-data:/var/lib/mysql
+      - picsure-data:/mysql/data
     command: --datadir=/mysql/data
     restart: always
     expose:
