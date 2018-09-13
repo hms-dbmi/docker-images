@@ -265,7 +265,7 @@ fractalis.node = "${System.getenv("FRACTALIS_NODE")}" // Must be a Fractalis end
 
 environments {
 	development {
-		externalLookup.setFromExternalValue 'com.recomdata.bugreportURL' // TODOBB
+		com.recomdata.bugreportURL = "${System.getenv("BUG_REPORT_URL")}"
 		com.recomdata.sessionTimeout = Integer.MAX_VALUE / 1000 as int // ~24 days
 		com.recomdata.heartbeatLaps = 900
 	}
