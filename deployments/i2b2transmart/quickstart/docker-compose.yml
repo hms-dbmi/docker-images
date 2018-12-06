@@ -82,13 +82,15 @@ services:
 
   ## Fractalis Stack ##
   fractalis:
-    image: sherzinger/fractalis:${fractalis_version}
+    build:
+      context: .
+      dockerfile: Dockerfile-fractalis
+      args:
+        fractalis_version: ${fractalis_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     restart: always
-    volumes:
-      - ./config/fractalis/config.py:/config.py
     environment:
       - FRACTALIS_CONFIG=/config.py
     command: gunicorn -w 3 -b :5000 --timeout 90 --log-file - fractalis:app
