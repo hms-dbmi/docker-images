@@ -19,7 +19,7 @@ RUN if [ ! -z "$username"] && [ ! -z "$psw"]; then export USERNAME=$username PAS
     && export HISTCONTROL=ignorespace \
     && git clone https://$USERNAME$PASSWORD$GIT_REPO -b ${VERSION} picsure \
     && cd picsure \
-    && mvn package -Dmaven.test.skip=true \
+    && mvn -pl '!pic-sure-api-wildfly' package \
     && apt-get remove -y $DEPENDENCIES && rm -rf /var/cache/apk/
 
 
@@ -54,7 +54,7 @@ COPY --from=builder picsure/pic-sure-api-war/target/modules/system/layers/base/c
 COPY --from=builder picsure/pic-sure-api-war/src/main/resources/wildfly-configuration/standalone.xml wildfly/standalone/configuration/
 
 # Copy war file
-COPY --from=builder ${projects} wildfly/standalone/deployments/
+COPY --from=builder picsure/pic-sure-api-war/target/pic-sure-api-war.war wildfly/standalone/deployments/pic-sure-api-2.war
 
 # root required to create default scratch directory - Andre
 USER root
@@ -63,6 +63,6 @@ USER root
 RUN wildfly/bin/jboss-cli.sh --command="module add --name=com.sql.mysql \
     --resources=/modules/mysql-connector-java-5.1.38.jar --dependencies=javax.api"
 
-USER jboss
+#USER jboss
 
 ENTRYPOINT ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
