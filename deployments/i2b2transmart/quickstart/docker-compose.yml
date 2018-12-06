@@ -51,8 +51,6 @@ services:
     # i2b2transmart database exposed port
     ports:
       - ${DOCKER_DB_PORT:-1521}:1521
-    volumes:
-      - i2b2transmart-data:/opt/oracle/oradata:rw
 
   # Rserve
   rserve:
@@ -107,13 +105,15 @@ services:
       - worker
 
   worker:
-    image: sherzinger/fractalis:${fractalis_version}
+    build:
+      context: .
+      dockerfile: Dockerfile-fractalis
+      args:
+        fractalis_version: ${fractalis_version}
     labels:
       - "edu.hms.harvard.dbmi.stack.name=${STACK_NAME}"
       - "edu.hms.harvard.dbmi.stack.env=${STACK_ENV}"
     restart: always
-    volumes:
-      - ./config/fractalis/config.py:/config.py
     environment:
       - FRACTALIS_CONFIG=/config.py
     command: celery worker -A fractalis:celery -l info --autoscale 16,4
@@ -206,8 +206,6 @@ services:
 volumes:
   # PIC-SURE database
   irct-data:
-  # i2b2/tranSMART database
-  i2b2transmart-data:
   # shared volume for R jobs
   rserve-jobs:
 
