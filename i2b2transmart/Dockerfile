@@ -1,27 +1,23 @@
-###########################
-# download tranSMART war
-###########################
+#############################################################
+# download tranSMART war from internal Artifactory repository
+#############################################################
 
-FROM alpine:3.7 AS transmart-war
+FROM maven:3.6-jdk-12-alpine AS transmart-war
 
 ARG version
 ARG artifact_url
 ARG artifact
 
 ENV ARTIFACT_VERSION ${version:-18.1-SNAPSHOT}
-ENV ARTIFACT_URL ${artifact_url:-http://ec2-35-170-59-132.compute-1.amazonaws.com:8080/artifactory/wars/transmart/transmart}
+ENV ARTIFACT_URL ${artifact_url:-http://ec2-35-170-59-132.compute-1.amazonaws.com:8080/artifactory/wars}
 ENV ARTIFACT ${artifact:-transmart.war}
 
-RUN apk upgrade --update --no-cache \
-    && DEPENDENCIES="wget" \
-    && apk --no-cache --update add $DEPENDENCIES \
-    #
-    # get transmart war file
-    # wget will recursively search for .war files and save them to /transmartWar directory - Andre
-    #
-    && wget -r -P /transmartWar -nd -nc -v -L --progress=bar:force -A war ${ARTIFACT_URL}/${ARTIFACT_VERSION}/ \
-    && apk del $DEPENDENCIES && rm -rf /var/cache/apk/*
-
+# Download the specified .war file from our repository
+RUN mvn dependency:get \
+  -Dartifact=transmart:transmart:${ARTIFACT_VERSION} \
+  -Dpackaging=war \
+  -DremoteRepositories=${ARTIFACT_URL} \
+  -Ddest=/transmartWar/${ARTIFACT}
 
 ###########################
 # tranSMART Production
@@ -52,7 +48,7 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
     && ln -sf /dev/stderr logs/stacktrace.log
 
 # dockerfile author
-LABEL maintainer="andre_rosa@hms.harvard.edu"
+LABEL maintainer="avillach_lab_developers@googlegroups.com"
 
 # tomcat variables
 ENV CATALINA_OPTS "$CATALINA_OPTS -Xms512m -Xmx2g -Djava.awt.headless=true -XX:+UseConcMarkSweepGC"
